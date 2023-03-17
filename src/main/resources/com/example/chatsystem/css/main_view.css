@@ -1,0 +1,38 @@
+.styled-node{
+    -fx-background-color: #0C281E;
+    -fx-background-radius: 20px;
+}
+
+.main-pane{
+    -fx-background-color: #4C956C;
+}
+
+.text-area .content{
+    -fx-background-color: #0C281E;
+}
+
+.text-area{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+
+.text-area .scroll-pane .content .text {
+    -fx-text-alignment: center;
+}
+
+.text-area .scroll-bar:vertical{
+    -fx-background-color: #0C281E;
+}
+
+.text-area .scroll-bar .increment-button:hover, .text-area .scroll-bar .decrement-button:hover{
+    -fx-background-color: #4C956C;
+}
+
+.button{
+    -fx-background-radius: 12;
+}
+
+.button:hover{
+    -fx-background-color: white;
+}
