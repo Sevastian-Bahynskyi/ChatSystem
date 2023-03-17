@@ -1,5 +1,6 @@
 package com.example.chatsystem.server;
 
+import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.ModelManager;
 
@@ -14,12 +15,12 @@ public class Server
     {
         ServerSocket serverSocket = new ServerSocket(8080);
         UDPBroadcaster broadcaster = new UDPBroadcaster("230.0.0.0",8888);
-        Model model = new ModelManager();
+        Data data = Data.getInstance();
 
         while (true)
         {
             Socket socket = serverSocket.accept();
-            ClientCommunicator clientCommunicator = new ClientCommunicator(socket, broadcaster, model);
+            ClientCommunicator clientCommunicator = new ClientCommunicator(socket, broadcaster, data);
             Thread thread = new Thread(clientCommunicator);
             thread.start();
         }
