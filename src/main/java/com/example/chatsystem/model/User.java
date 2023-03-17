@@ -1,11 +1,14 @@
 package com.example.chatsystem.model;
 
+import javafx.scene.image.Image;
+
 import java.nio.charset.Charset;
 
 public class User
 {
     private String username;
     private String password;
+    private Image image;
     private final int CHARACTER_NUMBER_OFF_PASSWORD = 8;
     private final int CHARACTER_NUMBER_OFF_USERNAME = 4;
 
@@ -17,7 +20,10 @@ public class User
         this.password = password;
     }
 
-
+    public Image getImage()
+    {
+        return image;
+    }
 
     private boolean validateUsername(String username)
     {

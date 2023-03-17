@@ -12,12 +12,14 @@ public class Message
 {
     private String message;
     private Date time;
+    private User user;
 
 
-    public Message(String message)
+    public Message(String message, User user)
     {
         this.message = message;
         time = new Date();
+        this.user = user;
     }
 
     public String getTime()
@@ -29,5 +31,11 @@ public class Message
     public String getMessage()
     {
         return message;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Message: " + message + "\nTime: " + time + "\nUsername: " + user.getUsername();
     }
 }

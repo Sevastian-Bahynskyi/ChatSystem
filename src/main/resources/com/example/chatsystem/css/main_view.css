@@ -36,3 +36,13 @@
 .button:hover{
     -fx-background-color: white;
 }
+
+.profile-image{
+    -fx-border-radius: 20;
+}
+
+.scroll-pane{
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
