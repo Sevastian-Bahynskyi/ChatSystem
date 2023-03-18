@@ -1,5 +1,6 @@
 package com.example.chatsystem.model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
-public class Message
+public class Message implements Serializable
 {
     private String message;
     private Date time;

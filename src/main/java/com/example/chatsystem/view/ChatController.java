@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -99,7 +100,7 @@ public class ChatController implements Controller
     //todo -> make 2 chat panes, one for current profile and others for others
 
     @FXML
-    void onSendMessage(ActionEvent event)
+    void onSendMessage(ActionEvent event) throws IOException
     {
         Label label = addMessage();
         viewModel.onSendMessage(label.textProperty());

@@ -2,7 +2,6 @@ package com.example.chatsystem;
 
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.ModelManager;
-import com.example.chatsystem.view.ViewFactory;
 import com.example.chatsystem.view.ViewHandler;
 import com.example.chatsystem.viewmodel.ViewModelFactory;
 import javafx.application.Application;

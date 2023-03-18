@@ -1,11 +1,10 @@
 package com.example.chatsystem.server;
 
-import com.example.chatsystem.model.Data;
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import javafx.scene.image.Image;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class ClientCommunicator implements Runnable
     {
         this.broadcaster = broadcaster;
         this.socket = socket;
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().registerTypeAdapter(Image.class, new ImageAdapter()).create();
         this.data = data;
     }
 
@@ -33,10 +32,10 @@ public class ClientCommunicator implements Runnable
     {
         try
         {
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            while(true)
+            loop: while(true)
             {
                 String request = in.readLine();
 
@@ -44,23 +43,26 @@ public class ClientCommunicator implements Runnable
                 {
                     case "connect" -> {
                         out.println("Connect");
+                        System.out.println("Client trying to connect.");
                     }
                     case "disconnect" -> {
                         out.println("Disconnect");
+                        break loop;
                     }
                     case "prepare to get message" -> {
                         out.println("message?");
                         String json = in.readLine();
                         Message message = gson.fromJson(json, Message.class);
-                        data.messages.add(message);
+                        data.getMessages().add(message);
                         broadcaster.broadcast(json);
                     }
                     case "prepare to get user" -> {
                         out.println("user?");
                         String json = in.readLine();
                         User user = gson.fromJson(json, User.class);
-                        data.users.add(user);
+                        data.getUsers().add(user);
                     }
+                    default -> throw new IllegalArgumentException("Unknown request.");
                 }
             }
         }

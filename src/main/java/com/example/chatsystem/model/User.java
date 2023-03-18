@@ -1,14 +1,15 @@
 package com.example.chatsystem.model;
 
+import com.google.gson.*;
 import javafx.scene.image.Image;
 
-import java.nio.charset.Charset;
+import java.io.Serializable;
 
-public class User
+public class User implements Serializable
 {
     private String username;
     private String password;
-    private Image image;
+    private String imageUrl;
     private final int CHARACTER_NUMBER_OFF_PASSWORD = 8;
     private final int CHARACTER_NUMBER_OFF_USERNAME = 4;
 
@@ -18,11 +19,12 @@ public class User
             return;
         this.username = username;
         this.password = password;
+        this.imageUrl = Data.getDefaultImageUrl();
     }
 
     public Image getImage()
     {
-        return image;
+        return new Image(getClass().getResourceAsStream(imageUrl));
     }
 
     private boolean validateUsername(String username)
@@ -72,4 +74,10 @@ public class User
     {
         return password;
     }
+
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
 }
+

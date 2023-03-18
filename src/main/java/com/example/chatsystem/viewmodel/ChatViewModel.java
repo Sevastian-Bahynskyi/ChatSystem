@@ -8,7 +8,11 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class ChatViewModel implements ViewModel
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+
+public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
     private Model model;
     private SimpleStringProperty textFieldProperty;
@@ -21,10 +25,11 @@ public class ChatViewModel implements ViewModel
         currentMessage = new SimpleStringProperty();
     }
 
-    public void onSendMessage(StringProperty messageProperty)
+    public void onSendMessage(StringProperty messageProperty) throws IOException
     {
         messageProperty.set(textFieldProperty.get());
         bindCurrentMessageProperty(messageProperty);
+        model.addMessage(textFieldProperty.get());
         textFieldProperty.set("");
     }
 
@@ -36,5 +41,14 @@ public class ChatViewModel implements ViewModel
     public void bindTextFieldProperty(StringProperty property)
     {
         property.bindBidirectional(textFieldProperty);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if(evt.getPropertyName().equals("new message"))
+        {
+            System.out.println(evt.getNewValue().toString());
+        }
     }
 }
