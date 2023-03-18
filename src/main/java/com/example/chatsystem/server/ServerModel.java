@@ -1,6 +1,7 @@
 package com.example.chatsystem.server;
 
 import com.example.chatsystem.model.Message;
+import com.example.chatsystem.model.User;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;

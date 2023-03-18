@@ -10,7 +10,7 @@ public class Data
     private ArrayList<User> users;
     private ArrayList<Message> messages;
 
-    private static String defaultImageUrl = "/com/example/chatsystem/images/windturbine.jpg";
+    private static String defaultImageUrl = "/com/example/chatsystem/images/default_user_avatar.png";
     private static Data instance;
 
     private Data()

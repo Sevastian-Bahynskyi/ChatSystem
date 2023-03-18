@@ -2,23 +2,24 @@ package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.effect.Light;
+import javafx.scene.image.Image;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.List;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
     private Model model;
     private SimpleStringProperty textFieldProperty;
     private SimpleStringProperty currentMessage;
+    private Image userImage;
     private PropertyChangeSupport support;
 
     public ChatViewModel(Model model)
@@ -27,6 +28,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.textFieldProperty = new SimpleStringProperty();
         support = new PropertyChangeSupport(this);
         currentMessage = new SimpleStringProperty();
+        userImage = model.getUser().getImage();
         model.addPropertyChangeListener("new message", this);
     }
 
@@ -38,11 +40,17 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         textFieldProperty.set("");
     }
 
+    public Image getUserImage()
+    {
+        return userImage;
+    }
+
     public void loadMessages()
     {
         for (Message message:model.getMessages())
         {
-            support.firePropertyChange("new message", null, message);
+            support.firePropertyChange("new message", null,
+                    List.of(message, message.getUser().equals(model.getUser())));
         }
     }
 
@@ -61,7 +69,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         if(evt.getPropertyName().equals("new message"))
         {
-            support.firePropertyChange("new message", null, evt.getNewValue());
+            support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
         }
     }
 

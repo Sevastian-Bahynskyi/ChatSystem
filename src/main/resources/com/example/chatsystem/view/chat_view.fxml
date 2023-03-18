@@ -20,13 +20,17 @@
                <children>
                   <VBox fx:id="messageMy" alignment="BOTTOM_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                        <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
                            <children>
-                              <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
+                              <VBox alignment="CENTER">
+                                 <children>
+                                    <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
                               <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />
                            </children>
                            <VBox.margin>
@@ -40,14 +44,18 @@
                   </VBox>
                   <VBox fx:id="messageOthers" alignment="BOTTOM_LEFT" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                        <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
                            <children>
                               <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />
-                              <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
+                              <VBox alignment="CENTER">
+                                 <children>
+                                    <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
                            </children>
                            <VBox.margin>
                               <Insets />
@@ -66,7 +74,7 @@
          <children>
             <Button fx:id="usersButton" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onUsers" prefHeight="57.0" prefWidth="57.0" styleClass="styled-node">
                <graphic>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/user_list.png" />
                      </image>
@@ -80,7 +88,7 @@
             </TextArea>
             <Button fx:id="sendButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendMessage" prefHeight="57.0" prefWidth="57.0" styleClass="styled-node">
                <graphic>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/send.png" />
                      </image>

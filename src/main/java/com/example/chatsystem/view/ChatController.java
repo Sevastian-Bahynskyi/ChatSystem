@@ -7,10 +7,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -24,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ChatController implements Controller, PropertyChangeListener
@@ -54,24 +52,28 @@ public class ChatController implements Controller, PropertyChangeListener
         this.viewModel.addPropertyChangeListener("new message", this);
         this.messageMy.setManaged(false);
         this.messageOthers.setManaged(false);
-        this.scrollPane.vvalueProperty().bind(chatPane.heightProperty());
-        profileImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/chatsystem/images/windturbine.jpg")));
+        profileImage = this.viewModel.getUserImage();
         this.viewModel.loadMessages();
+        this.textField.setTextFormatter(new TextFormatter<String>(change ->
+                change.getControlNewText().length() <= 8000 ? change : null));
 
-        textField.lengthProperty().addListener((observable, oldValue, newValue) ->
+        this.chatPane.heightProperty().addListener((observable, oldValue, newValue) ->
         {
-            if(newValue.intValue() >= 2000)
-            {
-                textField.setStyle("-fx-text-fill: red");
-                textField.setText("Stop");
-                textField.setStyle("-fx-text-fill: white");
-            }
-        });
+            scrollPane.setVvalue(chatPane.getHeight());
+        }); // scroll to the bottom of scrollpane whenever chatpane height is changed
+
+        scrollPane.setOnScroll(event -> {
+            double deltaY = event.getDeltaY();
+            double width = scrollPane.getContent().getBoundsInLocal().getWidth();
+            double vValue = scrollPane.getVvalue();
+
+            scrollPane.setVvalue(vValue - deltaY / width);
+        }); // allows to scroll with the mouse when scrollpane is focused
     }
 
     Label addMessage(VBox template)
     {
-        int labelIndex = -1;
+        Label rememberLabel = null;
         ArrayList<Node> copiedNodes = new ArrayList<>();
 
         HBox message = (HBox) template.getChildren().get(0);
@@ -85,16 +87,22 @@ public class ChatController implements Controller, PropertyChangeListener
                 circle.setRadius(((Circle) node).getRadius());
 
                 copiedNodes.add(circle);
-            } else if (node instanceof Label) {
-                Label label = new Label(((Label) node).getText());
+            } else if (node instanceof VBox) {
+                VBox newVbox = new VBox();
+                Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
+                Label label = new Label(templateLabel.getText());
 
-                label.setFont(((Label) node).getFont());
-                label.setTextFill(((Label) node).getTextFill());
-                label.setWrapText(((Label) node).isWrapText());
-                label.setMaxSize(chatPane.getWidth() / 2, chatPane.getHeight() / 2);
+                label.setFont(templateLabel.getFont());
+                label.setTextFill((templateLabel).getTextFill());
+                label.setWrapText((templateLabel).isWrapText());
+                label.setMaxWidth(chatPane.getWidth() / 2);
 
-                copiedNodes.add(label);
-                labelIndex = copiedNodes.indexOf(label);
+                newVbox.getChildren().add(label);
+                newVbox.setAlignment(((VBox) node).getAlignment());
+                newVbox.setPrefSize(((VBox) node).getPrefWidth(), ((VBox) node).getPrefHeight());
+
+                copiedNodes.add(newVbox);
+                rememberLabel = label;
             }
         }
 
@@ -116,7 +124,7 @@ public class ChatController implements Controller, PropertyChangeListener
         vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
         chatPane.getChildren().add(vBox);
 
-        return (Label) copiedNodes.get(labelIndex);
+        return rememberLabel;
     }
 
     //todo -> make 2 chat panes, one for current profile and others for others
@@ -129,6 +137,7 @@ public class ChatController implements Controller, PropertyChangeListener
             return;
         Label label = addMessage(messageMy);
         viewModel.onSendMessage(label.textProperty());
+        scrollPane.requestFocus();
     }
 
     @FXML
@@ -142,16 +151,6 @@ public class ChatController implements Controller, PropertyChangeListener
         return root;
     }
 
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if(evt.getPropertyName().equals("new message"))
-        {
-            Platform.runLater(() -> addMessage(messageOthers).setText(((Message)evt.getNewValue()).getMessage()));
-        }
-    }
-
     @FXML
     void onEnter(KeyEvent event) throws IOException
     {
@@ -163,6 +162,24 @@ public class ChatController implements Controller, PropertyChangeListener
         else if(event.getCode().equals(KeyCode.ENTER))
         {
             onSendMessage();
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if(evt.getPropertyName().equals("new message"))
+        {
+            var propertyEvent = (List<Object>) evt.getNewValue();
+            Message message = (Message) propertyEvent.get(0);
+            boolean isMessageOfTheUser = (boolean) propertyEvent.get(1);
+            Platform.runLater(() ->
+            {
+                if(isMessageOfTheUser)
+                    addMessage(messageMy).setText(message.getMessage());
+                else
+                    addMessage(messageOthers).setText(message.getMessage());
+            });
         }
     }
 

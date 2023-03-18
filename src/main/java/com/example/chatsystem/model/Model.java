@@ -15,4 +15,6 @@ public interface Model
     void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 
     ArrayList<Message> getMessages();
+
+    User getUser();
 }

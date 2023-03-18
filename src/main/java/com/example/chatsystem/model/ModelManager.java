@@ -54,6 +54,12 @@ public class ModelManager implements Model
     }
 
     @Override
+    public User getUser()
+    {
+        return user;
+    }
+
+    @Override
     public void addMessage(String message) throws IOException
     {
         server.sendMessage(new Message(message, user));
