@@ -1,5 +1,6 @@
 package com.example.chatsystem.viewmodel;
 
+import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableList;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
@@ -17,12 +19,15 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     private Model model;
     private SimpleStringProperty textFieldProperty;
     private SimpleStringProperty currentMessage;
+    private PropertyChangeSupport support;
 
     public ChatViewModel(Model model)
     {
         this.model = model;
         this.textFieldProperty = new SimpleStringProperty();
+        support = new PropertyChangeSupport(this);
         currentMessage = new SimpleStringProperty();
+        model.addPropertyChangeListener("new message", this);
     }
 
     public void onSendMessage(StringProperty messageProperty) throws IOException
@@ -31,6 +36,14 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         bindCurrentMessageProperty(messageProperty);
         model.addMessage(textFieldProperty.get());
         textFieldProperty.set("");
+    }
+
+    public void loadMessages()
+    {
+        for (Message message:model.getMessages())
+        {
+            support.firePropertyChange("new message", null, message);
+        }
     }
 
     public void bindCurrentMessageProperty(StringProperty property)
@@ -48,7 +61,17 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         if(evt.getPropertyName().equals("new message"))
         {
-            System.out.println(evt.getNewValue().toString());
+            support.firePropertyChange("new message", null, evt.getNewValue());
         }
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        support.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        support.removePropertyChangeListener(propertyName, listener);
     }
 }

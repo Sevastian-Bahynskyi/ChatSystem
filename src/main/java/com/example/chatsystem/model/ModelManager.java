@@ -7,6 +7,7 @@ import com.example.chatsystem.server.ServerModel;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ModelManager implements Model
 {
@@ -17,6 +18,7 @@ public class ModelManager implements Model
     private final String groupAddress = "230.0.0.0";
     private final int groupPort = 8888;
     private PropertyChangeSupport support;
+    private ArrayList<Message> messages;
 
     public ModelManager() throws IOException
     {
@@ -26,25 +28,34 @@ public class ModelManager implements Model
         if(server.isConnected())
         {
             server.addPropertyChangeListener(evt ->
-                    support.firePropertyChange("new message", null, evt.getNewValue()));
+            {
+                if(!((Message) evt.getNewValue()).getUser().equals(user))
+                    support.firePropertyChange("new message", null, evt.getNewValue());
+            });
         }
         else {
             System.out.println("GUI is not connected to the server, app is running in test mode.");
         }
+
+        messages = new ArrayList<>();
     }
     @Override
     public void setUser(String username, String password) throws IOException
     {
-        user = server.login(username, password);
+        var res = server.login(username, password);
+        user = (User) res.get(0);
+        var messages = (ArrayList<Message>) res.get(1);
+        this.messages = messages;
+    }
+
+    public ArrayList<Message> getMessages()
+    {
+        return messages;
     }
 
     @Override
     public void addMessage(String message) throws IOException
     {
-        if(user == null)
-        {
-            user = new User("Sevastian", "asus2004");
-        }
         server.sendMessage(new Message(message, user));
     }
 

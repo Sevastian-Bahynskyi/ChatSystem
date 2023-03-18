@@ -34,9 +34,14 @@ public class Message implements Serializable
         return message;
     }
 
+    public User getUser()
+    {
+        return user;
+    }
+
     @Override
     public String toString()
     {
-        return "Message: " + message + "\nTime: " + time + "\nUsername: " + user.getUsername();
+        return "Message: " + message + "\nTime: " + getTime() + "\nUsername: " + user.getUsername();
     }
 }

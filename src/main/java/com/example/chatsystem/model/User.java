@@ -79,5 +79,15 @@ public class User implements Serializable
     {
         return imageUrl;
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj == null || obj.getClass() != getClass())
+            return false;
+
+        User u = (User) obj;
+        return u.imageUrl.equals(imageUrl) && u.username.equals(username) && u.password.equals(password);
+    }
 }
 

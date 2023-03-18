@@ -12,15 +12,15 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="700.0" prefWidth="1000.0" styleClass="main-pane" stylesheets="@../css/main_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.ChatController">
+<VBox alignment="CENTER" onKeyPressed="#onEnter" prefHeight="700.0" prefWidth="1000.0" styleClass="main-pane" stylesheets="@../css/main_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.ChatController">
    <children>
-      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vvalue="1.0" VBox.vgrow="ALWAYS">
          <content>
-            <HBox prefHeight="100.0" prefWidth="200.0" styleClass="styled-node">
+            <VBox fx:id="chatPane" alignment="BOTTOM_LEFT" styleClass="styled-node">
                <children>
-                  <VBox fx:id="chatPaneOthers" alignment="BOTTOM_LEFT" HBox.hgrow="ALWAYS">
+                  <VBox fx:id="messageMy" alignment="BOTTOM_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <HBox fx:id="messageBoxTemp1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
                            <children>
                               <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
                                  <font>
@@ -38,16 +38,16 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox fx:id="chatPaneMy" alignment="BOTTOM_RIGHT" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS">
+                  <VBox fx:id="messageOthers" alignment="BOTTOM_LEFT" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <HBox fx:id="myMessageBoxTemp" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                        <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
                            <children>
+                              <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />
                               <Label text="Test" textAlignment="RIGHT" textFill="WHITE" wrapText="true">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
                               </Label>
-                              <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />
                            </children>
                            <VBox.margin>
                               <Insets />
@@ -59,7 +59,7 @@
                      </children>
                   </VBox>
                </children>
-            </HBox>
+            </VBox>
          </content>
       </ScrollPane>
       <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" spacing="20.0">
@@ -73,7 +73,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <TextArea fx:id="textField" maxHeight="0.0" maxWidth="1.7976931348623157E308" prefColumnCount="1" prefRowCount="1" promptText="Enter your message" styleClass="styled-node" wrapText="true" HBox.hgrow="ALWAYS">
+            <TextArea fx:id="textField" maxHeight="0.0" maxWidth="1.7976931348623157E308" onKeyPressed="#onEnter" prefColumnCount="1" prefRowCount="1" promptText="Enter your message" styleClass="styled-node" wrapText="true" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="18.0" />
                </font>

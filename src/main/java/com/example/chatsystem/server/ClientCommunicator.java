@@ -61,6 +61,11 @@ public class ClientCommunicator implements Runnable
                         String json = in.readLine();
                         User user = gson.fromJson(json, User.class);
                         data.getUsers().add(user);
+                        out.println("prepare to get messages");
+                        if(!in.readLine().equals("messages?"))
+                            return;
+                        json = gson.toJson(data.getMessages());
+                        out.println(json);
                     }
                     default -> throw new IllegalArgumentException("Unknown request.");
                 }

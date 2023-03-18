@@ -6,6 +6,7 @@ import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import javafx.scene.image.Image;
 
 import java.beans.PropertyChangeListener;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientImplementation implements ServerModel
 {
@@ -41,8 +44,9 @@ public class ClientImplementation implements ServerModel
         out.println(json);
     }
 
-    public User login(String username, String password) throws IOException
+    public List<Object> login(String username, String password) throws IOException
     {
+        var res = new ArrayList<>(List.of());
         User user = new User(username, password);
         out.println("prepare to get user");
         String response = in.readLine();
@@ -50,7 +54,18 @@ public class ClientImplementation implements ServerModel
             return null;
         String json = gson.toJson(user);
         out.println(json);
-        return user;
+        res.add(user);
+        if(in.readLine().equals("prepare to get messages"))
+        {
+            out.println("messages?");
+            String messagesJson = in.readLine();
+            ArrayList<Message> messages = gson.fromJson(messagesJson, new TypeToken<ArrayList<Message>>(){}.getType());
+            res.add(messages);
+        }
+        else {
+            res.add(new ArrayList<Message>());
+        }
+        return res;
     }
 
     public void connect(String host, int port, String groupAddress, int groupPort) throws IOException
