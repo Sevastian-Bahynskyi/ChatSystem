@@ -1,10 +1,8 @@
 package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 public class LoginViewModel implements ViewModel
 {
@@ -20,16 +18,20 @@ public class LoginViewModel implements ViewModel
         errorProperty = new SimpleStringProperty("");
     }
 
-    public void onLogin()
+    public boolean onLogin()
     {
         try
         {
-            model.setUser(usernameProperty.get(), passwordProperty.get());
+            model.login(usernameProperty.get(), passwordProperty.get());
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             errorProperty.set(e.getMessage());
+            return false;
         }
+
+        return true;
     }
 
     public void bindUsername(StringProperty property)
@@ -39,7 +41,7 @@ public class LoginViewModel implements ViewModel
 
     public void bindError(StringProperty property)
     {
-        errorProperty.bindBidirectional(property);
+        property.bindBidirectional(errorProperty);
     }
 
     public void bindPassword(StringProperty property)

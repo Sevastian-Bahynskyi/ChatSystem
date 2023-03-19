@@ -16,6 +16,8 @@ public class Data
     private Data()
     {
         users = new ArrayList<>();
+        users.add(new User("Sevastian", "a2345678"));
+        users.add(new User("Derek", "a2345678"));
         messages = new ArrayList<>();
     }
 
@@ -36,19 +38,10 @@ public class Data
         return users;
     }
 
-    /***
-     *
-     * @param user
-     * @return true if user was added and false if not
-     */
-    public boolean addUser(User user)
+
+    public boolean isUserRegistered(User user)
     {
-        if(!users.contains(user))
-        {
-            users.add(user);
-            return true;
-        }
-        return false;
+        return users.contains(user);
     }
 
     public synchronized ArrayList<Message> getMessages()

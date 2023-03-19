@@ -24,3 +24,7 @@
 .hyperlink:hover{
     -fx-text-fill: #00c2ff;
 }
+
+.bug:hover{
+    -fx-fill: white;
+}

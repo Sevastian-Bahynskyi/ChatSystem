@@ -8,14 +8,17 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
    <children>
       <HBox alignment="CENTER_RIGHT">
          <children>
+            <FontAwesomeIcon fill="#4c956c" glyphName="BUG" onMouseClicked="#onBug" size="3em" styleClass="bug" />
+            <Region HBox.hgrow="ALWAYS" />
             <Hyperlink focusTraversable="false" onAction="#onRegister" text="Register" textFill="WHITE" underline="true">
                <font>
                   <Font name="System Bold" size="14.0" />
@@ -23,11 +26,16 @@
             </Hyperlink>
          </children>
       </HBox>
-      <Circle fx:id="userImage" fill="DODGERBLUE" radius="50.0" stroke="BLACK" strokeType="INSIDE" />
-      <HBox alignment="CENTER" maxWidth="-Infinity" styleClass="input-field" VBox.vgrow="NEVER">
+      <HBox alignment="CENTER">
+         <children>
+            <Circle fx:id="userImage" fill="DODGERBLUE" radius="50.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" styleClass="input-field" VBox.vgrow="NEVER">
          <children>
             <FontAwesomeIcon fill="#4c956c" glyphName="USER" size="2em" />
-            <TextField fx:id="usernameField" />
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="usernameField" onKeyPressed="#onKeyPressed" />
          </children>
          <padding>
             <Insets left="10.0" right="10.0" />
@@ -36,10 +44,11 @@
             <Insets top="10.0" />
          </VBox.margin>
       </HBox>
-      <HBox alignment="CENTER" maxWidth="-Infinity" styleClass="input-field">
+      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" styleClass="input-field">
          <children>
             <FontAwesomeIcon fill="#4c956c" glyphName="KEY" size="2em" />
-            <PasswordField fx:id="passwordField" styleClass="text-field" />
+            <Region HBox.hgrow="ALWAYS" />
+            <PasswordField fx:id="passwordField" onKeyPressed="#onKeyPressed" styleClass="text-field" />
          </children>
          <padding>
             <Insets left="10.0" right="10.0" />
@@ -48,7 +57,7 @@
             <Insets bottom="20.0" />
          </VBox.margin>
       </HBox>
-      <HBox fx:id="errorLabel" maxWidth="-Infinity">
+      <HBox maxWidth="-Infinity">
          <children>
             <Button mnemonicParsing="false" onAction="#onLogin" prefWidth="80.0" text="Login" textFill="WHITE">
                <font>
@@ -57,13 +66,13 @@
             </Button>
          </children>
       </HBox>
-      <Label text="Error" textFill="RED">
+      <Label fx:id="errorLabel" text="Error" textFill="RED">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
    </children>
    <padding>
-      <Insets left="20.0" right="20.0" />
+      <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
    </padding>
 </VBox>

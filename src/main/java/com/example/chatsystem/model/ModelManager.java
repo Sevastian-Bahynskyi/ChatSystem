@@ -1,6 +1,5 @@
 package com.example.chatsystem.model;
 
-import com.example.chatsystem.server.Client;
 import com.example.chatsystem.server.ClientImplementation;
 import com.example.chatsystem.server.ServerModel;
 
@@ -40,9 +39,19 @@ public class ModelManager implements Model
         messages = new ArrayList<>();
     }
     @Override
-    public void setUser(String username, String password) throws IOException
+    public void login(String username, String password) throws IOException
     {
         var res = server.login(username, password);
+        user = (User) res.get(0);
+        var messages = (ArrayList<Message>) res.get(1);
+        this.messages = messages;
+        support.firePropertyChange("user", null, user);
+    }
+
+    @Override
+    public void register(String username, String password) throws IOException
+    {
+        var res = server.register(username, password);
         user = (User) res.get(0);
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;

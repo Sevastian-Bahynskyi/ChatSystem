@@ -22,4 +22,6 @@ public interface ServerModel
     void removePropertyChangeListener(PropertyChangeListener listener);
 
     boolean isConnected();
+
+    List<Object> register(String username, String password) throws IOException;
 }

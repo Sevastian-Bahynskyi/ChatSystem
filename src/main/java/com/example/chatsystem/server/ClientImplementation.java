@@ -48,26 +48,47 @@ public class ClientImplementation implements ServerModel
     {
         var res = new ArrayList<>(List.of());
         User user = new User(username, password);
-        out.println("prepare to get user");
-        String response = in.readLine();
-        if(!response.equals("user?"))
-            return null;
-        String json = gson.toJson(user);
-        out.println(json);
-        if(!in.readLine().equals("user is approved"))
-            throw new IllegalArgumentException("User with such username and password is not found! Want to register?");
+        sendAndProcessUser(user, "User with such username and password is not found!\nTry to register first.");
         res.add(user);
+        res.add(sendMessagesToServer());
+        return res;
+    }
+
+    public List<Object> register(String username, String password) throws IOException
+    {
+        var res = new ArrayList<>(List.of());
+        User user = new User(username, password);
+        sendAndProcessUser(user, "User with such username and password is already exist!\nTry to login.");
+        res.add(user);
+        res.add(sendMessagesToServer());
+        return res;
+    }
+
+    // tries to send messages
+    // returns messages if request that was got from server is not appropriate return null
+    private ArrayList<Message> sendMessagesToServer() throws IOException
+    {
         if(in.readLine().equals("prepare to get messages"))
         {
             out.println("messages?");
             String messagesJson = in.readLine();
             ArrayList<Message> messages = gson.fromJson(messagesJson, new TypeToken<ArrayList<Message>>(){}.getType());
-            res.add(messages);
+            return messages;
         }
-        else {
-            res.add(new ArrayList<Message>());
-        }
-        return res;
+        else
+            throw new IllegalArgumentException("Server or client is not connected!");
+    }
+
+    private void sendAndProcessUser(User user, String errorMessage) throws IOException
+    {
+        out.println("prepare to login user");
+        String response = in.readLine();
+        if(!response.equals("user?"))
+            throw new IllegalArgumentException("Server or client is not connected.");
+        String json = gson.toJson(user);
+        out.println(json);
+        if(!in.readLine().equals("user is approved"))
+            throw new IllegalArgumentException(errorMessage);
     }
 
     public void connect(String host, int port, String groupAddress, int groupPort) throws IOException
