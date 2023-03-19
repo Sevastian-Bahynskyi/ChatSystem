@@ -28,7 +28,7 @@ public class ViewFactory
         String fxmlFile;
         switch (view)
         {
-            case LOG -> fxmlFile = "log_view.fxml";
+            case LOG -> fxmlFile = "login_view.fxml";
             case CHAT -> fxmlFile = "chat_view.fxml";
             default -> throw new IllegalArgumentException("Didn't find the appropriate view.");
         }

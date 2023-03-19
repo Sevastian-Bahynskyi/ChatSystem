@@ -60,7 +60,10 @@ public class ClientCommunicator implements Runnable
                         out.println("user?");
                         String json = in.readLine();
                         User user = gson.fromJson(json, User.class);
-                        data.getUsers().add(user);
+                        if(data.addUser(user))
+                            out.println("user is approved");
+                        else out.println("user is not approved");
+
                         out.println("prepare to get messages");
                         if(!in.readLine().equals("messages?"))
                             return;

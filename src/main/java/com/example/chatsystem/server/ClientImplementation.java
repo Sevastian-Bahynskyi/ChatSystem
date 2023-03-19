@@ -54,6 +54,8 @@ public class ClientImplementation implements ServerModel
             return null;
         String json = gson.toJson(user);
         out.println(json);
+        if(!in.readLine().equals("user is approved"))
+            throw new IllegalArgumentException("User with such username and password is not found! Want to register?");
         res.add(user);
         if(in.readLine().equals("prepare to get messages"))
         {

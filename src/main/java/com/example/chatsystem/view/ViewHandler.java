@@ -21,7 +21,7 @@ public class ViewHandler
     public void start(Stage stage)
     {
         this.stage = stage;
-        openView(WINDOW.CHAT);
+        openView(WINDOW.LOG);
     }
 
     public void openView(WINDOW view)

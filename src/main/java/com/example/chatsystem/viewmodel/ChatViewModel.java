@@ -2,6 +2,7 @@ package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
+import com.example.chatsystem.model.User;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,8 +29,8 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.textFieldProperty = new SimpleStringProperty();
         support = new PropertyChangeSupport(this);
         currentMessage = new SimpleStringProperty();
-        userImage = model.getUser().getImage();
         model.addPropertyChangeListener("new message", this);
+        model.addPropertyChangeListener("user", this);
     }
 
     public void onSendMessage(StringProperty messageProperty) throws IOException
@@ -67,9 +68,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        if(evt.getPropertyName().equals("new message"))
+        switch (evt.getPropertyName())
         {
-            support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
+            case "new message" ->
+                support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
+            case "user" ->
+                userImage = ((User) evt.getNewValue()).getImage();
         }
     }
 

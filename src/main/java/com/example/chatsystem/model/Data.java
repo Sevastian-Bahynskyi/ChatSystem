@@ -36,6 +36,21 @@ public class Data
         return users;
     }
 
+    /***
+     *
+     * @param user
+     * @return true if user was added and false if not
+     */
+    public boolean addUser(User user)
+    {
+        if(!users.contains(user))
+        {
+            users.add(user);
+            return true;
+        }
+        return false;
+    }
+
     public synchronized ArrayList<Message> getMessages()
     {
         return messages;

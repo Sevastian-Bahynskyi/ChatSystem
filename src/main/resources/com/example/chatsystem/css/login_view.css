@@ -1,0 +1,26 @@
+.input-field{
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+}
+
+.text-field{
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+}
+
+.main-pane{
+    -fx-background-color: #0C281E;
+}
+
+.button{
+    -fx-background-radius: 15;
+    -fx-background-color: #4C956C;
+}
+
+.button:hover{
+    -fx-background-color: #00d55b;
+}
+
+.hyperlink:hover{
+    -fx-text-fill: #00c2ff;
+}

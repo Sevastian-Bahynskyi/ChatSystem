@@ -14,7 +14,6 @@ public class StartGui extends Application
     public void start(Stage primaryStage) throws Exception
     {
         Model model = new ModelManager();
-        model.setUser("Sevastian", "ekfbrfwef");
         ViewModelFactory viewModelFactory = new ViewModelFactory(model);
         ViewHandler viewHandler = new ViewHandler(viewModelFactory);
         viewHandler.start(primaryStage);

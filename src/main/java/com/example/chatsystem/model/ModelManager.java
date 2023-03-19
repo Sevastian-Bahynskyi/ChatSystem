@@ -34,7 +34,7 @@ public class ModelManager implements Model
             });
         }
         else {
-            System.out.println("GUI is not connected to the server, app is running in test mode.");
+            System.out.println("GUI is not connected to the server, app is running in the test mode.");
         }
 
         messages = new ArrayList<>();
@@ -46,6 +46,7 @@ public class ModelManager implements Model
         user = (User) res.get(0);
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;
+        support.firePropertyChange("user", null, user);
     }
 
     public ArrayList<Message> getMessages()
