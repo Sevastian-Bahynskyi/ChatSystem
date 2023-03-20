@@ -31,7 +31,7 @@ public class ClientImplementation implements ServerModel
 
     public ClientImplementation(Model model) throws IOException
     {
-        this.model = model; // todo -> maybe runnable
+        this.model = model;
     }
 
     public void sendMessage(Message message) throws IOException
@@ -48,7 +48,7 @@ public class ClientImplementation implements ServerModel
     {
         var res = new ArrayList<>(List.of());
         User user = new User(username, password);
-        sendAndProcessUser(user, "User with such username and password is not found!\nTry to register first.");
+        sendAndProcessUser(user, false, "User with such username and password is not found!\nTry to register first.");
         res.add(user);
         res.add(sendMessagesToServer());
         return res;
@@ -58,7 +58,7 @@ public class ClientImplementation implements ServerModel
     {
         var res = new ArrayList<>(List.of());
         User user = new User(username, password);
-        sendAndProcessUser(user, "User with such username and password is already exist!\nTry to login.");
+        sendAndProcessUser(user, true, "User with such username and password is already exist!\nTry to login.");
         res.add(user);
         res.add(sendMessagesToServer());
         return res;
@@ -79,9 +79,12 @@ public class ClientImplementation implements ServerModel
             throw new IllegalArgumentException("Server or client is not connected!");
     }
 
-    private void sendAndProcessUser(User user, String errorMessage) throws IOException
+    private void sendAndProcessUser(User user, boolean isActionRegister, String errorMessage) throws IOException
     {
-        out.println("prepare to login user");
+        if(isActionRegister)
+            out.println("prepare to register user");
+        else
+            out.println("prepare to login user");
         String response = in.readLine();
         if(!response.equals("user?"))
             throw new IllegalArgumentException("Server or client is not connected.");

@@ -48,4 +48,20 @@ public class LoginViewModel implements ViewModel
     {
         passwordProperty.bind(property);
     }
+
+    public boolean onRegister()
+    {
+        try
+        {
+            model.register(usernameProperty.get(), passwordProperty.get());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            errorProperty.set(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
 }

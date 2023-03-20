@@ -18,7 +18,6 @@ import java.util.Random;
 public class ViewHandler
 {
     private Stage stage;
-    private ImageLoader imageLoader = new ImageLoader(); // todo -> delete, it's for fun
     private Scene currentScene;
     private final ViewFactory viewFactory;
 
@@ -49,10 +48,10 @@ public class ViewHandler
         stage.setResizable(false);
         stage.show();
     }
-    Image image = new Image(getClass().getResourceAsStream("/com/example/chatsystem/images/dead_screen.png"));
+    private Image image = new Image(getClass().getResourceAsStream("/com/example/chatsystem/images/dead_screen.png"));
 
 
-    public void openParallelView(WINDOW view)
+    public void openParallelView(WINDOW view) // todo -> delete
     {
         Stage parallelStage = new Stage();
         Region root = viewFactory.loadView(view);

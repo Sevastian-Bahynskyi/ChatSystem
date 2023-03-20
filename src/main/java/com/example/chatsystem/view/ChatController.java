@@ -127,13 +127,12 @@ public class ChatController implements Controller, PropertyChangeListener
         return rememberLabel;
     }
 
-    //todo -> make 2 chat panes, one for current profile and others for others
 
     @FXML
     void onSendMessage() throws IOException
     {
         String t = textField.getText();
-        if(t == null || t.isEmpty() || t.matches("^(\n)+$"))
+        if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
             return;
         Label label = addMessage(messageMy);
         viewModel.onSendMessage(label.textProperty());
@@ -183,8 +182,13 @@ public class ChatController implements Controller, PropertyChangeListener
         }
     }
 
-    // todo -> open extra info about user when press on image
+    // todo
+    //      -> set image in register window
+    //      -> open extra info about user when press on image
     //      -> think about other GUI bugs
-    //      -> login
+    //      -> second button implementation
+    //      -> registration
     //      -> database
+    //      -> how should I check if user is registered or not?
+    //      Should I search for people with the  same username and password, or only username, or ID?
 }

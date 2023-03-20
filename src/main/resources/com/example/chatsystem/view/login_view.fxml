@@ -3,7 +3,6 @@
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -13,17 +12,17 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
+<VBox fx:id="parentNode" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
    <children>
       <HBox alignment="CENTER_RIGHT">
          <children>
             <FontAwesomeIcon fill="#4c956c" glyphName="BUG" onMouseClicked="#onBug" size="3em" styleClass="bug" />
             <Region HBox.hgrow="ALWAYS" />
-            <Hyperlink focusTraversable="false" onAction="#onRegister" text="Register" textFill="WHITE" underline="true">
+            <Label onMouseClicked="#onRegister" styleClass="hyperlink-label" text="Register" textFill="WHITE" underline="true">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
-            </Hyperlink>
+            </Label>
          </children>
       </HBox>
       <HBox alignment="CENTER">
@@ -31,6 +30,11 @@
             <Circle fx:id="userImage" fill="DODGERBLUE" radius="50.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
          </children>
       </HBox>
+      <Label fx:id="setImageLabel" onMouseClicked="#onSetImage" styleClass="hyperlink-label" text="Set Image" textFill="WHITE" underline="true">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
       <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" styleClass="input-field" VBox.vgrow="NEVER">
          <children>
             <FontAwesomeIcon fill="#4c956c" glyphName="USER" size="2em" />
@@ -59,7 +63,7 @@
       </HBox>
       <HBox maxWidth="-Infinity">
          <children>
-            <Button mnemonicParsing="false" onAction="#onLogin" prefWidth="80.0" text="Login" textFill="WHITE">
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLogin" prefWidth="80.0" text="Login" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

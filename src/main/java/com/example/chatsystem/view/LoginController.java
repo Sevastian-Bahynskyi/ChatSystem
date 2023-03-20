@@ -1,25 +1,29 @@
 package com.example.chatsystem.view;
 
-import com.example.chatsystem.model.Data;
 import com.example.chatsystem.viewmodel.LoginViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
-import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-import java.util.Random;
 
 public class LoginController implements Controller
 {
@@ -32,9 +36,14 @@ public class LoginController implements Controller
     @FXML
     private TextField usernameField;
     @FXML
-    private Label errorLabel;
+    private Label errorLabel, setImageLabel;
     @FXML
     private ImageView imageTest;
+    @FXML
+    private VBox parentNode;
+
+    @FXML
+    private Button loginButton;
 
     private ViewHandler viewHandler;
     private LoginViewModel viewModel;
@@ -56,13 +65,34 @@ public class LoginController implements Controller
     }
 
     @FXML
-    void onLogin() {
-        if(viewModel.onLogin()) // if login successfull
+    void onLogin()
+    {
+        if(isCurrentStateLogin && viewModel.onLogin()) // if login successfull
             viewHandler.openView(WINDOW.CHAT);
+        else if (!isCurrentStateLogin && viewModel.onRegister())
+        {
+            viewHandler.openView(WINDOW.CHAT);
+        }
     }
 
+    private boolean isCurrentStateLogin = true;
     @FXML
-    void onRegister() {
+    void onRegister(MouseEvent event)
+    {
+        Label register = (Label) event.getSource();
+        isCurrentStateLogin = !isCurrentStateLogin;
+        if(isCurrentStateLogin)
+        {
+            loginButton.setText("Login");
+            register.setText("Register");
+            setImageLabel.setManaged(!isCurrentStateLogin);
+        }
+        else
+        {
+            loginButton.setText("Register");
+            register.setText("Login");
+        }
+        setImageLabel.setManaged(!isCurrentStateLogin);
 
     }
 
@@ -83,6 +113,29 @@ public class LoginController implements Controller
         {
             onLogin();
         }
+    }
+
+    @FXML
+    void onSetImage(MouseEvent event)
+    {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png", "*.gif");
+        fileChooser.getExtensionFilters().add(imageFilter);
+        Window window = parentNode.getScene().getWindow();
+        File selectedImage = fileChooser.showOpenDialog(window);
+        Path sourcePath = selectedImage.toPath();
+        Path destinationPath = Paths.get("src/main/resources/com/example/chatsystem/images/" + selectedImage.getName());
+        try
+        {
+            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e)
+        {
+            errorLabel.setText("Unable to choose image.");
+        }
+
+        System.out.println(selectedImage.getName());
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/chatsystem/images/" + selectedImage.getName())));
+        userImage.setFill(new ImagePattern(image));
     }
 
     @FXML

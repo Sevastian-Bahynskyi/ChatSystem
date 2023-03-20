@@ -79,13 +79,13 @@ public class ClientCommunicator implements Runnable
         }
     }
 
-    private boolean processUser(boolean isRegistered) throws IOException
+    private boolean processUser(boolean isActionLogin) throws IOException
     {
         out.println("user?");
         String json = in.readLine();
         User user = gson.fromJson(json, User.class);
 
-        if(data.isUserRegistered(user) == isRegistered)
+        if(data.isUserRegistered(user) == isActionLogin)
         {
             out.println("user is approved");
             return true; // user is processed everything is fine
