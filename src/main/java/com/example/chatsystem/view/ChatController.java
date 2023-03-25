@@ -1,11 +1,18 @@
 package com.example.chatsystem.view;
 
 import com.example.chatsystem.model.Message;
+import com.example.chatsystem.model.User;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -16,6 +23,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -27,7 +37,7 @@ import java.util.Objects;
 public class ChatController implements Controller, PropertyChangeListener
 {
     @FXML
-    private VBox chatPane;
+    private VBox chatPane, mainPane;
     @FXML
     private Button sendButton, usersButton;
     @FXML
@@ -40,7 +50,7 @@ public class ChatController implements Controller, PropertyChangeListener
     private ViewHandler viewHandler;
     private ChatViewModel viewModel;
     private Region root;
-    private Image profileImage;
+    private ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
 
     @Override
     public void init(ViewHandler viewHandler, ViewModel viewModel, Region root)
@@ -49,10 +59,10 @@ public class ChatController implements Controller, PropertyChangeListener
         this.viewModel = (ChatViewModel) viewModel;
         this.root = root;
         this.viewModel.bindTextFieldProperty(textField.textProperty());
+        this.viewModel.bindUserImage(profileImage);
         this.viewModel.addPropertyChangeListener("new message", this);
         this.messageMy.setManaged(false);
         this.messageOthers.setManaged(false);
-        profileImage = this.viewModel.getUserImage();
         this.viewModel.loadMessages();
         this.textField.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 8000 ? change : null));
@@ -71,26 +81,51 @@ public class ChatController implements Controller, PropertyChangeListener
         }); // allows to scroll with the mouse when scrollpane is focused
     }
 
-    Label addMessage(VBox template)
+    void addMessage(VBox template, Image image, String message)
     {
-        Label rememberLabel = null;
+        VBox vBox = new VBox();
+        vBox.getChildren().add(generateTemplate(template, image, message));
+        vBox.setAlignment(template.getAlignment());
+        vBox.setPadding(template.getPadding());
+        vBox.setPrefSize(template.getPrefWidth(), template.getPrefHeight());
+        vBox.setMaxSize(template.getMaxWidth(), template.getMaxHeight());
+        vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
+
+        int transitionValue;
+        if(template.equals(messageMy))
+        {
+            transitionValue = 100;
+        }
+        else transitionValue = -100;
+
+        vBox.setTranslateX(transitionValue);
+        TranslateTransition animation = new TranslateTransition(Duration.seconds(1), vBox);
+
+        animation.setByX(-transitionValue);
+        chatPane.getChildren().add(vBox);
+        animation.play();
+    }
+
+
+    private HBox generateTemplate(VBox template, Image circleImage, String labelText)
+    {
+        HBox message = (HBox) template.getChildren().get(0);
         ArrayList<Node> copiedNodes = new ArrayList<>();
 
-        HBox message = (HBox) template.getChildren().get(0);
 
         for (Node node: message.getChildren())
         {
             if(node instanceof Circle)
             {
                 Circle circle = new Circle();
-                circle.setFill(new ImagePattern(profileImage));
+                circle.setFill(new ImagePattern(circleImage));
                 circle.setRadius(((Circle) node).getRadius());
 
                 copiedNodes.add(circle);
             } else if (node instanceof VBox) {
                 VBox newVbox = new VBox();
                 Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
-                Label label = new Label(templateLabel.getText());
+                Label label = new Label(labelText);
 
                 label.setFont(templateLabel.getFont());
                 label.setTextFill((templateLabel).getTextFill());
@@ -102,7 +137,6 @@ public class ChatController implements Controller, PropertyChangeListener
                 newVbox.setPrefSize(((VBox) node).getPrefWidth(), ((VBox) node).getPrefHeight());
 
                 copiedNodes.add(newVbox);
-                rememberLabel = label;
             }
         }
 
@@ -115,18 +149,8 @@ public class ChatController implements Controller, PropertyChangeListener
         newMessage.setMinSize(message.getMinWidth(), message.getMinHeight());
         newMessage.setSpacing(message.getSpacing());
 
-        VBox vBox = new VBox();
-        vBox.getChildren().add(newMessage);
-        vBox.setAlignment(template.getAlignment());
-        vBox.setPadding(template.getPadding());
-        vBox.setPrefSize(template.getPrefWidth(), template.getPrefHeight());
-        vBox.setMaxSize(template.getMaxWidth(), template.getMaxHeight());
-        vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
-        chatPane.getChildren().add(vBox);
-
-        return rememberLabel;
+        return newMessage;
     }
-
 
     @FXML
     void onSendMessage() throws IOException
@@ -134,15 +158,32 @@ public class ChatController implements Controller, PropertyChangeListener
         String t = textField.getText();
         if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
             return;
-        Label label = addMessage(messageMy);
-        viewModel.onSendMessage(label.textProperty());
+        viewModel.onSendMessage();
+        addMessage(messageMy, profileImage.get(), t);
         scrollPane.requestFocus();
     }
 
-    @FXML
-    void onUsers()
-    {
 
+
+    @FXML
+    void onUsers() throws IOException
+    {
+        VBox vBox = new VBox();
+        ArrayList<Node> children = new ArrayList<>();
+        for (User user:viewModel.getUsers())
+        {
+            children.add(generateTemplate(messageOthers, user.getImage(), user.getUsername()));
+            System.out.println(user.getImageUrl());
+        }
+        vBox.getChildren().addAll(children);
+        vBox.setStyle("-fx-background-color: #0C281E");
+        Dialog<VBox> dialog = new Dialog<>();
+        dialog.getDialogPane().setContent(vBox);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.managedProperty().bind(closeButton.visibleProperty());
+        closeButton.setVisible(false);
+        dialog.show();
     }
 
     public Region getRoot()
@@ -160,6 +201,7 @@ public class ChatController implements Controller, PropertyChangeListener
         }
         else if(event.getCode().equals(KeyCode.ENTER))
         {
+            textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
             onSendMessage();
         }
     }
@@ -172,23 +214,22 @@ public class ChatController implements Controller, PropertyChangeListener
             var propertyEvent = (List<Object>) evt.getNewValue();
             Message message = (Message) propertyEvent.get(0);
             boolean isMessageOfTheUser = (boolean) propertyEvent.get(1);
+
             Platform.runLater(() ->
             {
+                profileImage.set(message.getUser().getImage());
+                System.out.println("Image url that controller received: " + message.getUser().getImageUrl());
                 if(isMessageOfTheUser)
-                    addMessage(messageMy).setText(message.getMessage());
+                    addMessage(messageMy, profileImage.get(), message.getMessage());
                 else
-                    addMessage(messageOthers).setText(message.getMessage());
+                {
+                    addMessage(messageOthers, profileImage.get(), message.getMessage());
+                }
             });
         }
     }
 
     // todo
-    //      -> set image in register window
-    //      -> open extra info about user when press on image
-    //      -> think about other GUI bugs
-    //      -> second button implementation
-    //      -> registration
     //      -> database
-    //      -> how should I check if user is registered or not?
-    //      Should I search for people with the  same username and password, or only username, or ID?
+    //      -> check what the problem with image is, when user press user list
 }

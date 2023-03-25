@@ -42,6 +42,7 @@ public class Message implements Serializable
     @Override
     public String toString()
     {
-        return "Message: " + message + "\nTime: " + getTime() + "\nUsername: " + user.getUsername();
+        return "Message: " + message + "\nTime: " + getTime() +
+                "\nUsername: " + user.getUsername() + "\nImage url: "  +  user.getImageUrl();
     }
 }

@@ -13,14 +13,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
     private Model model;
     private SimpleStringProperty textFieldProperty;
-    private SimpleStringProperty currentMessage;
-    private Image userImage;
+    private ObjectProperty<Image> userImage;
     private PropertyChangeSupport support;
 
     public ChatViewModel(Model model)
@@ -28,22 +28,21 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.model = model;
         this.textFieldProperty = new SimpleStringProperty();
         support = new PropertyChangeSupport(this);
-        currentMessage = new SimpleStringProperty();
+        userImage = new SimpleObjectProperty<>();
         model.addPropertyChangeListener("new message", this);
         model.addPropertyChangeListener("user", this);
     }
 
-    public void onSendMessage(StringProperty messageProperty) throws IOException
+    public void onSendMessage() throws IOException
     {
-        messageProperty.set(textFieldProperty.get());
-        bindCurrentMessageProperty(messageProperty);
+        userImage.set(model.getUser().getImage());
         model.addMessage(textFieldProperty.get());
         textFieldProperty.set("");
     }
 
     public Image getUserImage()
     {
-        return userImage;
+        return userImage.get();
     }
 
     public void loadMessages()
@@ -55,9 +54,9 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
     }
 
-    public void bindCurrentMessageProperty(StringProperty property)
+    public void bindUserImage(ObjectProperty<Image> property)
     {
-        currentMessage.bind(property);
+        userImage.bindBidirectional(property);
     }
 
     public void bindTextFieldProperty(StringProperty property)
@@ -71,9 +70,14 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         switch (evt.getPropertyName())
         {
             case "new message" ->
+            {
+                userImage.set(((Message) evt.getNewValue()).getUser().getImage());
                 support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
+            }
             case "user" ->
-                userImage = ((User) evt.getNewValue()).getImage();
+            {
+                userImage.set(((User) evt.getNewValue()).getImage());
+            }
         }
     }
 
@@ -85,5 +89,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
         support.removePropertyChangeListener(propertyName, listener);
+    }
+
+    public ArrayList<User> getUsers() throws IOException
+    {
+        return model.getUserList();
     }
 }

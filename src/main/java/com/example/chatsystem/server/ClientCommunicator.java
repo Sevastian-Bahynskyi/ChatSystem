@@ -1,5 +1,6 @@
 package com.example.chatsystem.server;
 
+import com.example.chatsystem.log.DefaultLog;
 import com.example.chatsystem.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,13 +20,15 @@ public class ClientCommunicator implements Runnable
     private Data data;
     private PrintWriter out;
     private BufferedReader in;
+    private DefaultLog log;
 
-    public ClientCommunicator(Socket socket, UDPBroadcaster broadcaster, Data data) throws IOException
+    public ClientCommunicator(Socket socket, UDPBroadcaster broadcaster, Data data, DefaultLog log) throws IOException
     {
         this.broadcaster = broadcaster;
         this.socket = socket;
         this.gson = new GsonBuilder().registerTypeAdapter(Image.class, new ImageAdapter()).create();
         this.data = data;
+        this.log = log;
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
@@ -34,8 +37,6 @@ public class ClientCommunicator implements Runnable
     {
         try
         {
-
-
             loop: while(true)
             {
                 String request = in.readLine();
@@ -44,10 +45,11 @@ public class ClientCommunicator implements Runnable
                 {
                     case "connect" -> {
                         out.println("Connect");
-                        System.out.println("Client trying to connect.");
+                        log.log("Client " + socket.getInetAddress() + ":" + socket.getPort() + " was connected to the server.");
                     }
                     case "disconnect" -> {
                         out.println("Disconnect");
+                        log.log(in.readLine());
                         break loop;
                     }
                     case "prepare to get message" -> {
@@ -62,6 +64,10 @@ public class ClientCommunicator implements Runnable
                         boolean isUserApproved = processUser(false);
                         if(isUserApproved)
                             sendMessagesToClient();
+                    }
+                    case "User list?" -> {
+                        String json = gson.toJson(data.getUsers());
+                        out.println(json);
                     }
                     default -> throw new IllegalArgumentException("Unknown request.");
                 }
@@ -87,11 +93,23 @@ public class ClientCommunicator implements Runnable
 
         if(data.isUserRegistered(user) == isActionLogin)
         {
+            if(!isActionLogin)
+            {
+                data.getUsers().add(user);
+            }
+            log.log(user.getUsername() + (isActionLogin? " logged in the system." : " registered in the system."));
             out.println("user is approved");
+            if(isActionLogin)
+            {
+                User userTemp = data.getUsers().get(data.getUsers().indexOf(user));
+                String jsonTemp = gson.toJson(userTemp);
+                out.println(jsonTemp);
+            }
             return true; // user is processed everything is fine
         }
         else
         {
+            log.log(user.getUsername() + (isActionLogin? " log is failed." : " registration is failed."));
             out.println("user is not approved");
             return false;
         }
@@ -104,6 +122,7 @@ public class ClientCommunicator implements Runnable
         Message message = gson.fromJson(json, Message.class);
         data.getMessages().add(message);
         broadcaster.broadcast(json);
+        log.log(message.getUser().getUsername() + " wrote new message:\n" + message.getMessage());
     }
 
     private void sendMessagesToClient() throws IOException

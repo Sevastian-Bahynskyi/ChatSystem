@@ -47,7 +47,7 @@ public class MessageListener implements Runnable
         }
     }
 
-    private void close() throws IOException
+    public void close() throws IOException
     {
         multicastSocket.leaveGroup(socketAddress, networkInterface);
         multicastSocket.close();

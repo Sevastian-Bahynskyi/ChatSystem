@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LoginController implements Controller
 {
@@ -49,6 +50,10 @@ public class LoginController implements Controller
     private LoginViewModel viewModel;
     private Region root;
 
+    private boolean isCurrentStateLogin = true;
+
+
+
 
     @Override
     public void init(ViewHandler viewHandler, ViewModel viewModel, Region root)
@@ -62,6 +67,7 @@ public class LoginController implements Controller
         this.viewModel.bindPassword(passwordField.textProperty());
         this.viewModel.bindUsername(usernameField.textProperty());
         this.viewModel.bindError(errorLabel.textProperty());
+        this.setImageLabel.setManaged(false);
     }
 
     @FXML
@@ -75,7 +81,6 @@ public class LoginController implements Controller
         }
     }
 
-    private boolean isCurrentStateLogin = true;
     @FXML
     void onRegister(MouseEvent event)
     {
@@ -92,8 +97,8 @@ public class LoginController implements Controller
             loginButton.setText("Register");
             register.setText("Login");
         }
+        setImageLabel.setVisible(!isCurrentStateLogin);
         setImageLabel.setManaged(!isCurrentStateLogin);
-
     }
 
     @Override
@@ -118,24 +123,37 @@ public class LoginController implements Controller
     @FXML
     void onSetImage(MouseEvent event)
     {
+        AtomicReference<String> imageURL = new AtomicReference<>();
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png", "*.gif");
         fileChooser.getExtensionFilters().add(imageFilter);
+        File recordsDir = new File(System.getProperty("user.home") + "/Pictures");
+        fileChooser.setInitialDirectory(recordsDir);
         Window window = parentNode.getScene().getWindow();
         File selectedImage = fileChooser.showOpenDialog(window);
+        if(selectedImage == null)
+            return;
         Path sourcePath = selectedImage.toPath();
-        Path destinationPath = Paths.get("src/main/resources/com/example/chatsystem/images/" + selectedImage.getName());
-        try
-        {
-            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e)
-        {
-            errorLabel.setText("Unable to choose image.");
-        }
+        AtomicReference<Path> destinationPath = new AtomicReference<>(Paths.get("src/main/resources/com/example/chatsystem/images/" + selectedImage.getName()));
+        
+        
+        Platform.runLater(() -> {
+            try
+            {
+                Files.copy(sourcePath, destinationPath.get(), StandardCopyOption.REPLACE_EXISTING);
+                destinationPath.set(Paths.get("target/classes/com/example/chatsystem/images/" + selectedImage.getName()));
+                Files.copy(sourcePath, destinationPath.get(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e)
+            {
+                errorLabel.setText("Unable to choose image.");
+            }
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/chatsystem/images/" + selectedImage.getName())));
+            userImage.setFill(new ImagePattern(image));
+            imageURL.set("/com/example/chatsystem/images/" + selectedImage.getName());
+            System.out.println(imageURL.get());
+            this.viewModel.setImageUrl(imageURL.get());
+        });
 
-        System.out.println(selectedImage.getName());
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/chatsystem/images/" + selectedImage.getName())));
-        userImage.setFill(new ImagePattern(image));
     }
 
     @FXML

@@ -5,6 +5,7 @@ import com.example.chatsystem.model.User;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ServerModel
@@ -13,7 +14,7 @@ public interface ServerModel
 
     List<Object> login(String username, String password) throws IOException;
 
-    void connect(String host, int port, String groupAddress, int groupPort) throws IOException;
+    void connect() throws IOException;
 
     void disconnect() throws IOException;
 
@@ -23,5 +24,7 @@ public interface ServerModel
 
     boolean isConnected();
 
-    List<Object> register(String username, String password) throws IOException;
+    List<Object> register(String username, String password, String imageUrl) throws IOException;
+
+    ArrayList<User> getUserList() throws IOException;
 }

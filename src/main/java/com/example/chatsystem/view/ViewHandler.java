@@ -1,18 +1,14 @@
 package com.example.chatsystem.view;
 
-
 import com.example.chatsystem.viewmodel.ViewModelFactory;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-
 import java.awt.*;
+import java.io.IOException;
 import java.util.Random;
 
 public class ViewHandler
@@ -20,11 +16,13 @@ public class ViewHandler
     private Stage stage;
     private Scene currentScene;
     private final ViewFactory viewFactory;
+    private ViewModelFactory viewModelFactory;
 
     public ViewHandler(ViewModelFactory viewModelFactory)
     {
         this.viewFactory = new ViewFactory(this, viewModelFactory);
         this.currentScene = new Scene(new Region());
+        this.viewModelFactory = viewModelFactory;
     }
 
     public void start(Stage stage)
@@ -46,9 +44,21 @@ public class ViewHandler
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.setResizable(false);
+        stage.setOnCloseRequest(event ->
+        {
+            try
+            {
+                viewModelFactory.getModel().disconnect();
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            Platform.exit();
+        });
         stage.show();
     }
     private Image image = new Image(getClass().getResourceAsStream("/com/example/chatsystem/images/dead_screen.png"));
+
 
 
     public void openParallelView(WINDOW view) // todo -> delete

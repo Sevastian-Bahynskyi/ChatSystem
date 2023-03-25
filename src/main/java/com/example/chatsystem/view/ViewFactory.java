@@ -38,7 +38,8 @@ public class ViewFactory
             }
             default -> throw new IllegalArgumentException("Didn't find the appropriate view.");
         }
-        if (newController == null || currentController.getClass().equals(newController.getClass())) {
+        if (newController == null || currentController.getClass().equals(newController.getClass()))
+        {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(fxmlFile));
             try {

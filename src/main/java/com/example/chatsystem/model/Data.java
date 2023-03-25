@@ -1,9 +1,6 @@
 package com.example.chatsystem.model;
 
-import javafx.scene.image.Image;
-
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Data
 {
@@ -16,8 +13,8 @@ public class Data
     private Data()
     {
         users = new ArrayList<>();
-        users.add(new User("Sevastian", "a2345678"));
-        users.add(new User("Derek", "a2345678"));
+        users.add(new User("BobBobson", "bobspass"));
+        users.add(new User("Sevastian", "mypass123"));
         messages = new ArrayList<>();
     }
 
@@ -48,4 +45,5 @@ public class Data
     {
         return messages;
     }
+
 }

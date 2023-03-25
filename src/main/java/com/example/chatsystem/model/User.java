@@ -27,6 +27,7 @@ public class User implements Serializable
         return new Image(getClass().getResourceAsStream(imageUrl));
     }
 
+
     private boolean validateUsername(String username)
     {
         if(username == null || username.length() < CHARACTER_NUMBER_OFF_USERNAME)
@@ -78,6 +79,11 @@ public class User implements Serializable
     public String getImageUrl()
     {
         return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
     }
 
     @Override

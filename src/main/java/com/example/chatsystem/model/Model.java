@@ -14,9 +14,13 @@ public interface Model
 
     void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 
-    void register(String username, String password) throws IOException;
+    void register(String username, String password, String imageUrl) throws IOException;
 
     ArrayList<Message> getMessages();
 
     User getUser();
+
+    void disconnect() throws IOException;
+
+    ArrayList<User> getUserList() throws IOException;
 }

@@ -10,6 +10,7 @@ public class LoginViewModel implements ViewModel
     private SimpleStringProperty usernameProperty;
     private SimpleStringProperty passwordProperty;
     private SimpleStringProperty errorProperty;
+    private String imageUrl;
     public LoginViewModel(Model model)
     {
         this.model = model;
@@ -34,6 +35,11 @@ public class LoginViewModel implements ViewModel
         return true;
     }
 
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
+    }
+
     public void bindUsername(StringProperty property)
     {
         usernameProperty.bind(property);
@@ -49,13 +55,14 @@ public class LoginViewModel implements ViewModel
         passwordProperty.bind(property);
     }
 
+
+
     public boolean onRegister()
     {
         try
         {
-            model.register(usernameProperty.get(), passwordProperty.get());
-        }
-        catch (Exception e)
+            model.register(usernameProperty.get(), passwordProperty.get(), imageUrl);
+        } catch (Exception e)
         {
             e.printStackTrace();
             errorProperty.set(e.getMessage());

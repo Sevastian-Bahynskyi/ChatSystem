@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" onKeyPressed="#onEnter" prefHeight="700.0" prefWidth="1000.0" styleClass="main-pane" stylesheets="@../css/main_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.ChatController">
+<VBox fx:id="mainPane" alignment="CENTER" onKeyPressed="#onEnter" prefHeight="700.0" prefWidth="1000.0" styleClass="main-pane" stylesheets="@../css/main_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.ChatController">
    <children>
       <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vvalue="1.0" VBox.vgrow="ALWAYS">
          <content>
