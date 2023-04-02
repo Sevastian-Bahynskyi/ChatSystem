@@ -5,30 +5,28 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class DefaultLog {
+public class FileLog
+{
     private final CurrentTime currentTime;
-    private final File logDirectory;
+    private final File logFile;
 
-    private static DefaultLog instance;
+    private static FileLog instance;
 
-    private DefaultLog() {
-        logDirectory = new File("FileLog.txt");
+    private FileLog() {
+        logFile = new File("FileLog.txt");
         currentTime = CurrentTime.getInstance();
     }
 
-    public static synchronized DefaultLog getInstance()
+    public static synchronized FileLog getInstance()
     {
         if(instance == null)
-            return  instance = new DefaultLog();
+            return  instance = new FileLog();
         return instance;
     }
 
-    private File getLogFile() {
-        return logDirectory;
-    }
 
     public void log(String message) throws IOException {
-        try (FileWriter fileWriter = new FileWriter(getLogFile(), true);
+        try (FileWriter fileWriter = new FileWriter(logFile, true);
              PrintWriter writer = new PrintWriter(fileWriter)) {
             String logLine = currentTime.getFormattedTime() + " - " + message;
             writer.println(logLine);

@@ -1,9 +1,5 @@
 package com.example.chatsystem.model;
 
-import com.example.chatsystem.server.ClientImplementation;
-import com.example.chatsystem.server.ServerModel;
-
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
