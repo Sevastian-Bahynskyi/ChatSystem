@@ -1,8 +1,9 @@
 package com.example.chatsystem.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Data
+public class Data implements Serializable
 {
     private ArrayList<User> users;
     private ArrayList<Message> messages;
