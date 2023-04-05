@@ -60,7 +60,8 @@ public class ServerModelImplementation implements ServerModel
     {
         List<Object> res = new ArrayList<>(List.of());
         User user = new User(username, password);
-        user.setImageUrl(imageUrl);
+        if (imageUrl != null)
+            user.setImageUrl(imageUrl);
         if(data.isUserRegistered(user))
         {
             throw new IllegalArgumentException("User ia already registered.");

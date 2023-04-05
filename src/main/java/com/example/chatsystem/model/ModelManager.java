@@ -47,8 +47,7 @@ public class ModelManager implements Model
     {
         var res = server.register(username, password, imageUrl);
         user = (User) res.get(0);
-        if(imageUrl != null)
-            user.setImageUrl(imageUrl);
+
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;
         support.firePropertyChange("user", null, user);
