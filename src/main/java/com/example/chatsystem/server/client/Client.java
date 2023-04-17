@@ -25,7 +25,7 @@ public class Client implements Runnable, ServerModel
 
     public Client(int port, ModelManager modelManager)
     {
-        // todo send data and file log everywhere
+        // todo add file log
         this.port = port;
         model = modelManager;
     }

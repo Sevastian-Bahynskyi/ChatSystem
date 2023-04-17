@@ -156,19 +156,4 @@ public class LoginController implements Controller
 
     }
 
-    @FXML
-    void onBug() throws InterruptedException
-    {
-        for (int i = 0; i < 100; i++)
-        {
-            Thread newThread = new Thread(() ->
-            {
-                Platform.runLater(() -> viewHandler.openParallelView(WINDOW.BUG));
-            });
-            newThread.setDaemon(true);
-            newThread.start();
-
-//            Thread.sleep(200);
-        }
-    }
 }

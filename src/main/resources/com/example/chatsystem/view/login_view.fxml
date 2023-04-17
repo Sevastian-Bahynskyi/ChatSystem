@@ -16,7 +16,6 @@
    <children>
       <HBox alignment="CENTER_RIGHT">
          <children>
-            <FontAwesomeIcon fill="#4c956c" glyphName="BUG" onMouseClicked="#onBug" size="3em" styleClass="bug" />
             <Region HBox.hgrow="ALWAYS" />
             <Label onMouseClicked="#onRegister" styleClass="hyperlink-label" text="Register" textFill="WHITE" underline="true">
                <font>
