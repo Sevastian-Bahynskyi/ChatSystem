@@ -107,6 +107,14 @@ public class Chatter implements UserInterface,Serializable
         if(VIAid.length() != CHARACTER_NUMBER_OFF_VIAID)
         {
             throw new IllegalArgumentException("VIA ID should be 6 characters.");
+        } else
+        {
+            for (int i = 0; i < VIAid.length(); i++)
+            {
+                if(!Character.isDigit(VIAid.charAt(i)))
+                    throw new IllegalArgumentException("VIA ID should consist of digits.");
+
+            }
         }
 
         return true;

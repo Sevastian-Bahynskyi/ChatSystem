@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -293,6 +294,24 @@ public class ChatController implements Controller, PropertyChangeListener
             }
             else if(newChannelField.isFocused())
             {
+                if(newChannelField.getText().isEmpty() || newChannelField.getText().matches("^(\n)+$"))
+                {
+                    return;
+                }
+                else {
+                    for (Node node:channelListPane.getChildren())
+                    {
+                        Label label = (Label) node;
+                        if(label.getText().equals(newChannelField.getText()))
+                        {
+                            return;
+                        }
+                    }
+
+                    // if nothing was entered or entered value already exists in channel list not add a new channel
+                }
+
+
                 Label label = new Label();
                 label.setFont(channelNameTemplate.getFont());
                 label.setTextFill(channelNameTemplate.getTextFill());
@@ -355,6 +374,14 @@ public class ChatController implements Controller, PropertyChangeListener
     {
         newChannelField.setVisible(true);
         newChannelField.requestFocus();
+    }
+
+    @FXML
+    void onAddRoom(MouseEvent event)
+    {
+        Circle circle = new Circle();
+        circle.setRadius(40);
+        roomList.getChildren().add(circle);
     }
 
 
