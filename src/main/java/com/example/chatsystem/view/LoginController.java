@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
@@ -26,13 +27,15 @@ public class LoginController implements Controller
     private Circle userImage;
 
     @FXML
-    private TextField usernameField;
+    private TextField usernameField, idField;
     @FXML
     private Label errorLabel, setImageLabel;
     @FXML
     private ImageView imageTest;
     @FXML
     private VBox parentNode;
+    @FXML
+    private HBox idBox;
 
     @FXML
     private Button loginButton;
@@ -79,8 +82,10 @@ public class LoginController implements Controller
         isCurrentStateLogin = !isCurrentStateLogin;
         if(isCurrentStateLogin)
         {
+
             loginButton.setText("Login");
             register.setText("Register");
+            usernameField.requestFocus();
             setImageLabel.setManaged(!isCurrentStateLogin);
         }
         else
@@ -88,6 +93,11 @@ public class LoginController implements Controller
             loginButton.setText("Register");
             register.setText("Login");
         }
+        idField.requestFocus();
+
+        idBox.setVisible(!idBox.isVisible());
+        idBox.setManaged(idBox.isVisible());
+
         setImageLabel.setVisible(!isCurrentStateLogin);
         setImageLabel.setManaged(!isCurrentStateLogin);
     }
@@ -102,13 +112,21 @@ public class LoginController implements Controller
     void onKeyPressed(KeyEvent event)
     {
         Object source = event.getSource();
-        if (source.equals(usernameField) && event.getCode().equals(KeyCode.ENTER))
+        if(event.getCode() == KeyCode.ENTER)
         {
-            passwordField.requestFocus();
-        } else if (source.equals(passwordField) && event.getCode().equals(KeyCode.ENTER))
-        {
-            onLogin();
+            if (source.equals(usernameField))
+            {
+                passwordField.requestFocus();
+            } else if (source.equals(passwordField))
+            {
+                onLogin();
+            }
+            else if(source.equals(idField))
+            {
+                usernameField.requestFocus();
+            }
         }
+
     }
 
     @FXML

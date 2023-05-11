@@ -91,6 +91,12 @@ public class ChatController implements Controller, PropertyChangeListener
             scrollPane.setVvalue(vValue - deltaY / width);
         }); // allows to scroll with the mouse when scrollpane is focused
 
+        newChannelField.focusedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if(!newValue)
+                newChannelField.setVisible(false);
+        });
+
         indexOfUserListAsChild = parent.getChildren().indexOf(userListPane);
     }
 
@@ -108,12 +114,12 @@ public class ChatController implements Controller, PropertyChangeListener
         vBox.setMaxSize(template.getMaxWidth(), template.getMaxHeight());
         vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
 
-        int transitionValue;
-        if(template.equals(messageMyTemplate))
+        int transitionValue = 100;
+
+        if(!template.equals(messageMyTemplate))
         {
-            transitionValue = 100;
+            transitionValue = -transitionValue;
         }
-        else transitionValue = -100;
 
         vBox.setTranslateX(transitionValue);
         TranslateTransition animation = new TranslateTransition(Duration.seconds(1), vBox);

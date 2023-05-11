@@ -16,6 +16,19 @@
     -fx-background-color: #0C281E;
 }
 
+.separator{
+    -fx-background-color: #6d267c;
+}
+
+.separator .line{
+    -fx-border-color: transparent;
+}
+
+.room-list-pane{
+    -fx-background-color: #1E1B1F;
+    -fx-background-radius: 20px;
+}
+
 .text-area{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -50,4 +63,8 @@
     -fx-background-color: transparent;
     -fx-background: transparent;
     -fx-border-color: transparent;
+}
+
+.plus:hover{
+    -fx-opacity: 0.6;
 }
