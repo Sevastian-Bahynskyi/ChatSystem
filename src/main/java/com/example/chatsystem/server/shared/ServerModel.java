@@ -2,10 +2,9 @@ package com.example.chatsystem.server.shared;
 
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,7 +23,7 @@ public interface ServerModel extends Remote
 
     List<Object> register(String username, String password, String imageUrl) throws RemoteException, IOException;
 
-    ArrayList<User> getUserList() throws RemoteException, IOException;
+    ArrayList<Chatter> getUserList() throws RemoteException, IOException;
 
     Data getData() throws RemoteException;
 }

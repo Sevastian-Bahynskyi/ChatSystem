@@ -1,11 +1,10 @@
 package com.example.chatsystem.model;
 
-import com.google.gson.*;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
 
-public class User implements Serializable
+public class Chatter implements UserInterface,Serializable
 {
     private String username;
     private String password;
@@ -13,7 +12,7 @@ public class User implements Serializable
     private final int CHARACTER_NUMBER_OFF_PASSWORD = 8;
     private final int CHARACTER_NUMBER_OFF_USERNAME = 4;
 
-    public User(String username, String password)
+    public Chatter(String username, String password)
     {
         if(!(validateUsername(username) && validatePassword(password)))
             return;
@@ -22,6 +21,7 @@ public class User implements Serializable
         this.imageUrl = Data.getDefaultImageUrl();
     }
 
+    @Override
     public Image getImage()
     {
         return new Image(getClass().getResourceAsStream(imageUrl));
@@ -65,22 +65,25 @@ public class User implements Serializable
 
         return true;
     }
-
+    @Override
     public String getUsername()
     {
         return username;
     }
 
+    @Override
     public String getPassword()
     {
         return password;
     }
 
+    @Override
     public String getImageUrl()
     {
         return imageUrl;
     }
 
+    @Override
     public void setImageUrl(String imageUrl)
     {
         this.imageUrl = imageUrl;
@@ -92,7 +95,7 @@ public class User implements Serializable
         if(obj == null || obj.getClass() != getClass())
             return false;
 
-        User u = (User) obj;
+        Chatter u = (Chatter) obj;
         return u.username.equals(username) && u.password.equals(password);
     }
 }

@@ -4,15 +4,11 @@ import com.example.chatsystem.model.*;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +77,7 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public ArrayList<User> getUserList() throws RemoteException, IOException
+    public ArrayList<Chatter> getUserList() throws RemoteException, IOException
     {
         return listener.getUserList();
     }

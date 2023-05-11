@@ -1,7 +1,7 @@
 package com.example.chatsystem.view;
 
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
 import javafx.animation.TranslateTransition;
@@ -202,10 +202,10 @@ public class ChatController implements Controller, PropertyChangeListener
     }
 
 
-    private void loadUsersToUserListPane(Collection<User> users) throws IOException
+    private void loadUsersToUserListPane(Collection<Chatter> users) throws IOException
     {
         ArrayList<Node> children = new ArrayList<>();
-        for (User user:users)
+        for (Chatter user:users)
         {
             children.add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername()));
         }
@@ -269,7 +269,7 @@ public class ChatController implements Controller, PropertyChangeListener
             case "update user list" -> {
                 try
                 {
-                    loadUsersToUserListPane(((List<User>) evt.getNewValue()));
+                    loadUsersToUserListPane(((List<Chatter>) evt.getNewValue()));
                 } catch (IOException e)
                 {
                     throw new RuntimeException(e);

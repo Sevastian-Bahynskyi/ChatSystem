@@ -15,9 +15,10 @@ public interface Model
 
     ArrayList<Message> getMessages();
 
-    User getUser();
+    UserInterface getUser();
 
     void disconnect() throws IOException;
 
-    ArrayList<User> getUserList() throws IOException;
+    ArrayList<Chatter> getUserList() throws IOException;
+
 }

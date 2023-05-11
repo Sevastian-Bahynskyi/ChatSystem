@@ -3,7 +3,7 @@ package com.example.chatsystem.server.client;
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.ModelManager;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
@@ -77,7 +77,7 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public ArrayList<User> getUserList() throws RemoteException, IOException
+    public ArrayList<Chatter> getUserList() throws RemoteException, IOException
     {
         return serverModel.getUserList();
     }
