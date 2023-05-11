@@ -5,6 +5,8 @@ import com.example.chatsystem.server.client.Client;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ModelManager implements Model
@@ -21,7 +23,14 @@ public class ModelManager implements Model
     {
         this.server = new Client(port, this);
         server.run();
-
+        try
+        {//Register the postgres driver. Add the driver jar file to the module first
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
     }
