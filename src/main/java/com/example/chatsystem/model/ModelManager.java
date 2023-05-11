@@ -2,18 +2,15 @@ package com.example.chatsystem.model;
 
 import com.example.chatsystem.server.client.Client;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class ModelManager implements Model
 {
     private Client server;
-    private User user;
+    private UserInterface user;
     private final int port = 5050;
     private PropertyChangeSupport support;
 
@@ -33,17 +30,17 @@ public class ModelManager implements Model
     public void login(String username, String password) throws IOException
     {
         var res = server.login(username, password);
-        user = (User) res.get(0);
+        user = (Chatter) res.get(0);
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;
         support.firePropertyChange("user", null, user);
     }
 
     @Override
-    public void register(String username, String password, String imageUrl) throws IOException
+    public void register(String VIAid, String username, String password, String imageUrl) throws IOException
     {
-        var res = server.register(username, password, imageUrl);
-        user = (User) res.get(0);
+        var res = server.register(VIAid, username, password, imageUrl);
+        user = (Chatter) res.get(0);
 
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;
@@ -62,7 +59,7 @@ public class ModelManager implements Model
     }
 
     @Override
-    public User getUser()
+    public UserInterface getUser()
     {
         return user;
     }
@@ -85,7 +82,7 @@ public class ModelManager implements Model
         support.addPropertyChangeListener(listener);
     }
 
-    public ArrayList<User> getUserList() throws IOException
+    public ArrayList<UserInterface> getUserList() throws IOException
     {
         return server.getUserList();
     }

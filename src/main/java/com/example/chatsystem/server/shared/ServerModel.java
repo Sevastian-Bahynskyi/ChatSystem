@@ -2,10 +2,10 @@ package com.example.chatsystem.server.shared;
 
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.UserInterface;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -22,9 +22,9 @@ public interface ServerModel extends Remote
 
     void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException;
 
-    List<Object> register(String username, String password, String imageUrl) throws RemoteException, IOException;
+    List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
 
-    ArrayList<User> getUserList() throws RemoteException, IOException;
+    ArrayList<UserInterface> getUserList() throws RemoteException, IOException;
 
     Data getData() throws RemoteException;
 }

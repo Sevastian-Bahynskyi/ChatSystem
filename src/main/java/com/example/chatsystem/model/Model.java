@@ -11,13 +11,14 @@ public interface Model
     void addMessage(String message) throws IOException;
     void addPropertyChangeListener(PropertyChangeListener listener);
 
-    void register(String username, String password, String imageUrl) throws IOException;
+    void register(String VIAid, String username, String password, String imageUrl) throws IOException;
 
     ArrayList<Message> getMessages();
 
-    User getUser();
+    UserInterface getUser();
 
     void disconnect() throws IOException;
 
-    ArrayList<User> getUserList() throws IOException;
+    ArrayList<UserInterface> getUserList() throws IOException;
+
 }

@@ -2,12 +2,9 @@ package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.effect.Light;
 import javafx.scene.image.Image;
 
 import java.beans.PropertyChangeEvent;
@@ -21,7 +18,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
     private Model model;
     private SimpleStringProperty textFieldProperty;
-    private SimpleListProperty<User> users;
+    private SimpleListProperty<Chatter> users;
     private ObjectProperty<Image> userImage;
     private PropertyChangeSupport support;
 
@@ -78,10 +75,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 userImage.set(((Message) evt.getNewValue()).getUser().getImage());
                 support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
             }
-            case "user" -> userImage.set(((User) evt.getNewValue()).getImage());
+            case "user" -> userImage.set(((Chatter) evt.getNewValue()).getImage());
 
             case "update user list" -> {
-                var newUsers = ((List<User>) evt.getNewValue());
+                var newUsers = ((List<Chatter>) evt.getNewValue());
                 Platform.runLater(() -> support.firePropertyChange("update user list", null, newUsers));
             }
         }
@@ -97,7 +94,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         support.removePropertyChangeListener(listener);
     }
 
-    public ArrayList<User> getUsers() throws IOException
+    public ArrayList<Chatter> getUsers() throws IOException
     {
         return model.getUserList();
     }

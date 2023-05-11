@@ -1,9 +1,6 @@
 package com.example.chatsystem.server.client;
 
-import com.example.chatsystem.model.Data;
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.ModelManager;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.*;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
@@ -71,13 +68,13 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public List<Object> register(String username, String password, String imageUrl) throws RemoteException, IOException
+    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
-        return serverModel.register(username, password, imageUrl);
+        return serverModel.register(VIAid, username, password, imageUrl);
     }
 
     @Override
-    public ArrayList<User> getUserList() throws RemoteException, IOException
+    public ArrayList<UserInterface> getUserList() throws RemoteException, IOException
     {
         return serverModel.getUserList();
     }

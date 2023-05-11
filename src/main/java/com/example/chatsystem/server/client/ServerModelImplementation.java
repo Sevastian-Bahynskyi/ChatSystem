@@ -2,12 +2,12 @@ package com.example.chatsystem.server.client;
 
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.User;
+import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.UserInterface;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 import dk.via.remote.observer.RemotePropertyChangeSupport;
 
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,7 +35,8 @@ public class ServerModelImplementation implements ServerModel
     public List<Object> login(String username, String password) throws RemoteException, IOException
     {
         List<Object> res = new ArrayList<>(List.of());
-        User user = new User(username, password);
+        //Change it so it gets the VIAid from the database
+        UserInterface user = new Chatter("333333", username, password);
         if(data.isUserRegistered(user))
         {
             user = data.getUsers().get(data.getUsers().indexOf(user));
@@ -56,10 +57,10 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public List<Object> register(String username, String password, String imageUrl) throws RemoteException, IOException
+    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
         List<Object> res = new ArrayList<>(List.of());
-        User user = new User(username, password);
+        Chatter user = new Chatter(VIAid, username, password);
         if (imageUrl != null)
             user.setImageUrl(imageUrl);
         if(data.isUserRegistered(user))
@@ -76,7 +77,7 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public ArrayList<User> getUserList() throws RemoteException, IOException
+    public ArrayList<UserInterface> getUserList() throws RemoteException, IOException
     {
         return data.getUsers();
     }
