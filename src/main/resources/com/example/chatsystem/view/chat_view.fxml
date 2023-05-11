@@ -76,7 +76,7 @@
                      <content>
                         <VBox fx:id="channelListPane" spacing="15.0">
                            <children>
-                              <Label fx:id="channelNameTemplate" text="channel-name" textFill="WHITE">
+                              <Label fx:id="channelNameTemplate" text="default" textFill="WHITE">
                                  <font>
                                     <Font size="14.0" />
                                  </font>

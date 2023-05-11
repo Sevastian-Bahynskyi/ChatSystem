@@ -9,6 +9,7 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Handler;
 
 public class ChatController implements Controller, PropertyChangeListener
 {
@@ -218,6 +220,25 @@ public class ChatController implements Controller, PropertyChangeListener
     private void loadUsersToUserListPane(Collection<UserInterface> users) throws IOException
     {
         ArrayList<Node> children = new ArrayList<>();
+
+        ContextMenu popup = new ContextMenu();
+
+        String[] choices = {"Edit", "Delete"};
+        // Add menu items to the popup for each item in the list
+        for (var item : choices) {
+            MenuItem menuItem = new MenuItem(item);
+            popup.getItems().add(menuItem);
+        }
+
+
+        parent.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (popup.isShowing()) {
+                popup.hide();
+            }
+        });
+
+
+
         for (UserInterface user:users)
         {
             VBox newUser = new VBox();
@@ -226,7 +247,13 @@ public class ChatController implements Controller, PropertyChangeListener
             newUser.setMinSize(messageOthersTemplate.getMinWidth(), messageOthersTemplate.getMinHeight());
             newUser.setPadding(newUser.getPadding());
             newUser.getStyleClass().add("message-template");
-            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 14));
+            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16));
+            newUser.setOnMouseClicked(event ->
+            {
+                popup.show(parent, event.getScreenX(), event.getScreenY());
+            });
+
+
             children.add(newUser);
         }
         userListPane.getChildren().setAll(children);

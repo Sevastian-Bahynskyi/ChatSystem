@@ -5,7 +5,7 @@
 
 
 .message-template:hover{
-    -fx-background-color: #ff3737;
+    -fx-background-color: #4C956C;
 }
 
 .main-pane{
@@ -67,4 +67,25 @@
 
 .plus:hover{
     -fx-opacity: 0.6;
+}
+
+.context-menu{
+    -fx-background-color: white;
+    -fx-padding: 0;
+    -fx-text-fill: white;
+
+}
+
+.context-menu .text{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.context-menu .menu-item{
+    -fx-selection-bar: #6d267c;
+}
+
+
+.context-menu .menu-item:hover{
+    -fx-background-color: #6d267c;
 }
