@@ -9,10 +9,7 @@ public interface Model
     void login(String username, String password) throws IOException;
 
     void addMessage(String message) throws IOException;
-
-    void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
-
-    void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
+    void addPropertyChangeListener(PropertyChangeListener listener);
 
     void register(String username, String password, String imageUrl) throws IOException;
 

@@ -3,12 +3,11 @@ package com.example.chatsystem.view;
 import com.example.chatsystem.viewmodel.ViewModelFactory;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-enum WINDOW{
-    CHAT, LOG
-}
 public class ViewFactory
 {
 

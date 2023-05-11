@@ -18,7 +18,7 @@ public class Server
     {
         Data data = Data.getInstance();
         FileLog log = FileLog.getInstance();
-        Registry registry = LocateRegistry.createRegistry(8080);
+        Registry registry = LocateRegistry.createRegistry(5050);
         ServerModel serverModel = new ServerModelImplementation(data);
         Remote remote = UnicastRemoteObject.exportObject(serverModel, 0);
         registry.bind("ServerModel", remote);

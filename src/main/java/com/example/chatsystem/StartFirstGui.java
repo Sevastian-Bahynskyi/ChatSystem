@@ -8,15 +8,13 @@ import com.example.chatsystem.viewmodel.ViewModelFactory;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
-public class StartSecondClient extends Application
+public class StartFirstGui extends Application
 {
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         Model model = new ModelManager();
-        model.register("test1", "testpass1", null);
+        model.register("test2", "testpass2", null);
         ViewModelFactory viewModelFactory = new ViewModelFactory(model);
         ViewHandler viewHandler = new ViewHandler(viewModelFactory);
         viewHandler.start(primaryStage, WINDOW.CHAT);

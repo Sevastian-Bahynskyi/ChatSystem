@@ -35,11 +35,14 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
         getData().getUsers().addAll(data.getUsers());
         getData().getMessages().clear();
         getData().getMessages().addAll(data.getMessages());
-        if(remotePropertyChangeEvent.getPropertyName().equals("new message"))
+        switch (remotePropertyChangeEvent.getPropertyName())
         {
-            var messages = remotePropertyChangeEvent.getNewValue().getMessages();
-            System.out.println("New message: " + messages.get(messages.size() - 1));
-            modelManager.sendOthersMessage(messages.get(messages.size() - 1));
+            case "new message" -> {
+                var messages = remotePropertyChangeEvent.getNewValue().getMessages();
+                System.out.println("New message: " + messages.get(messages.size() - 1));
+                modelManager.sendOthersMessage(messages.get(messages.size() - 1));
+            }
+            case "register" -> this.modelManager.receiveData(data);
         }
     }
 
