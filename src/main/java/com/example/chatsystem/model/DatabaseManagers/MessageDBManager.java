@@ -4,10 +4,7 @@ import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.UserInterface;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
 
 public class  MessageDBManager
@@ -21,7 +18,9 @@ public class  MessageDBManager
   {
     try(Connection connection = getConnection())
     {
-      //Do logic with the connection in here
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO (Message) VALUES(?)");
+      ps.setString(1,message.toString());
+      ps.executeUpdate();
     }
     catch (SQLException e)
     {
@@ -30,19 +29,63 @@ public class  MessageDBManager
   }
   public Message readMessage(int id)
   {
-    Chatter temp = new Chatter("123456","username","password");
-    Message tempMessage = new Message("message",temp);
-    return tempMessage;
+    Message message = new Message("dummy","dummy");
+    try(Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE id = ?");
+
+      ps.setInt(1, id);
+
+      ResultSet rs = ps.executeQuery();
+
+      if(rs.next())
+      {
+        // message should be id,Message,timestamp,chatter_id,channel_id
+        message = new Message(rs.getInt("id"),rs.getString("message"),rs.getTimestamp("timestamp"),rs.getInt("chatter_id"),rs.getInt("channel_id"));
+      }
+    }
+    catch (SQLException e)
+    {
+      System.err.println(e.getMessage());
+    }
+    return message;
   }
 
-  public void updateMessage(int id)
+  public void updateMessage(int id, Message newMessage)
   {
+    try(Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
 
+      ps.setString(1, newMessage.getMessage());
+      ps.setInt(2,id);
+
+      ps.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      System.err.println(e.getMessage());
+    }
   }
 
   public void deleteMessage(int id)
   {
+    Message message = new Message("dummy","dummy");
+    try(Connection connection = getConnection())
+    {
+      String temp = "deleted message";
 
+      PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
+
+      ps.setString(1,temp);
+      ps.setInt(2,id);
+
+      ps.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      System.err.println(e.getMessage());
+    }
   }
 
 
