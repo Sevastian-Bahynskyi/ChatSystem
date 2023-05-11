@@ -32,7 +32,7 @@ import java.util.List;
 public class ChatController implements Controller, PropertyChangeListener
 {
     @FXML
-    private VBox chatPane, mainPane, userListPane, channelListPane;
+    private VBox chatPane, mainPane, userListPane, channelListPane, roomList;
     @FXML
     private HBox parent;
     @FXML
