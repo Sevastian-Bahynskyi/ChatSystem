@@ -14,7 +14,7 @@ public class StartFirstGui extends Application
     public void start(Stage primaryStage) throws Exception
     {
         Model model = new ModelManager();
-        model.register("test2", "testpass2", null);
+        model.register("123456", "testname", "testpass",null);
         ViewModelFactory viewModelFactory = new ViewModelFactory(model);
         ViewHandler viewHandler = new ViewHandler(viewModelFactory);
         viewHandler.start(primaryStage, WINDOW.CHAT);

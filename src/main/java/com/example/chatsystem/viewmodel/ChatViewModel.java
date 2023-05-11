@@ -3,6 +3,7 @@ package com.example.chatsystem.viewmodel;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.UserInterface;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -94,7 +95,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         support.removePropertyChangeListener(listener);
     }
 
-    public ArrayList<Chatter> getUsers() throws IOException
+    public ArrayList<UserInterface> getUsers() throws IOException
     {
         return model.getUserList();
     }

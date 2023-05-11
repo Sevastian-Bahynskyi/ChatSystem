@@ -62,7 +62,7 @@ public class LoginViewModel implements ViewModel
         try
         {
             //needs update from GUI
-            model.register(usernameProperty.get(), passwordProperty.get(), imageUrl);
+            model.register("123456",usernameProperty.get(), passwordProperty.get(), imageUrl);
         } catch (Exception e)
         {
             e.printStackTrace();
