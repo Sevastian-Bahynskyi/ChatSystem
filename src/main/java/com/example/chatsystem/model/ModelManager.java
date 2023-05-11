@@ -1,10 +1,6 @@
 package com.example.chatsystem.model;
 
 import com.example.chatsystem.server.client.Client;
-import com.example.chatsystem.server.client.ServerModelImplementation;
-import com.example.chatsystem.server.shared.ServerModel;
-import dk.via.remote.observer.RemotePropertyChangeEvent;
-import dk.via.remote.observer.RemotePropertyChangeListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,8 +14,10 @@ public class ModelManager implements Model
 {
     private Client server;
     private User user;
-    private final int port = 8080;
+    private final int port = 5050;
     private PropertyChangeSupport support;
+
+    private Data data;
     private ArrayList<Message> messages;
 
     public ModelManager() throws IOException, InterruptedException
@@ -29,7 +27,6 @@ public class ModelManager implements Model
 
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
-
     }
 
     @Override
@@ -51,6 +48,12 @@ public class ModelManager implements Model
         var messages = (ArrayList<Message>) res.get(1);
         this.messages = messages;
         support.firePropertyChange("user", null, user);
+    }
+
+    public void receiveData(Data data)
+    {
+        this.data = data;
+        support.firePropertyChange("update user list", null, data.getUsers());
     }
 
     public ArrayList<Message> getMessages()
@@ -77,14 +80,9 @@ public class ModelManager implements Model
         server.sendMessage(mes);
     }
 
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public void addPropertyChangeListener(PropertyChangeListener listener)
     {
-        support.addPropertyChangeListener(propertyName, listener);
-    }
-
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
-    {
-        support.removePropertyChangeListener(propertyName, listener);
+        support.addPropertyChangeListener(listener);
     }
 
     public ArrayList<User> getUserList() throws IOException

@@ -3,6 +3,7 @@ package com.example.chatsystem.viewmodel;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.User;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
     private Model model;
     private SimpleStringProperty textFieldProperty;
+    private SimpleListProperty<User> users;
     private ObjectProperty<Image> userImage;
     private PropertyChangeSupport support;
 
@@ -29,8 +31,8 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.textFieldProperty = new SimpleStringProperty();
         support = new PropertyChangeSupport(this);
         userImage = new SimpleObjectProperty<>();
-        model.addPropertyChangeListener("new message", this);
-        model.addPropertyChangeListener("user", this);
+        this.users = new SimpleListProperty<>();
+        model.addPropertyChangeListener(this);
     }
 
     public void onSendMessage() throws IOException
@@ -64,6 +66,8 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         property.bindBidirectional(textFieldProperty);
     }
 
+
+
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
@@ -74,21 +78,23 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 userImage.set(((Message) evt.getNewValue()).getUser().getImage());
                 support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
             }
-            case "user" ->
-            {
-                userImage.set(((User) evt.getNewValue()).getImage());
+            case "user" -> userImage.set(((User) evt.getNewValue()).getImage());
+
+            case "update user list" -> {
+                var newUsers = ((List<User>) evt.getNewValue());
+                Platform.runLater(() -> support.firePropertyChange("update user list", null, newUsers));
             }
         }
     }
 
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public void addPropertyChangeListener(PropertyChangeListener listener)
     {
-        support.addPropertyChangeListener(propertyName, listener);
+        support.addPropertyChangeListener(listener);
     }
 
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    public void removePropertyChangeListener(PropertyChangeListener listener)
     {
-        support.removePropertyChangeListener(propertyName, listener);
+        support.removePropertyChangeListener(listener);
     }
 
     public ArrayList<User> getUsers() throws IOException

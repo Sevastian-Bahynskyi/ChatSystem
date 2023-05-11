@@ -4,15 +4,11 @@ import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.User;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -23,46 +19,59 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 public class ChatController implements Controller, PropertyChangeListener
 {
     @FXML
-    private VBox chatPane, mainPane;
+    private VBox chatPane, mainPane, userListPane;
+    @FXML
+    private HBox parent;
     @FXML
     private Button sendButton, usersButton;
     @FXML
     private TextArea textField;
     @FXML
-    private VBox messageMy, messageOthers;
+    private Label channelNameTemplate;
+    @FXML
+    private VBox messageMyTemplate, messageOthersTemplate;
     @FXML
     private ScrollPane scrollPane;
+    @FXML
+    private TextField newChannelField;
+
+
 
     private ViewHandler viewHandler;
     private ChatViewModel viewModel;
     private Region root;
     private ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
 
+
+
+    private int indexOfUserListAsChild;
+    private double rememberParentWidth;
+
+
     @Override
-    public void init(ViewHandler viewHandler, ViewModel viewModel, Region root)
+    public void init(ViewHandler viewHandler, ViewModel viewModel, Region root) throws IOException
     {
         this.viewHandler = viewHandler;
         this.viewModel = (ChatViewModel) viewModel;
         this.root = root;
         this.viewModel.bindTextFieldProperty(textField.textProperty());
         this.viewModel.bindUserImage(profileImage);
-        this.viewModel.addPropertyChangeListener("new message", this);
-        this.messageMy.setManaged(false);
-        this.messageOthers.setManaged(false);
+        this.viewModel.addPropertyChangeListener(this);
+        this.viewHandler.addPropertyChangeListener(this);
+        this.messageMyTemplate.setManaged(false);
+        this.messageOthersTemplate.setManaged(false);
         this.viewModel.loadMessages();
         this.textField.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 8000 ? change : null));
@@ -79,6 +88,8 @@ public class ChatController implements Controller, PropertyChangeListener
 
             scrollPane.setVvalue(vValue - deltaY / width);
         }); // allows to scroll with the mouse when scrollpane is focused
+
+        indexOfUserListAsChild = parent.getChildren().indexOf(userListPane);
     }
 
     void addMessage(VBox template, Image image, String message)
@@ -92,7 +103,7 @@ public class ChatController implements Controller, PropertyChangeListener
         vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
 
         int transitionValue;
-        if(template.equals(messageMy))
+        if(template.equals(messageMyTemplate))
         {
             transitionValue = 100;
         }
@@ -127,6 +138,7 @@ public class ChatController implements Controller, PropertyChangeListener
                 Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
                 Label label = new Label(labelText);
 
+
                 label.setFont(templateLabel.getFont());
                 label.setTextFill((templateLabel).getTextFill());
                 label.setWrapText((templateLabel).isWrapText());
@@ -159,7 +171,7 @@ public class ChatController implements Controller, PropertyChangeListener
         if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
             return;
         viewModel.onSendMessage();
-        addMessage(messageMy, profileImage.get(), t);
+        addMessage(messageMyTemplate, profileImage.get(), t);
         scrollPane.requestFocus();
     }
 
@@ -168,23 +180,38 @@ public class ChatController implements Controller, PropertyChangeListener
     @FXML
     void onUsers() throws IOException
     {
-        VBox vBox = new VBox();
-        ArrayList<Node> children = new ArrayList<>();
-        for (User user:viewModel.getUsers())
-        {
-            children.add(generateTemplate(messageOthers, user.getImage(), user.getUsername()));
-            System.out.println(user.getImageUrl());
+        var stage = viewHandler.getStage(parent);
+        var borderSize = (stage.getWidth() - stage.getScene().getWidth()) / 2;
+
+
+        if (parent.getChildren().contains(userListPane)) {
+            parent.getChildren().remove(userListPane);
+            var newWidth = stage.getWidth() - userListPane.getWidth() - borderSize * 2 - userListPane.getPadding().getLeft() - userListPane.getPadding().getRight();
+
+            parent.setPrefWidth(newWidth);
+            stage.setWidth(newWidth);
+        } else {
+            parent.getChildren().add(indexOfUserListAsChild, userListPane);
+
+            var newWidth = stage.getWidth() + userListPane.getWidth() + borderSize * 2 + userListPane.getPadding().getLeft() + userListPane.getPadding().getRight();
+
+            parent.setPrefWidth(newWidth);
+            stage.setWidth(newWidth);
         }
-        vBox.getChildren().addAll(children);
-        vBox.setStyle("-fx-background-color: #0C281E");
-        Dialog<VBox> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(vBox);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.managedProperty().bind(closeButton.visibleProperty());
-        closeButton.setVisible(false);
-        dialog.show();
+
     }
+
+
+    private void loadUsersToUserListPane(Collection<User> users) throws IOException
+    {
+        ArrayList<Node> children = new ArrayList<>();
+        for (User user:users)
+        {
+            children.add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername()));
+        }
+        userListPane.getChildren().setAll(children);
+    }
+
 
     public Region getRoot()
     {
@@ -206,30 +233,57 @@ public class ChatController implements Controller, PropertyChangeListener
         }
     }
 
+
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        if(evt.getPropertyName().equals("new message"))
+        switch (evt.getPropertyName())
         {
-            var propertyEvent = (List<Object>) evt.getNewValue();
-            Message message = (Message) propertyEvent.get(0);
-            boolean isMessageOfTheUser = (boolean) propertyEvent.get(1);
+            case "new message" -> {
+                var propertyEvent = (List<Object>) evt.getNewValue();
+                Message message = (Message) propertyEvent.get(0);
+                boolean isMessageOfTheUser = (boolean) propertyEvent.get(1);
 
-            Platform.runLater(() ->
-            {
-                profileImage.set(message.getUser().getImage());
-                System.out.println("Image url that controller received: " + message.getUser().getImageUrl());
-                if(isMessageOfTheUser)
-                    addMessage(messageMy, profileImage.get(), message.getMessage());
-                else
+                Platform.runLater(() ->
                 {
-                    addMessage(messageOthers, profileImage.get(), message.getMessage());
+                    profileImage.set(message.getUser().getImage());
+                    System.out.println("Image url that controller received: " + message.getUser().getImageUrl());
+                    if(isMessageOfTheUser)
+                        addMessage(messageMyTemplate, profileImage.get(), message.getMessage());
+                    else
+                    {
+                        addMessage(messageOthersTemplate, profileImage.get(), message.getMessage());
+                    }
+                });
+            }
+            case "load user list" -> {
+                try
+                {
+                    loadUsersToUserListPane(viewModel.getUsers());
+                    onUsers();
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
                 }
-            });
+            }
+            case "update user list" -> {
+                try
+                {
+                    loadUsersToUserListPane(((List<User>) evt.getNewValue()));
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
+    private void onAddChannel()
+    {
+
+    }
+
     // todo
-    //      -> database
+    //      -> bug, user list is not being updated
     //      -> check what the problem with image is, when user press user list
 }
