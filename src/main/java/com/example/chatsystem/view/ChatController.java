@@ -161,7 +161,6 @@ public class ChatController implements Controller, PropertyChangeListener
         newMessage.setMaxSize(message.getMaxWidth(), message.getMaxHeight());
         newMessage.setMinSize(message.getMinWidth(), message.getMinHeight());
         newMessage.setSpacing(message.getSpacing());
-        newMessage.setStyle(":hover");
 
 
         return newMessage;
@@ -258,7 +257,14 @@ public class ChatController implements Controller, PropertyChangeListener
         ArrayList<Node> children = new ArrayList<>();
         for (User user:users)
         {
-            children.add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 14));
+            VBox newUser = new VBox();
+            newUser.setPrefSize(messageOthersTemplate.getPrefWidth(), messageOthersTemplate.getPrefHeight());
+            newUser.setMaxSize(messageOthersTemplate.getMaxWidth(), messageOthersTemplate.getMaxHeight());
+            newUser.setMinSize(messageOthersTemplate.getMinWidth(), messageOthersTemplate.getMinHeight());
+            newUser.setPadding(newUser.getPadding());
+            newUser.getStyleClass().add("message-template");
+            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 14));
+            children.add(newUser);
         }
         userListPane.getChildren().setAll(children);
     }
