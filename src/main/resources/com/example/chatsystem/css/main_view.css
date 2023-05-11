@@ -3,6 +3,11 @@
     -fx-background-radius: 20px;
 }
 
+
+.message-template:hover{
+    -fx-background-color: #ff3737;
+}
+
 .main-pane{
     -fx-background-color: #4C956C;
 }

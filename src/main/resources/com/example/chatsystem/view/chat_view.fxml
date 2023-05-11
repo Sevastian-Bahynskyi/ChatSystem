@@ -57,7 +57,7 @@
                      <children>
                         <VBox fx:id="messageMyTemplate" alignment="BOTTOM_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
                            <children>
-                              <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                              <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" styleClass="message-template" VBox.vgrow="NEVER">
                                  <children>
                                     <VBox alignment="CENTER">
                                        <children>
@@ -81,7 +81,7 @@
                         </VBox>
                         <VBox fx:id="messageOthersTemplate" alignment="BOTTOM_LEFT" minHeight="-Infinity" minWidth="-Infinity">
                            <children>
-                              <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
+                              <HBox alignment="TOP_CENTER" maxWidth="-Infinity" spacing="20.0" styleClass="message-template" VBox.vgrow="NEVER">
                                  <children>
                                     <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />
                                     <VBox alignment="CENTER">
