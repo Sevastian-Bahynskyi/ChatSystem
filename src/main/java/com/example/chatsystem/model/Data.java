@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Data implements Serializable
 {
-    private ArrayList<Chatter> users;
+    private ArrayList<UserInterface> users;
     private ArrayList<Message> messages;
 
     private static String defaultImageUrl = "/com/example/chatsystem/images/default_user_avatar.png";
@@ -14,8 +14,8 @@ public class Data implements Serializable
     private Data()
     {
         users = new ArrayList<>();
-        users.add(new Chatter("BobBobson", "bobspass"));
-        users.add(new Chatter("Sevastian", "mypass123"));
+        users.add(new Chatter("111111", "BobBobson", "bobspass"));
+        users.add(new Chatter("222222", "Sevastian", "mypass123"));
         messages = new ArrayList<>();
     }
 
@@ -31,13 +31,13 @@ public class Data implements Serializable
         return defaultImageUrl;
     }
 
-    public synchronized ArrayList<Chatter> getUsers()
+    public synchronized ArrayList<UserInterface> getUsers()
     {
         return users;
     }
 
 
-    public boolean isUserRegistered(Chatter user)
+    public boolean isUserRegistered(UserInterface user)
     {
         return users.contains(user);
     }

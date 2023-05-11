@@ -71,13 +71,13 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public List<Object> register(String username, String password, String imageUrl) throws RemoteException, IOException
+    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
-        return listener.register(username, password, imageUrl);
+        return listener.register(VIAid, username, password, imageUrl);
     }
 
     @Override
-    public ArrayList<Chatter> getUserList() throws RemoteException, IOException
+    public ArrayList<UserInterface> getUserList() throws RemoteException, IOException
     {
         return listener.getUserList();
     }

@@ -11,7 +11,7 @@ public interface Model
     void addMessage(String message) throws IOException;
     void addPropertyChangeListener(PropertyChangeListener listener);
 
-    void register(String username, String password, String imageUrl) throws IOException;
+    void register(String VIAid, String username, String password, String imageUrl) throws IOException;
 
     ArrayList<Message> getMessages();
 
@@ -19,6 +19,6 @@ public interface Model
 
     void disconnect() throws IOException;
 
-    ArrayList<Chatter> getUserList() throws IOException;
+    ArrayList<UserInterface> getUserList() throws IOException;
 
 }

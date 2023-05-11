@@ -37,9 +37,9 @@ public class ModelManager implements Model
     }
 
     @Override
-    public void register(String username, String password, String imageUrl) throws IOException
+    public void register(String VIAid, String username, String password, String imageUrl) throws IOException
     {
-        var res = server.register(username, password, imageUrl);
+        var res = server.register(VIAid, username, password, imageUrl);
         user = (Chatter) res.get(0);
 
         var messages = (ArrayList<Message>) res.get(1);
@@ -82,7 +82,7 @@ public class ModelManager implements Model
         support.addPropertyChangeListener(listener);
     }
 
-    public ArrayList<Chatter> getUserList() throws IOException
+    public ArrayList<UserInterface> getUserList() throws IOException
     {
         return server.getUserList();
     }
