@@ -60,7 +60,6 @@ public class ChatController implements Controller, PropertyChangeListener
 
 
     private int indexOfUserListAsChild;
-    private double rememberParentWidth;
 
 
     @Override
@@ -97,8 +96,12 @@ public class ChatController implements Controller, PropertyChangeListener
 
     void addMessage(VBox template, Image image, String message)
     {
+        double imageRadius = 18;
+        double fontSize = 16;
+
         VBox vBox = new VBox();
-        vBox.getChildren().add(generateTemplate(template, image, message));
+
+        vBox.getChildren().add(generateTemplate(template, image, message, imageRadius, fontSize));
         vBox.setAlignment(template.getAlignment());
         vBox.setPadding(template.getPadding());
         vBox.setPrefSize(template.getPrefWidth(), template.getPrefHeight());
@@ -118,54 +121,6 @@ public class ChatController implements Controller, PropertyChangeListener
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
         animation.play();
-    }
-
-
-    private HBox generateTemplate(VBox template, Image circleImage, String labelText)
-    {
-        HBox message = (HBox) template.getChildren().get(0);
-        ArrayList<Node> copiedNodes = new ArrayList<>();
-
-
-        for (Node node: message.getChildren())
-        {
-            if(node instanceof Circle)
-            {
-                Circle circle = new Circle();
-                circle.setFill(new ImagePattern(circleImage));
-                circle.setRadius(((Circle) node).getRadius());
-
-                copiedNodes.add(circle);
-            } else if (node instanceof VBox) {
-                VBox newVbox = new VBox();
-                Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
-                Label label = new Label(labelText);
-
-
-                label.setFont(templateLabel.getFont());
-                label.setTextFill((templateLabel).getTextFill());
-                label.setWrapText((templateLabel).isWrapText());
-                label.setMaxWidth(chatPane.getWidth() / 2);
-
-                newVbox.getChildren().add(label);
-                newVbox.setAlignment(((VBox) node).getAlignment());
-                newVbox.setPrefSize(((VBox) node).getPrefWidth(), ((VBox) node).getPrefHeight());
-
-                copiedNodes.add(newVbox);
-            }
-        }
-
-        HBox newMessage = new HBox();
-        newMessage.getChildren().addAll(copiedNodes);
-        newMessage.setAlignment(message.getAlignment());
-        newMessage.setPadding(message.getPadding());
-        newMessage.setPrefSize(message.getPrefWidth(), message.getPrefHeight());
-        newMessage.setMaxSize(message.getMaxWidth(), message.getMaxHeight());
-        newMessage.setMinSize(message.getMinWidth(), message.getMinHeight());
-        newMessage.setSpacing(message.getSpacing());
-
-
-        return newMessage;
     }
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)

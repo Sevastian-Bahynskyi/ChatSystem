@@ -101,4 +101,9 @@ public class ViewHandler
         parallelStage.setResizable(false);
         parallelStage.show();
     }
+
+    public void closeWindow(Region root)
+    {
+        root.getScene().getWindow().setOnCloseRequest(event -> Platform.exit());
+    }
 }

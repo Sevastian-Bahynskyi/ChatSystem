@@ -10,23 +10,40 @@ import java.util.Random;
 public class RoomViewModel implements ViewModel
 {
     private ModelManager modelManager;
-    private StringProperty nameFieldProperty, codeFieldProperty;
+    private StringProperty nameFieldProperty, codeFieldProperty, errorLabelProperty;
+    private String imageUrl;
 
     public RoomViewModel(Model model)
     {
         this.modelManager = (ModelManager) model;
         this.nameFieldProperty = new SimpleStringProperty();
         this.codeFieldProperty = new SimpleStringProperty();
+        this.errorLabelProperty = new SimpleStringProperty();
     }
 
-    public void bindNameField(StringProperty nameFieldProperty)
+    public void bindNameField(StringProperty property)
     {
-        this.nameFieldProperty.bindBidirectional(nameFieldProperty);
+        this.nameFieldProperty.bindBidirectional(property);
     }
 
-    public void bindCodeField(StringProperty codeFieldProperty)
+    public void bindCodeField(StringProperty property)
     {
-        this.codeFieldProperty.bindBidirectional(codeFieldProperty);
+        this.codeFieldProperty.bindBidirectional(property);
+    }
+
+    public void bindErrorField(StringProperty property)
+    {
+        property.bindBidirectional(errorLabelProperty);
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl()
+    {
+        return imageUrl;
     }
 
     public void generateCode()
@@ -58,4 +75,11 @@ public class RoomViewModel implements ViewModel
 
         codeFieldProperty.setValue(codeBuilder.toString());
     }
+
+
+    public void onCreateRoom()
+    {
+
+    }
+
 }

@@ -27,7 +27,6 @@ public class LoginViewModel implements ViewModel
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             errorProperty.set(e.getMessage());
             return false;
         }
@@ -65,7 +64,6 @@ public class LoginViewModel implements ViewModel
             model.register("123456",usernameProperty.get(), passwordProperty.get(), imageUrl);
         } catch (Exception e)
         {
-            e.printStackTrace();
             errorProperty.set(e.getMessage());
             return false;
         }
