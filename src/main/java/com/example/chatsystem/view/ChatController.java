@@ -96,7 +96,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
     void addMessage(VBox template, Image image, String message)
     {
-        double imageRadius = 18;
+        double imageRadius = 25;
         double fontSize = 16;
 
         VBox vBox = new VBox();

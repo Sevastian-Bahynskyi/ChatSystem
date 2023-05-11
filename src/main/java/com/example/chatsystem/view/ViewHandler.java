@@ -104,6 +104,7 @@ public class ViewHandler
 
     public void closeWindow(Region root)
     {
-        root.getScene().getWindow().setOnCloseRequest(event -> Platform.exit());
+        Stage window = (Stage) root.getScene().getWindow();
+        window.close();
     }
 }
