@@ -6,16 +6,18 @@ import java.io.Serializable;
 
 public class Chatter implements UserInterface,Serializable
 {
+    private int VIAid;
     private String username;
     private String password;
     private String imageUrl;
     private final int CHARACTER_NUMBER_OFF_PASSWORD = 8;
     private final int CHARACTER_NUMBER_OFF_USERNAME = 4;
 
-    public Chatter(String username, String password)
+    public Chatter(int VIAid, String username, String password)
     {
         if(!(validateUsername(username) && validatePassword(password)))
             return;
+        this.VIAid= VIAid;
         this.username = username;
         this.password = password;
         this.imageUrl = Data.getDefaultImageUrl();
