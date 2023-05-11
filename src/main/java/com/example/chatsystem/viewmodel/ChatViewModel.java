@@ -23,6 +23,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     private ObjectProperty<Image> userImage;
     private PropertyChangeSupport support;
 
+
     public ChatViewModel(Model model)
     {
         this.model = model;

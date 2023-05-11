@@ -379,9 +379,7 @@ public class ChatController implements Controller, PropertyChangeListener
     @FXML
     void onAddRoom(MouseEvent event)
     {
-        Circle circle = new Circle();
-        circle.setRadius(40);
-        roomList.getChildren().add(circle);
+        viewHandler.openParallelView(WINDOW.ADD_ROOM);
     }
 
 

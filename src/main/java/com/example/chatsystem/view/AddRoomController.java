@@ -42,6 +42,9 @@ public class AddRoomController implements Controller
         this.viewHandler = viewHandler;
         this.viewModel = (RoomViewModel) viewModel;
         this.root = root;
+
+        this.viewModel.bindCodeField(codeField.textProperty());
+        this.viewModel.bindNameField(roomNameField.textProperty());
     }
 
     @FXML
@@ -53,33 +56,7 @@ public class AddRoomController implements Controller
     @FXML
     void onGenerateCode()
     {
-        int codeLength = 8;
-        StringBuilder chars = new StringBuilder();
-        for (char i = 'A'; i <= 'Z'; i++)
-        {
-            chars.append(i);
-        }
-
-        for (char i = '0'; i < '9'; i++)
-        {
-            chars.append(i);
-        }
-
-        for (int i = 'a'; i < 'z'; i++)
-        {
-            chars.append(i);
-        }
-
-        StringBuilder codeBuilder = new StringBuilder();
-        Random random = new Random();
-
-        for (int i = 0; i < codeLength; i++) {
-            int index = random.nextInt(chars.length());
-            codeBuilder.append(chars.charAt(index));
-        }
-
-
-
+        viewModel.generateCode();
     }
 
     @FXML
@@ -88,7 +65,8 @@ public class AddRoomController implements Controller
     }
 
     @FXML
-    void onSetImage() {
+    void onSetImage()
+    {
 
     }
 
