@@ -6,15 +6,16 @@ import java.io.Serializable;
 
 public class Moderator implements UserInterface, Serializable
 {
-  private int VIAid;
+  private String VIAid;
   private String username;
   private String password;
   private String imageUrl;
   private final int CHARACTER_NUMBER_OFF_PASSWORD = 8;
   private final int CHARACTER_NUMBER_OFF_USERNAME = 4;
+  private final int CHARACTER_NUMBER_OFF_VIAID = 6;
 
-  public Moderator(int VIAid, String username, String password){
-    if(!(validateUsername(username) && validatePassword(password)))
+  public Moderator(String VIAid, String username, String password){
+    if(!(validateUsername(username) && validatePassword(password)) && !(validateViaID(VIAid)))
       return;
     this.VIAid = VIAid;
     this.username = username;
@@ -80,6 +81,16 @@ public class Moderator implements UserInterface, Serializable
     }
     if (!(lowercase || digit)) {
       throw new IllegalArgumentException("Password needs both lower case letters and digits.");
+    }
+
+    return true;
+  }
+
+  private boolean validateViaID(String VIAid)
+  {
+    if(VIAid.length() != CHARACTER_NUMBER_OFF_VIAID)
+    {
+      throw new IllegalArgumentException("VIA ID should be 6 characters.");
     }
 
     return true;
