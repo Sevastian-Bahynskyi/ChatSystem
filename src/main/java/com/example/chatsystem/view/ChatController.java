@@ -19,6 +19,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import java.beans.PropertyChangeEvent;
@@ -31,7 +32,7 @@ import java.util.List;
 public class ChatController implements Controller, PropertyChangeListener
 {
     @FXML
-    private VBox chatPane, mainPane, userListPane;
+    private VBox chatPane, mainPane, userListPane, channelListPane;
     @FXML
     private HBox parent;
     @FXML
@@ -164,6 +165,30 @@ public class ChatController implements Controller, PropertyChangeListener
         return newMessage;
     }
 
+    private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
+    {
+        HBox message = (HBox) template.getChildren().get(0);
+
+        for (Node node:message.getChildren())
+        {
+            if(node instanceof Circle)
+            {
+                Circle circle = (Circle) node;
+                circle.setRadius(circleRadius);
+                int index = template.getChildren().indexOf(node);
+                template.getChildren().add(index, circle);
+            } else if (node instanceof VBox)
+            {
+                Label label = (Label) ((VBox) node).getChildren().get(0);
+                label.setFont(new Font(label.getFont().getName(), fontSize));
+                int index = template.getChildren().indexOf(node);
+                template.getChildren().add(index, label);
+            }
+        }
+        return generateTemplate(template, circleImage, labelText);
+    }
+    
+
     @FXML
     void onSendMessage() throws IOException
     {
@@ -207,7 +232,7 @@ public class ChatController implements Controller, PropertyChangeListener
         ArrayList<Node> children = new ArrayList<>();
         for (User user:users)
         {
-            children.add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername()));
+            children.add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 14));
         }
         userListPane.getChildren().setAll(children);
     }
@@ -228,8 +253,22 @@ public class ChatController implements Controller, PropertyChangeListener
         }
         else if(event.getCode().equals(KeyCode.ENTER))
         {
-            textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
-            onSendMessage();
+            if(textField.isFocused())
+            {
+                textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+                onSendMessage();
+            }
+            else if(newChannelField.isFocused())
+            {
+                Label label = new Label();
+                label.setFont(channelNameTemplate.getFont());
+                label.setTextFill(channelNameTemplate.getTextFill());
+                label.setText(newChannelField.getText());
+
+                channelListPane.getChildren().add(0, label);
+                newChannelField.setVisible(false);
+                newChannelField.clear();
+            }
         }
     }
 
@@ -278,10 +317,14 @@ public class ChatController implements Controller, PropertyChangeListener
         }
     }
 
-    private void onAddChannel()
+    @FXML
+    void onAddChannel()
     {
-
+        newChannelField.setVisible(true);
+        newChannelField.requestFocus();
     }
+
+
 
     // todo
     //      -> bug, user list is not being updated
