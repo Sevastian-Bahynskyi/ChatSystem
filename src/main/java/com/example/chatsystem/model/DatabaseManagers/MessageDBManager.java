@@ -5,6 +5,7 @@ import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.UserInterface;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class  MessageDBManager
@@ -49,6 +50,30 @@ public class  MessageDBManager
       System.err.println(e.getMessage());
     }
     return message;
+  }
+
+  public Collection<Message> getAllMessagesForAChannel(int channelId)
+  {
+    ArrayList<Message> messageArrayList = new ArrayList<>();
+    try(Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+
+      ps.setInt(1, channelId);
+
+      ResultSet rs = ps.executeQuery();
+
+      if(rs.next())
+      {
+        // message should be id,Message,timestamp,chatter_id,channel_id
+        messageArrayList.add(new Message(rs.getInt("id"),rs.getString("message"),rs.getTimestamp("timestamp"),rs.getInt("chatter_id"),rs.getInt("channel_id")));
+      }
+    }
+    catch (SQLException e)
+    {
+      System.err.println(e.getMessage());
+    }
+    return messageArrayList;
   }
 
   public void updateMessage(int id, Message newMessage)
