@@ -80,7 +80,14 @@ public class RoomViewModel implements ViewModel
 
     public void onCreateRoom()
     {
-        modelManager.addRoom(nameFieldProperty.getValue(), codeFieldProperty.getValue(), imageUrl);
+        try
+        {
+            modelManager.addRoom(nameFieldProperty.getValue(), codeFieldProperty.getValue(), imageUrl);
+        }
+        catch (Exception e)
+        {
+            errorLabelProperty.setValue(e.getMessage());
+        }
     }
 
 }
