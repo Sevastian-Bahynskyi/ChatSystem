@@ -1,5 +1,6 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
+import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 
@@ -65,9 +66,19 @@ public class ModeratorDBManager
 
   public Collection<Moderator> getListOfAllModeratorsOfRoom(int roomId){
     ArrayList<Moderator> temp = new ArrayList<>();
+    UserInterface tempMod = null;
     try(Connection connection = getConnection())
     {
-      PreparedStatement ps = connection.prepareStatement("SELECT ");
+      PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password, ismoderator from chatter join moderatorroomlist m on chatter.viaid = m.moderator_id where room_id = ? and ismoderator = true");
+      ps.setInt(1, roomId);
+      ResultSet rs = ps.executeQuery();
+      tempMod = new Moderator(rs.getString(1), rs.getString(2), rs.getString(3));
+      if(rs.next()){
+        if(rs.getBoolean(4)){
+          temp.add(rs.getString(1), rs.getString(2), rs.getString(3));
+          //yeah i have no idea what to do here
+        }
+      }
     }
     catch (SQLException e)
     {
