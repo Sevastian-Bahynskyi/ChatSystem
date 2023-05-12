@@ -4,7 +4,6 @@ module com.example.chatsystem {
     requires javafx.graphics;
     requires java.desktop;
     requires remoteobserver;
-    requires fontawesomefx;
     requires java.rmi;
     requires com.google.gson;
     requires java.sql;
