@@ -72,18 +72,18 @@ public class ModeratorDBManager
       PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password, ismoderator from chatter join moderatorroomlist m on chatter.viaid = m.moderator_id where room_id = ? and ismoderator = true");
       ps.setInt(1, roomId);
       ResultSet rs = ps.executeQuery();
-      tempMod = new Moderator(rs.getString(1), rs.getString(2), rs.getString(3));
-      if(rs.next()){
-        if(rs.getBoolean(4)){
-          temp.add(rs.getString(1), rs.getString(2), rs.getString(3));
-          //yeah i have no idea what to do here
-        }
+      while (rs.next()){
+        String id = rs.getString("viaid");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        temp.add(new Moderator(id, username, password));
       }
     }
     catch (SQLException e)
     {
       System.err.println(e.getMessage());
     }
+    return temp;
   }
 
   private Connection getConnection() throws SQLException
