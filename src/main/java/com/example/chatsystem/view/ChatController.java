@@ -1,37 +1,50 @@
 package com.example.chatsystem.view;
 
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.Room;
 import com.example.chatsystem.model.UserInterface;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.EventType;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
+import javax.swing.plaf.FontUIResource;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Handler;
 
 public class ChatController implements Controller, PropertyChangeListener
 {
@@ -353,6 +366,20 @@ public class ChatController implements Controller, PropertyChangeListener
                 {
                     throw new RuntimeException(e);
                 }
+            }
+
+            case "room added" -> {
+                Room room = (Room) evt.getNewValue();
+                System.out.println(room);
+                System.out.println(room.getImage());
+                Circle circle = new Circle(30);
+                if(room.getImage() != null)
+                    circle.setFill(new ImagePattern(room.getImage()));
+                else {
+
+                    // do something
+                }
+                roomList.getChildren().add(circle);
             }
         }
     }

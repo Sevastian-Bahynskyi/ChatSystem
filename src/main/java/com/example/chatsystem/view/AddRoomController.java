@@ -49,6 +49,7 @@ public class AddRoomController implements Controller
 
         this.viewModel.bindCodeField(codeField.textProperty());
         this.viewModel.bindNameField(roomNameField.textProperty());
+        this.viewModel.bindErrorField(errorLabel.textProperty());
     }
 
     @FXML
@@ -90,7 +91,7 @@ public class AddRoomController implements Controller
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imageURL)));
 
             roomImage.setFill(new ImagePattern(image));
-            this.viewModel.setImageUrl(image.getUrl());
+            this.viewModel.setImageUrl(imageURL);
 
         } catch (Exception e)
         {

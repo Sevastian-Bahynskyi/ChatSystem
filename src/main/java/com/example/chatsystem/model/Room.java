@@ -1,5 +1,7 @@
 package com.example.chatsystem.model;
 
+import javafx.scene.image.Image;
+
 import java.util.Objects;
 
 public class Room
@@ -11,6 +13,8 @@ public class Room
     private int id;
     private String name;
     private String code;
+    private String imageUrl;
+
 
 
     public Room(int id, String name, String code)
@@ -24,6 +28,18 @@ public class Room
     {
         this.name = name;
         this.code = code;
+    }
+
+    public Image getImage()
+    {
+        if(imageUrl == null)
+            return null;
+        return new Image(getClass().getResourceAsStream(imageUrl));
+    }
+
+    public void setImageUrl(String imageUrl)
+    {
+        this.imageUrl = imageUrl;
     }
 
     public String getCode()

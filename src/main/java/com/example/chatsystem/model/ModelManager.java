@@ -86,6 +86,15 @@ public class ModelManager implements Model
         server.sendMessage(mes);
     }
 
+
+    public void addRoom(String name, String code, String imageURL)
+    {
+        Room room = new Room(1, name, code);
+        System.out.println(imageURL);
+        room.setImageUrl(imageURL);
+        support.firePropertyChange("room added", null, room);
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
         support.addPropertyChangeListener(listener);

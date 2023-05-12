@@ -2,6 +2,7 @@ package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.model.ModelManager;
+import com.example.chatsystem.model.Room;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -79,7 +80,7 @@ public class RoomViewModel implements ViewModel
 
     public void onCreateRoom()
     {
-
+        modelManager.addRoom(nameFieldProperty.getValue(), codeFieldProperty.getValue(), imageUrl);
     }
 
 }

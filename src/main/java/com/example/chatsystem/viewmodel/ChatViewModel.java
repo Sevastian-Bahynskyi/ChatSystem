@@ -1,9 +1,6 @@
 package com.example.chatsystem.viewmodel;
 
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.Chatter;
-import com.example.chatsystem.model.UserInterface;
+import com.example.chatsystem.model.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -82,6 +79,11 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
             case "update user list" -> {
                 var newUsers = ((List<Chatter>) evt.getNewValue());
                 Platform.runLater(() -> support.firePropertyChange("update user list", null, newUsers));
+            }
+
+            case "room added" -> {
+                Room room = (Room) evt.getNewValue();
+                Platform.runLater(() -> support.firePropertyChange("room added", null, room));
             }
         }
     }
