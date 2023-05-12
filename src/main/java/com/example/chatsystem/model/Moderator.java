@@ -48,6 +48,11 @@ public class Moderator implements UserInterface, Serializable
     this.imageUrl = imageUrl;
   }
 
+  @Override public String getViaId()
+  {
+    return VIAid;
+  }
+
   private boolean validateUsername(String username)
   {
     if(username == null || username.length() < CHARACTER_NUMBER_OFF_USERNAME)

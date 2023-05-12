@@ -102,6 +102,11 @@ public class Chatter implements UserInterface,Serializable
         return u.username.equals(username) && u.password.equals(password);
     }
 
+    @Override public String getViaId()
+    {
+        return VIAid;
+    }
+
     private boolean validateViaID(String VIAid)
     {
         if(VIAid.length() != CHARACTER_NUMBER_OFF_VIAID)
