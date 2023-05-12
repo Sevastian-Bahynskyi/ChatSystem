@@ -30,6 +30,23 @@ public class ModeratorDBManager
     }
   }
 
+  public void makeModerator(String viaID, String room_id){
+    try(Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("Update chatter set ismoderator = true where viaid= ?");
+      ps.setString(1, viaID);
+      PreparedStatement ps1 = connection.prepareStatement("Insert into ModeratorRoomList(room_id, moderator_id) values (? , ?)");
+      ps1.setString(1, viaID);
+      ps1.setString(2, room_id);
+      ResultSet rs = ps.executeQuery();
+      ResultSet rs1 = ps1.executeQuery();
+    }
+    catch (SQLException e)
+    {
+      System.err.println(e.getMessage());
+    }
+  }
+
   public void deleteModeratorByID(String viaID){
     try(Connection connection = getConnection())
     {
