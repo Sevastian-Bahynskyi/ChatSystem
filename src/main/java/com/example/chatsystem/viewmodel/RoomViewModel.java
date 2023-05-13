@@ -86,6 +86,7 @@ public class RoomViewModel implements ViewModel
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             errorLabelProperty.setValue(e.getMessage());
         }
     }

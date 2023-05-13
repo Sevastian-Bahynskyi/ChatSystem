@@ -87,7 +87,8 @@ public class AddRoomController implements Controller
         try
         {
             String imageURL = GetImageAsFile.getImage(root.getScene().getWindow());
-            assert imageURL != null;
+            if(imageURL == null)
+                return;
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imageURL)));
 
             roomImage.setFill(new ImagePattern(image));
@@ -95,6 +96,7 @@ public class AddRoomController implements Controller
 
         } catch (Exception e)
         {
+            e.printStackTrace();
             errorLabel.setText(e.getMessage());
         }
     }

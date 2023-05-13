@@ -98,6 +98,16 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         support.removePropertyChangeListener(listener);
     }
 
+    public void editUser()
+    {
+        System.out.println("edit option was chosen");
+    }
+
+    public void deleteUser()
+    {
+        System.out.println("delete option was chosen");
+    }
+
     public ArrayList<UserInterface> getUsers() throws IOException
     {
         return model.getUserList();

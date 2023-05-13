@@ -11,8 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
+import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -30,27 +29,25 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Translate;
+import javafx.stage.Popup;
 import javafx.util.Duration;
 
-import javax.imageio.ImageIO;
-import javax.swing.plaf.FontUIResource;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class ChatController implements Controller, PropertyChangeListener
 {
@@ -235,17 +232,15 @@ public class ChatController implements Controller, PropertyChangeListener
 
     }
 
-
-    private void loadUsersToUserListPane(Collection<UserInterface> users) throws IOException
+    // takes map of choices and functions that choice should provide
+    private void showContextMenu(Map<String, Runnable> options, double screenX, double screenY)
     {
-        ArrayList<Node> children = new ArrayList<>();
-
         ContextMenu popup = new ContextMenu();
 
-        String[] choices = {"Edit", "Delete"};
         // Add menu items to the popup for each item in the list
-        for (var item : choices) {
+        for (var item : options.keySet()) {
             MenuItem menuItem = new MenuItem(item);
+            menuItem.setOnAction(event -> options.get(item).run());
             popup.getItems().add(menuItem);
         }
 
@@ -255,7 +250,18 @@ public class ChatController implements Controller, PropertyChangeListener
                 popup.hide();
             }
         });
+        popup.show(parent, screenX, screenY);
+    }
 
+
+    private void loadUsersToUserListPane(Collection<UserInterface> users) throws IOException
+    {
+        ArrayList<Node> children = new ArrayList<>();
+
+
+        HashMap<String, Runnable> options = new HashMap<>();
+        options.put("Edit", () -> viewModel.editUser());
+        options.put("Delete", () -> viewModel.deleteUser());
 
 
         for (UserInterface user:users)
@@ -269,7 +275,7 @@ public class ChatController implements Controller, PropertyChangeListener
             newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16));
             newUser.setOnMouseClicked(event ->
             {
-                popup.show(parent, event.getScreenX(), event.getScreenY());
+                showContextMenu(options, event.getScreenX(), event.getScreenY());
             });
 
 
@@ -287,6 +293,7 @@ public class ChatController implements Controller, PropertyChangeListener
     @FXML
     void onEnter(KeyEvent event) throws IOException
     {
+//        textField.getText() += FontAwesome
         if(event.getCode().equals(KeyCode.ENTER) && event.isShiftDown())
         {
             textField.setText(textField.getText() + "\n");
@@ -379,48 +386,36 @@ public class ChatController implements Controller, PropertyChangeListener
                 System.out.println(room);
                 System.out.println(room.getImage());
                 Circle circle = new Circle(30);
+                Label label = new Label(room.getName());
+                label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
+                Popup popup = new Popup();
+
+// set the content of the popup
+                VBox vbox = new VBox(label);
+                vbox.setStyle("-fx-background-color: #4C956C;");
+                vbox.setPadding(new Insets(0, 10, 0,10));
+                popup.getContent().add(vbox);
+
+// show the popup when the user hovers over the circle
+                circle.setOnMouseEntered(event -> {
+                    popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
+                });
+
+// hide the popup when the user moves the mouse away from the circle
+                circle.setOnMouseExited(event -> {
+                    popup.hide();
+                });
+
                 if(room.getImage() != null)
                     circle.setFill(new ImagePattern(room.getImage()));
                 else {
-                    String text = room.getName();
-                    BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g2d = img.createGraphics();
-                    Font font = new Font("Arial",Font.PLAIN, 24);
-                    g2d.setFont(font);
-                    FontMetrics fm = g2d.getFontMetrics();
-                    int width = fm.stringWidth(text) + 50;
-                    int height = fm.getHeight();
-                    g2d.dispose();
 
-                    img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                    g2d = img.createGraphics();
-                    g2d.setBackground(Color.WHITE);
-                    g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-                    g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-                    g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                    g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                    g2d.setFont(font);
-                    fm = g2d.getFontMetrics();
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawString(text, 0, fm.getAscent());
-                    g2d.dispose();
-                    try {
-                        ImageIO.write(img, "png", new File("Text.png"));
-
-                        Image image = SwingFXUtils.toFXImage(img, null);
-                        circle.setFill(new ImagePattern(image));
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
                 }
                 roomList.getChildren().add(circle);
             }
         }
     }
+
 
     @FXML
     void onAddChannel()
