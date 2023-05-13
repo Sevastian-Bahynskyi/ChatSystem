@@ -4,21 +4,20 @@ import java.util.ArrayList;
 
 public class Channel
 {
-  private Data data;
+  private ArrayList<Message> messages;
   private int id;
   private String name;
   private int roomId;
   public Channel(int id, String name, int roomId)
   {
-    data = Data.getInstance();
+    messages = new ArrayList<>();
     this.id = id;
     this.name = name;
     this.roomId = roomId;
   }
   public ArrayList<Message> getMessages()
   {
-    return data.getMessages();
-    //Obviously, we need to modify data, this returns all the messages in the system
+    return messages;
   }
   public int getId()
   {
@@ -36,5 +35,9 @@ public class Channel
   {
     name = newName;
     return getName();
+  }
+  public String toString()
+  {
+    return "id: " + id + ", name: " + name + ", room id: " + roomId;
   }
 }
