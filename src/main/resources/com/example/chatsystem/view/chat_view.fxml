@@ -37,11 +37,11 @@
                                     <Region HBox.hgrow="ALWAYS" />
                                     <FontAwesomeIcon fill="WHITE" glyphName="PLUS" onMouseClicked="#onAddRoom" selectionEnd="1" size="1.5em" styleClass="plus" />
                                  </children>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </VBox.margin>
                               </HBox>
                            </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="15.0" />
-                           </padding>
                         </VBox>
                      </content>
                   </ScrollPane>
@@ -53,7 +53,7 @@
             <Separator maxWidth="-Infinity" minWidth="-Infinity" opacity="0.31" orientation="VERTICAL" prefWidth="2.0" />
             <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets />
                </HBox.margin>
                <children>
                   <HBox alignment="TOP_RIGHT" spacing="15.0">
@@ -70,25 +70,23 @@
                            </HBox.margin>
                         </FontAwesomeIcon>
                      </children>
+                     <VBox.margin>
+                        <Insets left="20.0" right="20.0" top="25.0" />
+                     </VBox.margin>
                   </HBox>
-                  <TextField fx:id="newChannelField" onKeyPressed="#onEnter" promptText="Enter channel name" styleClass="text-area" visible="false" />
+                  <TextField fx:id="newChannelField" onKeyPressed="#onEnter" promptText="Enter channel name" styleClass="text-area" visible="false">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <font>
+                        <Font size="13.0" />
+                     </font></TextField>
                   <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox fx:id="channelListPane" spacing="15.0">
-                           <children>
-                              <Label fx:id="channelNameTemplate" text="default" textFill="WHITE">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </VBox>
+                        <VBox fx:id="channelListPane" spacing="15.0" styleClass="channel-list" />
                      </content>
                   </ScrollPane>
                </children>
-               <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </padding>
             </VBox>
          </children>
          <HBox.margin>

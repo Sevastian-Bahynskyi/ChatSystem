@@ -9,43 +9,25 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.geometry.*;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.transform.Translate;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -56,11 +38,7 @@ public class ChatController implements Controller, PropertyChangeListener
     @FXML
     private HBox parent;
     @FXML
-    private Button sendButton, usersButton;
-    @FXML
     private TextArea textField;
-    @FXML
-    private Label channelNameTemplate;
     @FXML
     private VBox messageMyTemplate, messageOthersTemplate;
     @FXML
@@ -73,7 +51,8 @@ public class ChatController implements Controller, PropertyChangeListener
     private ViewHandler viewHandler;
     private ChatViewModel viewModel;
     private Region root;
-    private ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
+    private final ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
+    private Label selectedChannel;
 
 
 
@@ -116,6 +95,7 @@ public class ChatController implements Controller, PropertyChangeListener
         });
 
         indexOfUserListAsChild = parent.getChildren().indexOf(userListPane);
+        addChannel("default");
     }
 
     void addMessage(VBox template, Image image, String message)
@@ -168,7 +148,7 @@ public class ChatController implements Controller, PropertyChangeListener
                 Label label = new Label(labelText);
 
 
-                label.setFont(new javafx.scene.text.Font(templateLabel.getFont().getName(), fontSize));
+                label.setFont(new Font(templateLabel.getFont().getName(), fontSize));
                 label.setTextFill((templateLabel).getTextFill());
                 label.setWrapText((templateLabel).isWrapText());
                 label.setMaxWidth(chatPane.getWidth() / 2);
@@ -293,7 +273,6 @@ public class ChatController implements Controller, PropertyChangeListener
     @FXML
     void onEnter(KeyEvent event) throws IOException
     {
-//        textField.getText() += FontAwesome
         if(event.getCode().equals(KeyCode.ENTER) && event.isShiftDown())
         {
             textField.setText(textField.getText() + "\n");
@@ -324,18 +303,40 @@ public class ChatController implements Controller, PropertyChangeListener
 
                     // if nothing was entered or entered value already exists in channel list not add a new channel
                 }
+                addChannel(newChannelField.getText());
 
-
-                Label label = new Label();
-                label.setFont(channelNameTemplate.getFont());
-                label.setTextFill(channelNameTemplate.getTextFill());
-                label.setText(newChannelField.getText());
-
-                channelListPane.getChildren().add(0, label);
                 newChannelField.setVisible(false);
                 newChannelField.clear();
             }
         }
+    }
+
+    private void addChannel(String channelName)
+    {
+        Label label = new Label();
+        label.setPadding(new Insets(10));
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setText(channelName);
+        label.getStyleClass().set(0, "channel");
+        label.setOnMouseClicked(this::onChannelClick);
+        selectedChannel = label;
+
+        channelListPane.getChildren().add(0, label);
+    }
+
+    @FXML
+    private void onChannelClick(MouseEvent event) {
+        // Get the clicked label
+        Label clickedChannel = (Label) event.getSource();
+
+        // Update the styles of the selected and clicked labels
+        if (selectedChannel != null) {
+            selectedChannel.getStyleClass().set(0, "channel");
+        }
+        clickedChannel.getStyleClass().set(0, "channel-selected");
+
+        // Update the selected label
+        selectedChannel = clickedChannel;
     }
 
 
@@ -418,14 +419,14 @@ public class ChatController implements Controller, PropertyChangeListener
 
 
     @FXML
-    void onAddChannel()
+    private void onAddChannel()
     {
         newChannelField.setVisible(true);
         newChannelField.requestFocus();
     }
 
     @FXML
-    void onAddRoom(MouseEvent event)
+    private void onAddRoom(MouseEvent event)
     {
         viewHandler.openParallelView(WINDOW.ADD_ROOM);
     }

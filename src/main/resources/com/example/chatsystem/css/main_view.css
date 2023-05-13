@@ -90,3 +90,24 @@
     -fx-background-color: #6d267c;
 }
 
+.channel:hover{
+    -fx-background-color: #6d267c;
+}
+
+
+.channel{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+.channel-selected{
+    -fx-background-color: gray;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+.channel-selected:hover{
+    -fx-background-color: #6d267c;
+}
+
