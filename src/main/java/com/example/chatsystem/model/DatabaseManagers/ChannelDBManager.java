@@ -13,6 +13,12 @@ public class ChannelDBManager
 
   public ChannelDBManager()
   {
+    updateNextId();
+  }
+
+  private void updateNextId()
+  {
+    nextId = 1;
     while (true)
     {
       try (Connection connection = getConnection())
@@ -22,7 +28,9 @@ public class ChannelDBManager
         statement.setString(2, "test");
         statement.setInt(3, 1);
         statement.executeUpdate();
-        deleteChannelById(nextId);
+        PreparedStatement statement1 = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
+        statement1.setInt(1, nextId);
+        statement1.executeUpdate();
         break;
       }
       catch (SQLException e)
@@ -40,9 +48,10 @@ public class ChannelDBManager
       statement.setInt(1, nextId);
       statement.setString(2, name);
       statement.setInt(3, roomId);
-      nextId++;
+      int temp = nextId;
       statement.executeUpdate();
-      return new Channel(nextId - 1, name, roomId);
+      updateNextId();
+      return new Channel(temp, name, roomId);
     }
     catch (SQLException e)
     {
@@ -57,6 +66,7 @@ public class ChannelDBManager
       PreparedStatement statement = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
       statement.setInt(1, id);
       statement.executeUpdate();
+      updateNextId();
     }
   }
 
@@ -85,8 +95,7 @@ public class ChannelDBManager
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement preparedStatement = connection.prepareStatement(
-          "SELECT * FROM Channel WHERE id = ?;");
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Channel WHERE id = ?;");
       preparedStatement.setInt(1, id);
       ResultSet resultSet = preparedStatement.executeQuery();
       resultSet.next();
@@ -129,6 +138,7 @@ public class ChannelDBManager
     Driver driver = new org.postgresql.Driver();
     DriverManager.registerDriver(driver);
     ChannelDBManager channelDBManager = new ChannelDBManager();
-    System.out.println(channelDBManager.getChannelsByRoom(1));
+    channelDBManager.deleteChannelById(1);
+    System.out.println(channelDBManager.createChannel("Welcome", 1));
   }
 }
