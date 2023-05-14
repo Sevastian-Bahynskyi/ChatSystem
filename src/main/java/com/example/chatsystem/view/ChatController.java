@@ -317,8 +317,11 @@ public class ChatController implements Controller, PropertyChangeListener
         label.setPadding(new Insets(10));
         label.setMaxWidth(Double.MAX_VALUE);
         label.setText(channelName);
-        label.getStyleClass().set(0, "channel");
+        label.getStyleClass().set(0, "channel-selected");
         label.setOnMouseClicked(this::onChannelClick);
+        if (selectedChannel != null) {
+            selectedChannel.getStyleClass().set(0, "channel");
+        }
         selectedChannel = label;
 
         channelListPane.getChildren().add(0, label);
