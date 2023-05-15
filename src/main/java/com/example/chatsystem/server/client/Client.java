@@ -39,6 +39,9 @@ public class Client implements Runnable, ServerModel
         } catch (RemoteException | NotBoundException e)
         {
             e.printStackTrace();
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -60,13 +63,13 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
     {
         serverModel.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
     {
         listener.firePropertyChange(propertyName, oldValue, newValue);
     }

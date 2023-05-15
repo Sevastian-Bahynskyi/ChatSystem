@@ -3,12 +3,14 @@ package com.example.chatsystem.model.DatabaseManagers;
 import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.model.UserInterface;
 
+import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ChatterDBManager{
+public class ChatterDBManager
+{
     static final String DB_URL = "jdbc:postgresql://localhost/sep2?user=postgres&password=password&currentSchema=sep2";
     static final String QUERY = "SELECT VIAid, username, password FROM sep2.Chatter";
 

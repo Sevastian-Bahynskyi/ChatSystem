@@ -1,6 +1,7 @@
 package com.example.chatsystem.server.shared;
 
 import com.example.chatsystem.model.*;
+import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
 import java.io.IOException;
@@ -16,9 +17,9 @@ public interface ServerModel extends Remote
 
     UserInterface login(String viaID, String username, String password) throws RemoteException, IOException;
 
-    void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException;
+    void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException;
 
-    void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException;
+    void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException;
 
     UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
 

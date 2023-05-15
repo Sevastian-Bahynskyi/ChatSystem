@@ -4,6 +4,7 @@ import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 
+import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;

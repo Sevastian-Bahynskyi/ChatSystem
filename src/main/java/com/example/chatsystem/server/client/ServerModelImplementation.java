@@ -2,6 +2,7 @@ package com.example.chatsystem.server.client;
 
 import com.example.chatsystem.model.*;
 import com.example.chatsystem.server.shared.ServerModel;
+import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 import dk.via.remote.observer.RemotePropertyChangeSupport;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class ServerModelImplementation implements ServerModel
 {
-    private final RemotePropertyChangeSupport<Data> support;
+    private final RemotePropertyChangeSupport<Boolean> support;
     private final Data data;
 
     public ServerModelImplementation(Data data)
@@ -26,7 +27,7 @@ public class ServerModelImplementation implements ServerModel
     public void sendMessage(Message message) throws IOException
     {
         data.getMessageDBManager().createMessage(message);
-        support.firePropertyChange("new message", null, data);
+        support.firePropertyChange("new message", null, true);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ServerModelImplementation implements ServerModel
         if(user != null)
         {
             if(user.getUsername().equals(username) && user.getPassword().equals(password))
-                support.firePropertyChange("login", null, data);
+                support.firePropertyChange("login", null, true);
         }
         else
             throw new IllegalArgumentException("User is not registered.");
@@ -46,7 +47,7 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
     {
         support.addPropertyChangeListener(listener);
     }
@@ -64,7 +65,7 @@ public class ServerModelImplementation implements ServerModel
 
         data.getChatterDBManager().insert(VIAid, username, password);
 
-        support.firePropertyChange("register", null, data);
+        support.firePropertyChange("register", null, true);
         return user;
     }
 
@@ -74,7 +75,7 @@ public class ServerModelImplementation implements ServerModel
         return (ArrayList<UserInterface>) data.getChatterDBManager().readAll();
     }
 
-    public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
     {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }

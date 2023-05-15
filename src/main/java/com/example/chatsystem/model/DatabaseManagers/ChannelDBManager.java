@@ -3,6 +3,7 @@ package com.example.chatsystem.model.DatabaseManagers;
 import com.example.chatsystem.model.Channel;
 import com.example.chatsystem.model.Room;
 
+import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;

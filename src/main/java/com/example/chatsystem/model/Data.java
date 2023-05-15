@@ -3,10 +3,11 @@ package com.example.chatsystem.model;
 import com.example.chatsystem.model.DatabaseManagers.*;
 
 import java.io.Serializable;
+import java.rmi.Remote;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Data implements Serializable
+public class Data
 {
     private ChatterDBManager chatterDBManager;
     private ChannelDBManager channelDBManager;

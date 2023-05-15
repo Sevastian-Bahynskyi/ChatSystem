@@ -13,22 +13,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Listener extends UnicastRemoteObject implements RemotePropertyChangeListener<Data>, Serializable, ServerModel
+public class Listener extends UnicastRemoteObject implements RemotePropertyChangeListener<Boolean>, Serializable, ServerModel
 {
 
     private ModelManager modelManager;
     private ServerModel serverModel;
-    public Listener(ServerModel serverModel, ModelManager model) throws RemoteException
+    private Data data = Data.getInstance();
+    public Listener(ServerModel serverModel, ModelManager model) throws RemoteException, SQLException
     {
         this.serverModel = serverModel;
         this.modelManager = model;
     }
 
     @Override
-    public void propertyChange(RemotePropertyChangeEvent<Data> remotePropertyChangeEvent) throws RemoteException
+    public void propertyChange(RemotePropertyChangeEvent<Boolean> remotePropertyChangeEvent) throws RemoteException
     {
+        System.out.println("Property change was called");
 
-        Data data = remotePropertyChangeEvent.getNewValue();
         switch (remotePropertyChangeEvent.getPropertyName())
         {
             case "new message" -> {
@@ -94,13 +95,13 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
     {
-
+        serverModel.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
     {
         serverModel.firePropertyChange(propertyName, oldValue, newValue);
     }

@@ -4,6 +4,7 @@ package com.example.chatsystem.model.DatabaseManagers;
 import com.example.chatsystem.StartGui;
 import com.example.chatsystem.model.Room;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
