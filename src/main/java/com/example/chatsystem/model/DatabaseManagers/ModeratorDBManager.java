@@ -15,11 +15,11 @@ public class ModeratorDBManager
     DriverManager.registerDriver(new org.postgresql.Driver());
   };
 
-  public void makeModerator(String viaID, String room_id){
+  public void makeModerator(String viaID, int room_id){
     try(Connection connection = getConnection())
     {
       PreparedStatement ps1 = connection.prepareStatement("Insert into ModeratorRoomList(room_id, moderator_id) values (? , ?)");
-      ps1.setString(1, room_id);
+      ps1.setInt(1, room_id);
       ps1.setString(2, viaID);
       ResultSet rs1 = ps1.executeQuery();
     }

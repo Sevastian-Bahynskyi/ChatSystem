@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ChatterDBManager{
     static final String DB_URL = "jdbc:postgresql://localhost/sep2?user=postgres&password=password&currentSchema=sep2";
-    static final String QUERY = "SELECT VIAid, username, password, isModerator FROM sep2.Chatter";
+    static final String QUERY = "SELECT VIAid, username, password FROM sep2.Chatter";
 
     public void update(String VIAid, String username, String password) {
         // Open a connection
