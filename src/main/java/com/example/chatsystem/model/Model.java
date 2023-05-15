@@ -21,4 +21,5 @@ public interface Model
 
     ArrayList<UserInterface> getUserList() throws IOException;
 
+    int getChannelId();
 }

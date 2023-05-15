@@ -16,13 +16,13 @@ public interface ServerModel extends Remote
 {
     void sendMessage(Message message) throws RemoteException, IOException;
 
-    List<Object> login(String username, String password) throws RemoteException, IOException;
+    UserInterface login(String viaID, String username, String password) throws RemoteException, IOException;
 
     void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException;
 
     void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException;
 
-    List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
+    UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
 
     ArrayList<UserInterface> getUserList() throws RemoteException, IOException;
 

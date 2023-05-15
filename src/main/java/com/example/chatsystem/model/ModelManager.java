@@ -13,6 +13,7 @@ public class ModelManager implements Model
 {
     private Client server;
     private UserInterface user;
+    private Channel channel;
     private final int port = 5050;
     private PropertyChangeSupport support;
 
@@ -111,5 +112,11 @@ public class ModelManager implements Model
         System.out.println("Got message: " + message.getMessage() + " from " + message.getUser().getUsername());
         if(!message.getUser().equals(user))
             support.firePropertyChange("new message", null, message);
+    }
+
+    @Override
+    public int getChannelId()
+    {
+        return channel.getId();
     }
 }

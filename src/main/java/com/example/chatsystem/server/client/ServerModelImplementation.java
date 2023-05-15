@@ -27,27 +27,24 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public void sendMessage(Message message) throws IOException
     {
-        data.getMessages().add(message);
+        data.getMessageDBManager().createMessage(message);
         support.firePropertyChange("new message", null, data);
     }
 
     @Override
-    public List<Object> login(String username, String password) throws RemoteException, IOException
+    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
     {
-        List<Object> res = new ArrayList<>(List.of());
-        //Change it so it gets the VIAid from the database
-        UserInterface user = new Chatter("333333", username, password);
-        if(data.isUserRegistered(user))
+        UserInterface user = data.getChatterDBManager().read(viaID);
+
+        if(user != null)
         {
-            user = data.getUsers().get(data.getUsers().indexOf(user));
-            res.add(user);
+            if(user.getUsername().equals(username) && user.getPassword().equals(password))
+                support.firePropertyChange("login", null, data);
         }
         else
             throw new IllegalArgumentException("User is not registered.");
 
-        res.add(data.getMessages());
-        support.firePropertyChange("login", null, data);
-        return res;
+        return user;
     }
 
     @Override
@@ -57,29 +54,26 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
+    public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
-        List<Object> res = new ArrayList<>(List.of());
         Chatter user = new Chatter(VIAid, username, password);
         if (imageUrl != null)
             user.setImageUrl(imageUrl);
-        if(data.isUserRegistered(user))
+        if(data.getChatterDBManager().read(VIAid) != null)
         {
-            throw new IllegalArgumentException("User ia already registered.");
+            throw new IllegalArgumentException("User is already registered.");
         }
 
-        data.getUsers().add(user);
-        res.add(user);
+        data.getChatterDBManager().insert(VIAid, username, password);
 
-        res.add(data.getMessages());
         support.firePropertyChange("register", null, data);
-        return res;
+        return user;
     }
 
     @Override
     public ArrayList<UserInterface> getUserList() throws RemoteException, IOException
     {
-        return data.getUsers();
+        return (ArrayList<UserInterface>) data.getChatterDBManager().readAll();
     }
 
     public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException

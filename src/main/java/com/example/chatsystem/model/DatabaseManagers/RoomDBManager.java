@@ -20,8 +20,6 @@ public class RoomDBManager
 
     private Connection getConnection() throws SQLException
     {
-        Driver driver = new org.postgresql.Driver();
-        DriverManager.registerDriver(driver);
         return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2",
                 "postgres","password");
     }

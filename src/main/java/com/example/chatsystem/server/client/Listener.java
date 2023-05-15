@@ -28,18 +28,14 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     {
 
         Data data = remotePropertyChangeEvent.getNewValue();
-        getData().getUsers().clear();
-        getData().getUsers().addAll(data.getUsers());
-        getData().getMessages().clear();
-        getData().getMessages().addAll(data.getMessages());
         switch (remotePropertyChangeEvent.getPropertyName())
         {
             case "new message" -> {
-                var messages = remotePropertyChangeEvent.getNewValue().getMessages();
-                System.out.println("New message: " + messages.get(messages.size() - 1));
-                modelManager.sendOthersMessage(messages.get(messages.size() - 1));
+                var userList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId()));
+
+                modelManager.sendOthersMessage(userList.get(userList.size() - 1));
             }
-            case "register" -> this.modelManager.receiveData(data);
+            case "register" -> this.modelManager.receiveData();
         }
     }
 
@@ -50,25 +46,15 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public List<Object> login(String username, String password) throws RemoteException, IOException
+    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
     {
-        return serverModel.login(username, password);
+        return serverModel.login(viaID, username, password);
     }
 
-    @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException
-    {
 
-    }
 
     @Override
-    public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException
-    {
-        serverModel.firePropertyChange(propertyName, oldValue, newValue);
-    }
-
-    @Override
-    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
+    public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
         return serverModel.register(VIAid, username, password, imageUrl);
     }
@@ -83,5 +69,17 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     public Data getData() throws RemoteException
     {
         return serverModel.getData();
+    }
+
+    @Override
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Data> listener) throws RemoteException
+    {
+
+    }
+
+    @Override
+    public void firePropertyChange(String propertyName, Data oldValue, Data newValue) throws RemoteException
+    {
+        serverModel.firePropertyChange(propertyName, oldValue, newValue);
     }
 }

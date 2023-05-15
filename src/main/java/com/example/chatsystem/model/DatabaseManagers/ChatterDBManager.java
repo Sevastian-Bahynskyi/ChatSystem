@@ -1,21 +1,26 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
+import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.UserInterface;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ChatterDBManager{
     static final String DB_URL = "jdbc:postgresql://localhost/sep2?user=postgres&password=password&currentSchema=sep2";
     static final String QUERY = "SELECT VIAid, username, password, isModerator FROM sep2.Chatter";
 
-    public void update(String VIAid, String username, String password, boolean isModerator) {
+    public void update(String VIAid, String username, String password) {
         // Open a connection
-        try(Connection conn = DriverManager.getConnection(DB_URL)) {
+        try(Connection conn = getConnection()) {
             conn.setAutoCommit(false);
-            try(PreparedStatement ps = conn.prepareStatement("UPDATE Chatter set username=?,password=?,isModerator=? WHERE VIAid=?")) {
+            try(PreparedStatement ps = conn.prepareStatement("UPDATE Chatter set username=?,password=? WHERE VIAid=?")) {
                 System.out.println("Updating record to the table...");
                 ps.setString(1, username);
                 ps.setString(2, password);
-                ps.setBoolean(3, isModerator);
-                ps.setString(4, VIAid);
+                ps.setString(3, VIAid);
                 ps.executeUpdate();
                 conn.commit();
             }
@@ -23,18 +28,16 @@ public class ChatterDBManager{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        read();
     }
-    public void insert(String VIAid, String username, String password, boolean isModerator) {
+    public void insert(String VIAid, String username, String password) {
         // Open a connection
-        try(Connection conn = DriverManager.getConnection(DB_URL)){
+        try(Connection conn = getConnection()){
             conn.setAutoCommit(false);
-            try(PreparedStatement ps = conn.prepareStatement("INSERT INTO Chatter(VIAid, username,password,isModerator) VALUES(?,?,?,?)")){
+            try(PreparedStatement ps = conn.prepareStatement("INSERT INTO Chatter(VIAid, username,password) VALUES(?,?,?)")){
                 System.out.println("Inserting record to the table...");
                 ps.setString(1,VIAid);
                 ps.setString(2,username);
                 ps.setString(3,password);
-                ps.setBoolean(4,isModerator);
                 ps.executeUpdate();
                 conn.commit();
             }
@@ -42,11 +45,10 @@ public class ChatterDBManager{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        read();
     }
     public void delete(String VIAid) {
         // Open a connection
-        try(Connection conn = DriverManager.getConnection(DB_URL)) {
+        try(Connection conn = getConnection()) {
             conn.setAutoCommit(false);
             try( PreparedStatement ps = conn.prepareStatement("DELETE FROM Chatter WHERE VIAid = ?")) {
                 System.out.println("Deleting records from the table...");
@@ -58,23 +60,42 @@ public class ChatterDBManager{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        read();
     }
-    public void read() {
+    public UserInterface read(String id) {
+        UserInterface userInterface = null;
         // Open a connection
-        try(Connection conn = DriverManager.getConnection(DB_URL);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(QUERY);
-        ) {
-            while(rs.next()){
-                //Display values
-                System.out.print("VIAid: " + rs.getString("VIAid"));
-                System.out.print(", username: " + rs.getString("username"));
-                System.out.print(", password: " + rs.getString("password"));
-                System.out.println(", isModerator: " + rs.getBoolean("isModerator"));
+        try(Connection conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter WHERE id = ?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                userInterface = new Chatter(rs.getString(1), rs.getString(2), rs.getString(3));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return userInterface;
     }
+
+    public Collection<UserInterface> readAll()
+    {
+        List<UserInterface> userList = new ArrayList<>();
+        try(Connection conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                userList.add(new Chatter(rs.getString(1), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+    private Connection getConnection() throws SQLException
+    {
+        return DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2","postgres","password");
+    }
+
 }
