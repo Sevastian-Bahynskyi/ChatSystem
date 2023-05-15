@@ -1,5 +1,174 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
+import com.example.chatsystem.model.Channel;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 public class ChannelDBManager
 {
+  private ArrayList<Channel> channels;
+  public ChannelDBManager() throws SQLException
+  {
+    channels = getChannels();
+  }
+  public ArrayList<Channel> getArrayList()
+  {
+    return channels;
+  }
+
+  public Channel createChannel(String name, int roomId)
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO Channel (name, room_id) VALUES (?, ?);");
+      statement.setString(1, name);
+      statement.setInt(2, roomId);
+      statement.executeUpdate();
+      int id = getChannelId(name, roomId);
+      return new Channel(id, name, roomId);
+    }
+    catch (SQLException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static ArrayList<Channel> getChannels() throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement1 = connection.prepareStatement("SELECT * FROM Channel;");
+      ResultSet resultSet = statement1.executeQuery();
+      ArrayList<Channel> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String names = resultSet.getString("name");
+        int room_id = resultSet.getInt("room_id");
+        Channel tempo = new Channel(id, names, room_id);
+        temp.add(tempo);
+      }
+      return temp;
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  private static int getChannelId(String name, int room_id)
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement1 = connection.prepareStatement("SELECT id FROM Channel WHERE name = ? AND room_id = ?;");
+      statement1.setString(1, name);
+      statement1.setInt(2, room_id);
+      ResultSet resultSet = statement1.executeQuery();
+      ArrayList<Integer> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        temp.add(id);
+      }
+      return temp.get(temp.size() - 1);
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return -1;
+  }
+
+  public Channel deleteChannelById(int id) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
+      statement.setInt(1, id);
+      statement.executeUpdate();
+      for (int i = 0; i < channels.size(); i++)
+      {
+        if (channels.get(i).getId() == id)
+        {
+          return channels.remove(i);
+        }
+      }
+    }
+    return null;
+  }
+
+  public Collection<Channel> getChannelsByRoom(int roomId) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement preparedStatement = connection.prepareStatement(
+          "SELECT * FROM Channel WHERE room_id = ?;");
+      preparedStatement.setInt(1, roomId);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      ArrayList<Channel> channels = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        int room_id = resultSet.getInt("room_id");
+        Channel temp = new Channel(id, name, room_id);
+        channels.add(temp);
+      }
+      return channels;
+    }
+  }
+
+  public Channel getChannelById(int id) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Channel WHERE id = ?;");
+      preparedStatement.setInt(1, id);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      int idTemp = resultSet.getInt("id");
+      String name = resultSet.getString("name");
+      int room_id = resultSet.getInt("room_id");
+      Channel temp = new Channel(idTemp, name, room_id);
+      return temp;
+    }
+  }
+
+  public ArrayList<Channel> getChannelByName(String name) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement preparedStatement = connection.prepareStatement(
+          "SELECT * FROM Channel WHERE name like ?;");
+      preparedStatement.setString(1, "%" + name + "%");
+      ResultSet resultSet = preparedStatement.executeQuery();
+      ArrayList<Channel> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String nameTemp = resultSet.getString("name");
+        int room_id = resultSet.getInt("room_id");
+        Channel tempo = new Channel(id, nameTemp, room_id);
+        temp.add(tempo);
+      }
+      return temp;
+    }
+  }
+
+  public static Connection getConnection() throws SQLException
+  {
+    return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres","password");
+  }
+
+  public static void main(String[] args) throws SQLException
+  {
+    Driver driver = new org.postgresql.Driver();
+    DriverManager.registerDriver(driver);
+    ChannelDBManager channelDBManager = new ChannelDBManager();
+    channelDBManager.deleteChannelById(1);
+    System.out.println(channelDBManager.createChannel("Help", 1));
+  }
 }
