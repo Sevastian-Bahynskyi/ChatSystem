@@ -28,23 +28,27 @@ public class RoomDBManager
                 "postgres","password");
     }
 
-    public void createRoom(Room room)
+    public Room createRoom(String name, String code)
     {
+        Room room = null;
         try(Connection connection = getConnection())
         {
-            //Do logic with the connection in here
-
-
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name) VALUES (?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name, code) VALUES (?, ?)");
 //            ps.setInt(1, room.getId());
-            ps.setString(1, room.getName());
-//            ps.setString(2, room.getCode());
-            ps.executeUpdate();
+            ps.setString(1, name);
+            ps.setString(2, code);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next())
+            {
+                room = new Room(rs.getInt("id"), rs.getString("name"), rs.getString("code"));
+            }
         }
         catch (SQLException e)
         {
             System.err.println(e.getMessage());
         }
+        return room;
     }
     public Room readRoom(int id) // can I change the name to findRoom
     {
@@ -58,11 +62,10 @@ public class RoomDBManager
             ResultSet rs = ps.executeQuery();
 
 
-            if(rs.next())
+            while (rs.next())
             {
-                // message should be id,Message,timestamp,chatter_id,channel_id
-                room = new Room(id, rs.getString("name"), "tempcode");
-//                Room room = new Room(id, rs.getString("name"), rs.getString("code"));
+                if(rs.getInt("id") == id)
+                    room = new Room(id, rs.getString("name"), rs.getString("code"));
             }
         }
         catch (SQLException e)
@@ -76,11 +79,11 @@ public class RoomDBManager
     {
         try(Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("UPDATE room SET name=? WHERE id=?");
+            PreparedStatement ps = connection.prepareStatement("UPDATE room SET name=?, code=? WHERE id=?");
 
             ps.setString(1, room.getName());
-//            ps.setString(2, room.getCode());
-            ps.setInt(2, id);
+            ps.setString(2, room.getCode());
+            ps.setInt(3, id);
 
             ps.executeUpdate();
         }

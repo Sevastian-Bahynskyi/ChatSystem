@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -287,6 +288,7 @@ public class ChatController implements Controller, PropertyChangeListener
             }
             else if(newChannelField.isFocused())
             {
+
                 if(newChannelField.getText().isEmpty() || newChannelField.getText().matches("^(\n)+$"))
                 {
                     return;
@@ -303,7 +305,14 @@ public class ChatController implements Controller, PropertyChangeListener
 
                     // if nothing was entered or entered value already exists in channel list not add a new channel
                 }
-                addChannel(newChannelField.getText());
+
+                if(isEditChannel)
+                {
+                    selectedChannel.setText(newChannelField.getText());
+                }
+                else {
+                    addChannel(newChannelField.getText());
+                }
 
                 newChannelField.setVisible(false);
                 newChannelField.clear();
@@ -313,12 +322,21 @@ public class ChatController implements Controller, PropertyChangeListener
 
     private void addChannel(String channelName)
     {
+        Map<String, Runnable> options = new HashMap<>();
+        options.put("Edit", this::editChannel);
+        options.put("Delete", this::deleteChannel);
+
         Label label = new Label();
         label.setPadding(new Insets(10));
         label.setMaxWidth(Double.MAX_VALUE);
         label.setText(channelName);
         label.getStyleClass().set(0, "channel-selected");
-        label.setOnMouseClicked(this::onChannelClick);
+        label.setOnMouseClicked(event -> {
+            if(event.getButton() == MouseButton.SECONDARY)
+                showContextMenu(options, event.getScreenX(), event.getScreenY());
+            else if(event.getButton() == MouseButton.PRIMARY)
+                onChannelClick(event);
+        });
         if (selectedChannel != null) {
             selectedChannel.getStyleClass().set(0, "channel");
         }
@@ -328,18 +346,34 @@ public class ChatController implements Controller, PropertyChangeListener
     }
 
     @FXML
-    private void onChannelClick(MouseEvent event) {
-        // Get the clicked label
+    private void onChannelClick(MouseEvent event)
+    {
         Label clickedChannel = (Label) event.getSource();
 
-        // Update the styles of the selected and clicked labels
+
         if (selectedChannel != null) {
             selectedChannel.getStyleClass().set(0, "channel");
         }
         clickedChannel.getStyleClass().set(0, "channel-selected");
 
-        // Update the selected label
         selectedChannel = clickedChannel;
+    }
+
+
+    private void deleteChannel()
+    {
+        channelListPane.getChildren().remove(selectedChannel);
+    }
+
+
+    private boolean isEditChannel = false;
+    private void editChannel()
+    {
+        // not works
+        isEditChannel = true;
+        newChannelField.setVisible(true);
+        newChannelField.requestFocus();
+        isEditChannel = false;
     }
 
 
@@ -394,13 +428,13 @@ public class ChatController implements Controller, PropertyChangeListener
                 label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
                 Popup popup = new Popup();
 
-// set the content of the popup
+
                 VBox vbox = new VBox(label);
                 vbox.setStyle("-fx-background-color: #4C956C;");
                 vbox.setPadding(new Insets(0, 10, 0,10));
                 popup.getContent().add(vbox);
 
-// show the popup when the user hovers over the circle
+
                 circle.setOnMouseEntered(event -> {
                     popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
                 });
