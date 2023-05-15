@@ -5,7 +5,7 @@
 
 
 .message-template:hover{
-    -fx-background-color: #ff3737;
+    -fx-background-color: #4C956C;
 }
 
 .main-pane{
@@ -14,6 +14,19 @@
 
 .text-area .content{
     -fx-background-color: #0C281E;
+}
+
+.separator{
+    -fx-background-color: #6d267c;
+}
+
+.separator .line{
+    -fx-border-color: transparent;
+}
+
+.room-list-pane{
+    -fx-background-color: #1E1B1F;
+    -fx-background-radius: 20px;
 }
 
 .text-area{
@@ -51,3 +64,50 @@
     -fx-background: transparent;
     -fx-border-color: transparent;
 }
+
+.plus:hover{
+    -fx-opacity: 0.6;
+}
+
+.context-menu{
+    -fx-background-color: white;
+    -fx-padding: 0;
+    -fx-text-fill: white;
+
+}
+
+.context-menu .text{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.context-menu .menu-item{
+    -fx-selection-bar: #6d267c;
+}
+
+
+.context-menu .menu-item:hover{
+    -fx-background-color: #6d267c;
+}
+
+.channel:hover{
+    -fx-background-color: #6d267c;
+}
+
+
+.channel{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+.channel-selected{
+    -fx-background-color: gray;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+.channel-selected:hover{
+    -fx-background-color: #6d267c;
+}
+

@@ -1,8 +1,8 @@
 package com.example.chatsystem.view;
 
+import com.example.chatsystem.view.setimage.GetImageAsFile;
 import com.example.chatsystem.viewmodel.LoginViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -10,21 +10,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
+import javafx.scene.text.Text;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class LoginController implements Controller
 {
@@ -35,13 +29,15 @@ public class LoginController implements Controller
     private Circle userImage;
 
     @FXML
-    private TextField usernameField;
+    private TextField usernameField, idField;
     @FXML
     private Label errorLabel, setImageLabel;
     @FXML
     private ImageView imageTest;
     @FXML
     private VBox parentNode;
+    @FXML
+    private HBox idBox;
 
     @FXML
     private Button loginButton;
@@ -88,8 +84,10 @@ public class LoginController implements Controller
         isCurrentStateLogin = !isCurrentStateLogin;
         if(isCurrentStateLogin)
         {
+
             loginButton.setText("Login");
             register.setText("Register");
+            usernameField.requestFocus();
             setImageLabel.setManaged(!isCurrentStateLogin);
         }
         else
@@ -97,6 +95,11 @@ public class LoginController implements Controller
             loginButton.setText("Register");
             register.setText("Login");
         }
+        idField.requestFocus();
+
+        idBox.setVisible(!idBox.isVisible());
+        idBox.setManaged(idBox.isVisible());
+
         setImageLabel.setVisible(!isCurrentStateLogin);
         setImageLabel.setManaged(!isCurrentStateLogin);
     }
@@ -111,49 +114,38 @@ public class LoginController implements Controller
     void onKeyPressed(KeyEvent event)
     {
         Object source = event.getSource();
-        if (source.equals(usernameField) && event.getCode().equals(KeyCode.ENTER))
+        if(event.getCode() == KeyCode.ENTER)
         {
-            passwordField.requestFocus();
-        } else if (source.equals(passwordField) && event.getCode().equals(KeyCode.ENTER))
-        {
-            onLogin();
+            if (source.equals(usernameField))
+            {
+                passwordField.requestFocus();
+            } else if (source.equals(passwordField))
+            {
+                onLogin();
+            }
+            else if(source.equals(idField))
+            {
+                usernameField.requestFocus();
+            }
         }
+
     }
 
     @FXML
     void onSetImage(MouseEvent event)
     {
-        AtomicReference<String> imageURL = new AtomicReference<>();
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png", "*.gif");
-        fileChooser.getExtensionFilters().add(imageFilter);
-        File recordsDir = new File(System.getProperty("user.home") + "/Pictures");
-        fileChooser.setInitialDirectory(recordsDir);
-        Window window = parentNode.getScene().getWindow();
-        File selectedImage = fileChooser.showOpenDialog(window);
-        if(selectedImage == null)
-            return;
-        Path sourcePath = selectedImage.toPath();
-        AtomicReference<Path> destinationPath = new AtomicReference<>(Paths.get("src/main/resources/com/example/chatsystem/images/" + selectedImage.getName()));
-        
-        
-        Platform.runLater(() -> {
-            try
-            {
-                Files.copy(sourcePath, destinationPath.get(), StandardCopyOption.REPLACE_EXISTING);
-                destinationPath.set(Paths.get("target/classes/com/example/chatsystem/images/" + selectedImage.getName()));
-                Files.copy(sourcePath, destinationPath.get(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e)
-            {
-                errorLabel.setText("Unable to choose image.");
-            }
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/chatsystem/images/" + selectedImage.getName())));
-            userImage.setFill(new ImagePattern(image));
-            imageURL.set("/com/example/chatsystem/images/" + selectedImage.getName());
-            System.out.println(imageURL.get());
-            this.viewModel.setImageUrl(imageURL.get());
-        });
+        try
+        {
+            String imageURL = GetImageAsFile.getImage(root.getScene().getWindow());
+            assert imageURL != null;
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imageURL)));
 
+            userImage.setFill(new ImagePattern(image));
+            this.viewModel.setImageUrl(image.getUrl());
+        } catch (Exception e)
+        {
+            errorLabel.setText(e.getMessage());
+        }
     }
 
 }

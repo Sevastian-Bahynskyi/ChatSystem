@@ -29,6 +29,7 @@ public class ViewFactory
         {
             case LOG -> fxmlFile = "login_view.fxml";
             case CHAT -> fxmlFile = "chat_view.fxml";
+            case ADD_ROOM -> fxmlFile = "add_room_view.fxml";
             default -> throw new IllegalArgumentException("Didn't find the appropriate view.");
         }
         if (newController == null || currentController.getClass().equals(newController.getClass()))

@@ -4,12 +4,14 @@ module com.example.chatsystem {
     requires javafx.graphics;
     requires java.desktop;
     requires remoteobserver;
+    requires fontawesomefx;
     requires java.rmi;
     requires com.google.gson;
     requires java.sql;
   requires org.postgresql.jdbc;
+    requires javafx.swing;
 
-  opens com.example.chatsystem to javafx.fxml;
+    opens com.example.chatsystem to javafx.fxml;
     opens com.example.chatsystem.view to javafx.fxml;
     opens com.example.chatsystem.images to com.google.gson;
     opens com.example.chatsystem.model to com.google.gson;

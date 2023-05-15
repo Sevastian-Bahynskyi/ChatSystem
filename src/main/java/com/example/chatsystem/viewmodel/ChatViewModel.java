@@ -1,9 +1,6 @@
 package com.example.chatsystem.viewmodel;
 
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.Chatter;
-import com.example.chatsystem.model.UserInterface;
+import com.example.chatsystem.model.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -22,6 +19,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     private SimpleListProperty<Chatter> users;
     private ObjectProperty<Image> userImage;
     private PropertyChangeSupport support;
+
 
     public ChatViewModel(Model model)
     {
@@ -82,6 +80,11 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 var newUsers = ((List<Chatter>) evt.getNewValue());
                 Platform.runLater(() -> support.firePropertyChange("update user list", null, newUsers));
             }
+
+            case "room added" -> {
+                Room room = (Room) evt.getNewValue();
+                Platform.runLater(() -> support.firePropertyChange("room added", null, room));
+            }
         }
     }
 
@@ -93,6 +96,16 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
         support.removePropertyChangeListener(listener);
+    }
+
+    public void editUser()
+    {
+        System.out.println("edit option was chosen");
+    }
+
+    public void deleteUser()
+    {
+        System.out.println("delete option was chosen");
     }
 
     public ArrayList<UserInterface> getUsers() throws IOException

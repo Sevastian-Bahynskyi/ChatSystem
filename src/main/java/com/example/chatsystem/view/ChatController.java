@@ -1,7 +1,7 @@
 package com.example.chatsystem.view;
 
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.Room;
 import com.example.chatsystem.model.UserInterface;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
@@ -10,11 +10,13 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -22,27 +24,24 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 
 public class ChatController implements Controller, PropertyChangeListener
 {
+
     @FXML
     private VBox chatPane, mainPane, userListPane, channelListPane, roomList;
     @FXML
     private HBox parent;
     @FXML
-    private Button sendButton, usersButton;
-    @FXML
     private TextArea textField;
-    @FXML
-    private Label channelNameTemplate;
     @FXML
     private VBox messageMyTemplate, messageOthersTemplate;
     @FXML
@@ -55,12 +54,11 @@ public class ChatController implements Controller, PropertyChangeListener
     private ViewHandler viewHandler;
     private ChatViewModel viewModel;
     private Region root;
-    private ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
-
-
-
+    private final ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
+    private Label selectedChannel;
     private int indexOfUserListAsChild;
-    private double rememberParentWidth;
+    private boolean isEditChannel = false;
+
 
 
     @Override
@@ -92,25 +90,36 @@ public class ChatController implements Controller, PropertyChangeListener
             scrollPane.setVvalue(vValue - deltaY / width);
         }); // allows to scroll with the mouse when scrollpane is focused
 
+        newChannelField.focusedProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if(!newValue)
+                newChannelField.setVisible(false);
+        });
+
         indexOfUserListAsChild = parent.getChildren().indexOf(userListPane);
+        addChannel("default");
     }
 
     void addMessage(VBox template, Image image, String message)
     {
+        double imageRadius = 25;
+        double fontSize = 16;
+
         VBox vBox = new VBox();
-        vBox.getChildren().add(generateTemplate(template, image, message));
+
+        vBox.getChildren().add(generateTemplate(template, image, message, imageRadius, fontSize));
         vBox.setAlignment(template.getAlignment());
         vBox.setPadding(template.getPadding());
         vBox.setPrefSize(template.getPrefWidth(), template.getPrefHeight());
         vBox.setMaxSize(template.getMaxWidth(), template.getMaxHeight());
         vBox.setMinSize(template.getMinWidth(), template.getMinHeight());
 
-        int transitionValue;
-        if(template.equals(messageMyTemplate))
+        int transitionValue = 100;
+
+        if(!template.equals(messageMyTemplate))
         {
-            transitionValue = 100;
+            transitionValue = -transitionValue;
         }
-        else transitionValue = -100;
 
         vBox.setTranslateX(transitionValue);
         TranslateTransition animation = new TranslateTransition(Duration.seconds(1), vBox);
@@ -118,54 +127,6 @@ public class ChatController implements Controller, PropertyChangeListener
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
         animation.play();
-    }
-
-
-    private HBox generateTemplate(VBox template, Image circleImage, String labelText)
-    {
-        HBox message = (HBox) template.getChildren().get(0);
-        ArrayList<Node> copiedNodes = new ArrayList<>();
-
-
-        for (Node node: message.getChildren())
-        {
-            if(node instanceof Circle)
-            {
-                Circle circle = new Circle();
-                circle.setFill(new ImagePattern(circleImage));
-                circle.setRadius(((Circle) node).getRadius());
-
-                copiedNodes.add(circle);
-            } else if (node instanceof VBox) {
-                VBox newVbox = new VBox();
-                Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
-                Label label = new Label(labelText);
-
-
-                label.setFont(templateLabel.getFont());
-                label.setTextFill((templateLabel).getTextFill());
-                label.setWrapText((templateLabel).isWrapText());
-                label.setMaxWidth(chatPane.getWidth() / 2);
-
-                newVbox.getChildren().add(label);
-                newVbox.setAlignment(((VBox) node).getAlignment());
-                newVbox.setPrefSize(((VBox) node).getPrefWidth(), ((VBox) node).getPrefHeight());
-
-                copiedNodes.add(newVbox);
-            }
-        }
-
-        HBox newMessage = new HBox();
-        newMessage.getChildren().addAll(copiedNodes);
-        newMessage.setAlignment(message.getAlignment());
-        newMessage.setPadding(message.getPadding());
-        newMessage.setPrefSize(message.getPrefWidth(), message.getPrefHeight());
-        newMessage.setMaxSize(message.getMaxWidth(), message.getMaxHeight());
-        newMessage.setMinSize(message.getMinWidth(), message.getMinHeight());
-        newMessage.setSpacing(message.getSpacing());
-
-
-        return newMessage;
     }
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
@@ -253,10 +214,38 @@ public class ChatController implements Controller, PropertyChangeListener
 
     }
 
+    // takes map of choices and functions that choice should provide
+    private void showContextMenu(Map<String, Runnable> options, double screenX, double screenY)
+    {
+        ContextMenu popup = new ContextMenu();
+
+        // Add menu items to the popup for each item in the list
+        for (var item : options.keySet()) {
+            MenuItem menuItem = new MenuItem(item);
+            menuItem.setOnAction(event -> options.get(item).run());
+            popup.getItems().add(menuItem);
+        }
+
+
+        parent.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (popup.isShowing()) {
+                popup.hide();
+            }
+        });
+        popup.show(parent, screenX, screenY);
+    }
+
 
     private void loadUsersToUserListPane(Collection<UserInterface> users) throws IOException
     {
         ArrayList<Node> children = new ArrayList<>();
+
+
+        HashMap<String, Runnable> options = new HashMap<>();
+        options.put("Edit", () -> viewModel.editUser());
+        options.put("Delete", () -> viewModel.deleteUser());
+
+
         for (UserInterface user:users)
         {
             VBox newUser = new VBox();
@@ -265,7 +254,13 @@ public class ChatController implements Controller, PropertyChangeListener
             newUser.setMinSize(messageOthersTemplate.getMinWidth(), messageOthersTemplate.getMinHeight());
             newUser.setPadding(newUser.getPadding());
             newUser.getStyleClass().add("message-template");
-            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 14));
+            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16));
+            newUser.setOnMouseClicked(event ->
+            {
+                showContextMenu(options, event.getScreenX(), event.getScreenY());
+            });
+
+
             children.add(newUser);
         }
         userListPane.getChildren().setAll(children);
@@ -294,6 +289,7 @@ public class ChatController implements Controller, PropertyChangeListener
             }
             else if(newChannelField.isFocused())
             {
+
                 if(newChannelField.getText().isEmpty() || newChannelField.getText().matches("^(\n)+$"))
                 {
                     return;
@@ -311,17 +307,74 @@ public class ChatController implements Controller, PropertyChangeListener
                     // if nothing was entered or entered value already exists in channel list not add a new channel
                 }
 
+                if(isEditChannel)
+                {
+                    isEditChannel = false;
 
-                Label label = new Label();
-                label.setFont(channelNameTemplate.getFont());
-                label.setTextFill(channelNameTemplate.getTextFill());
-                label.setText(newChannelField.getText());
+                    selectedChannel.setText(newChannelField.getText());
+                }
+                else {
+                    addChannel(newChannelField.getText());
+                }
 
-                channelListPane.getChildren().add(0, label);
                 newChannelField.setVisible(false);
                 newChannelField.clear();
             }
         }
+    }
+
+    private void addChannel(String channelName)
+    {
+        Map<String, Runnable> options = new HashMap<>();
+        options.put("Edit", this::editChannel);
+        options.put("Delete", this::deleteChannel);
+
+        Label label = new Label();
+        label.setPadding(new Insets(10));
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setText(channelName);
+        label.getStyleClass().set(0, "channel-selected");
+        label.setOnMouseClicked(event -> {
+            if(event.getButton() == MouseButton.SECONDARY)
+                showContextMenu(options, event.getScreenX(), event.getScreenY());
+            else if(event.getButton() == MouseButton.PRIMARY)
+                onChannelClick(event);
+        });
+        if (selectedChannel != null) {
+            selectedChannel.getStyleClass().set(0, "channel");
+        }
+        selectedChannel = label;
+
+        channelListPane.getChildren().add(0, label);
+    }
+
+    @FXML
+    private void onChannelClick(MouseEvent event)
+    {
+        Label clickedChannel = (Label) event.getSource();
+
+
+        if (selectedChannel != null) {
+            selectedChannel.getStyleClass().set(0, "channel");
+        }
+        clickedChannel.getStyleClass().set(0, "channel-selected");
+
+        selectedChannel = clickedChannel;
+    }
+
+
+    private void deleteChannel()
+    {
+        channelListPane.getChildren().remove(selectedChannel);
+    }
+
+
+    private void editChannel()
+    {
+        // not works
+        isEditChannel = true;
+        newChannelField.setVisible(true);
+        newChannelField.requestFocus();
     }
 
 
@@ -366,22 +419,54 @@ public class ChatController implements Controller, PropertyChangeListener
                     throw new RuntimeException(e);
                 }
             }
+
+            case "room added" -> {
+                Room room = (Room) evt.getNewValue();
+                System.out.println(room);
+                System.out.println(room.getImage());
+                Circle circle = new Circle(30);
+                Label label = new Label(room.getName());
+                label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
+                Popup popup = new Popup();
+
+
+                VBox vbox = new VBox(label);
+                vbox.setStyle("-fx-background-color: #4C956C;");
+                vbox.setPadding(new Insets(0, 10, 0,10));
+                popup.getContent().add(vbox);
+
+
+                circle.setOnMouseEntered(event -> {
+                    popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
+                });
+
+// hide the popup when the user moves the mouse away from the circle
+                circle.setOnMouseExited(event -> {
+                    popup.hide();
+                });
+
+                if(room.getImage() != null)
+                    circle.setFill(new ImagePattern(room.getImage()));
+                else {
+
+                }
+                roomList.getChildren().add(circle);
+            }
         }
     }
 
+
     @FXML
-    void onAddChannel()
+    private void onAddChannel()
     {
         newChannelField.setVisible(true);
         newChannelField.requestFocus();
     }
 
     @FXML
-    void onAddRoom(MouseEvent event)
+    private void onAddRoom(MouseEvent event)
     {
-        Circle circle = new Circle();
-        circle.setRadius(40);
-        roomList.getChildren().add(circle);
+        viewHandler.openParallelView(WINDOW.ADD_ROOM);
     }
 
 

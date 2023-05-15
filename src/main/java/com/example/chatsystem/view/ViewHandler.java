@@ -96,14 +96,15 @@ public class ViewHandler
         Stage parallelStage = new Stage();
         Region root = viewFactory.loadView(view);
         Scene parallelScene = new Scene(root);
-        Random random = new Random();
         parallelStage.setScene(parallelScene);
         parallelStage.sizeToScene();
-        parallelStage.setX(random.nextInt((int) (Toolkit.getDefaultToolkit().getScreenSize().width)));
-        parallelStage.setY(random.nextInt((int) (Toolkit.getDefaultToolkit().getScreenSize().height)));
         parallelStage.setResizable(false);
-        ImageView imageView = (ImageView) root.lookup("#deadImage"); // Replace "imageView" with the ID of your ImageView
-        imageView.setImage(image);
         parallelStage.show();
+    }
+
+    public void closeWindow(Region root)
+    {
+        Stage window = (Stage) root.getScene().getWindow();
+        window.close();
     }
 }

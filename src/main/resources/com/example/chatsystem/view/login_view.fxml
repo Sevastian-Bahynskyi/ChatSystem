@@ -35,7 +35,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <HBox alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" styleClass="input-field">
+      <HBox fx:id="idBox" alignment="CENTER" maxWidth="-Infinity" prefWidth="200.0" styleClass="input-field">
          <children>
             <Text fill="#4c956c" strokeType="OUTSIDE" strokeWidth="0.0" text="ID">
                <font>
