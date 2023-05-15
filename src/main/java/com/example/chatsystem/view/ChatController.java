@@ -37,7 +37,7 @@ public class ChatController implements Controller, PropertyChangeListener
 {
 
     @FXML
-    private VBox chatPane, mainPane, userListPane, channelListPane, roomList;
+    private VBox chatPane, mainPane, userListPane, channelListPane, roomList, userPane;
     @FXML
     private HBox parent;
     @FXML
@@ -56,7 +56,7 @@ public class ChatController implements Controller, PropertyChangeListener
     private Region root;
     private final ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
     private Label selectedChannel;
-    private int indexOfUserListAsChild;
+    private int indexOfUserPaneAsChild;
     private boolean isEditChannel = false;
 
 
@@ -96,7 +96,7 @@ public class ChatController implements Controller, PropertyChangeListener
                 newChannelField.setVisible(false);
         });
 
-        indexOfUserListAsChild = parent.getChildren().indexOf(userListPane);
+        indexOfUserPaneAsChild = parent.getChildren().indexOf(userPane);
         addChannel("default");
     }
 
@@ -197,16 +197,16 @@ public class ChatController implements Controller, PropertyChangeListener
         var borderSize = (stage.getWidth() - stage.getScene().getWidth()) / 2;
 
 
-        if (parent.getChildren().contains(userListPane)) {
-            parent.getChildren().remove(userListPane);
-            var newWidth = stage.getWidth() - userListPane.getWidth() - borderSize * 2 - userListPane.getPadding().getLeft() - userListPane.getPadding().getRight();
+        if (parent.getChildren().contains(userPane)) {
+            parent.getChildren().remove(userPane);
+            var newWidth = stage.getWidth() - userPane.getWidth() - borderSize * 2 - userPane.getPadding().getLeft() - userPane.getPadding().getRight();
 
             parent.setPrefWidth(newWidth);
             stage.setWidth(newWidth);
         } else {
-            parent.getChildren().add(indexOfUserListAsChild, userListPane);
+            parent.getChildren().add(indexOfUserPaneAsChild, userPane);
 
-            var newWidth = stage.getWidth() + userListPane.getWidth() + borderSize * 2 + userListPane.getPadding().getLeft() + userListPane.getPadding().getRight();
+            var newWidth = stage.getWidth() + userPane.getWidth() + borderSize * 2 + userPane.getPadding().getLeft() + userPane.getPadding().getRight();
 
             parent.setPrefWidth(newWidth);
             stage.setWidth(newWidth);
