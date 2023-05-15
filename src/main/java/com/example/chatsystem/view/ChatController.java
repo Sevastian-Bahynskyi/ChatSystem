@@ -32,8 +32,10 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.*;
 
+
 public class ChatController implements Controller, PropertyChangeListener
 {
+
     @FXML
     private VBox chatPane, mainPane, userListPane, channelListPane, roomList;
     @FXML
@@ -54,10 +56,9 @@ public class ChatController implements Controller, PropertyChangeListener
     private Region root;
     private final ObjectProperty<Image> profileImage = new SimpleObjectProperty<>();
     private Label selectedChannel;
-
-
-
     private int indexOfUserListAsChild;
+    private boolean isEditChannel = false;
+
 
 
     @Override
@@ -308,6 +309,8 @@ public class ChatController implements Controller, PropertyChangeListener
 
                 if(isEditChannel)
                 {
+                    isEditChannel = false;
+
                     selectedChannel.setText(newChannelField.getText());
                 }
                 else {
@@ -366,14 +369,12 @@ public class ChatController implements Controller, PropertyChangeListener
     }
 
 
-    private boolean isEditChannel = false;
     private void editChannel()
     {
         // not works
         isEditChannel = true;
         newChannelField.setVisible(true);
         newChannelField.requestFocus();
-        isEditChannel = false;
     }
 
 
