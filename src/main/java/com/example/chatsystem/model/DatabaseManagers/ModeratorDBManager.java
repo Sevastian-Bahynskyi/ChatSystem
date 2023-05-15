@@ -51,9 +51,9 @@ public class ModeratorDBManager
     try(Connection connection = getConnection())
     {
       PreparedStatement psUpdate = connection.prepareStatement("UPDATE Chatter SET ismoderator = false where viaid = ?");
-      PreparedStatement psDelete = connection.prepareStatement("delete drom moderatorroomlist where moderator_id = ?");
+      PreparedStatement psDelete = connection.prepareStatement("delete from moderatorroomlist where moderator_id = ?");
       psUpdate.setString(1, viaID);
-      psUpdate.setString(1, viaID);
+      psDelete.setString(1, viaID);
       ResultSet rs1 = psUpdate.executeQuery();
       ResultSet rs2 = psDelete.executeQuery();
     }
