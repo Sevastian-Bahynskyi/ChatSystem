@@ -93,13 +93,13 @@ public class MessageDBManager
         Message message = null;
         try (Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ? ORDER BY id DESC LIMIT 1");
 
             ps.setInt(1, channelId);
 
             ResultSet rs = ps.executeQuery();
             UserInterface tempChatter = null;
-            while (rs.next())
+            if (rs.next())
             {
                 tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
 

@@ -129,7 +129,6 @@ public class ChannelDBManager
       ResultSet rs = preparedStatement.executeQuery();
       if (rs.next())
       {
-        if(rs.getInt("id") == id)
           channel = new Channel(rs.getInt(1), rs.getString(2), rs.getInt(3));
       }
 
