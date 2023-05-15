@@ -16,10 +16,6 @@ public class ChannelDBManager
   {
     channels = getChannels();
   }
-  public ArrayList<Channel> getArrayList()
-  {
-    return channels;
-  }
 
   public Channel createChannel(String name, int roomId)
   {

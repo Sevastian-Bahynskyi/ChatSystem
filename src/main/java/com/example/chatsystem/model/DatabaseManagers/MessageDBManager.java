@@ -10,153 +10,148 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class  MessageDBManager
+public class MessageDBManager
 {
-  public MessageDBManager()
-  {}
-
-  public void createMessage(Message message)
-  {
-    try(Connection connection = getConnection())
+    public MessageDBManager()
     {
-      PreparedStatement ps = connection.prepareStatement("INSERT INTO Message (channel_id, timestamp, chatter_id, message) VALUES(?, ?, ?, ?)");
-      ps.setInt(1, message.getChannelId());
-      ps.setTimestamp(2, message.getTimeStamp());
-      ps.setString(3, message.getUserId());
-      ps.setString(4, message.getMessage());
-      ps.executeUpdate();
     }
-    catch (SQLException e)
+
+    public void createMessage(Message message)
     {
-      e.printStackTrace();
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO Message (channel_id, timestamp, chatter_id, message) VALUES(?, ?, ?, ?)");
+            ps.setInt(1, message.getChannelId());
+            ps.setTimestamp(2, message.getTimeStamp());
+            ps.setString(3, message.getUserId());
+            ps.setString(4, message.getMessage());
+            ps.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
-  }
-  public Message readMessage(int id)
-  {
-    Message message = new Message();
-    try(Connection connection = getConnection())
+
+    public Message readMessage(int id)
     {
-      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE id = ?");
+        Message message = new Message();
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE id = ?");
 
-      ps.setInt(1, id);
+            ps.setInt(1, id);
 
-      ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-      UserInterface chatter = null;
+            UserInterface chatter = null;
 
-      if (rs.next())
-      {
-        chatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
-        // message should be id,Message,timestamp,chatter_id,channel_id
-        message = new Message(rs.getInt("id"),rs.getString("message"),
-                rs.getTimestamp("timestamp"),chatter, rs.getInt("channel_id"));
-      }
+            if (rs.next())
+            {
+                chatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
+                // message should be id,Message,timestamp,chatter_id,channel_id
+                message = new Message(rs.getInt("id"), rs.getString("message"),
+                        rs.getTimestamp("timestamp"), chatter, rs.getInt("channel_id"));
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return message;
     }
-    catch (SQLException e)
+
+    public Collection<Message> getAllMessagesForAChannel(int channelId)
     {
-      e.printStackTrace();
+        ArrayList<Message> messageArrayList = new ArrayList<>();
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+
+            ps.setInt(1, channelId);
+
+            ResultSet rs = ps.executeQuery();
+            UserInterface tempChatter = null;
+
+            while (rs.next())
+            {
+                tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
+                // message should be id,Message,timestamp,chatter_id,channel_id
+                Message message = new Message(rs.getInt("id"), rs.getString("message"),
+                        rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
+                // message should be id,Message,timestamp,chatter_id,channel_id
+                messageArrayList.add(message);
+            }
+        } catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return messageArrayList;
     }
-    return message;
-  }
 
-  public Collection<Message> getAllMessagesForAChannel(int channelId)
-  {
-    ArrayList<Message> messageArrayList = new ArrayList<>();
-    try(Connection connection = getConnection())
+
+    public Message getLastMessage(int channelId)
     {
-      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+        Message message = null;
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
 
-      ps.setInt(1, channelId);
+            ps.setInt(1, channelId);
 
-      ResultSet rs = ps.executeQuery();
-      UserInterface tempChatter = null;
+            ResultSet rs = ps.executeQuery();
+            UserInterface tempChatter = null;
+            while (rs.next())
+            {
+                tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
 
-      while (rs.next())
-      {
-        tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
-        // message should be id,Message,timestamp,chatter_id,channel_id
-        Message message = new Message(rs.getInt("id"),rs.getString("message"),
-                rs.getTimestamp("timestamp"),tempChatter, rs.getInt("channel_id"));
-        // message should be id,Message,timestamp,chatter_id,channel_id
-        messageArrayList.add(message);
-      }
+                message = new Message(rs.getInt("id"), rs.getString("message"),
+                        rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
+            }
+        } catch (SQLException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        return message;
     }
-    catch (SQLException e)
+
+    public void updateMessage(int id, Message newMessage)
     {
-      System.err.println(e.getMessage());
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
+
+            ps.setString(1, newMessage.getMessage());
+            ps.setInt(2, id);
+
+            ps.executeUpdate();
+        } catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
-    return messageArrayList;
-  }
 
-
-  public Message getLastMessage(int channelId)
-  {
-    Message message = null;
-    try(Connection connection = getConnection())
+    public void deleteMessage(int id)
     {
-      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+        Message message = new Message();
+        try (Connection connection = getConnection())
+        {
+            String temp = "deleted message";
 
-      ps.setInt(1, channelId);
+            PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
 
-      ResultSet rs = ps.executeQuery();
-      UserInterface tempChatter = null;
-      while (rs.next())
-      {
-        tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
+            ps.setString(1, temp);
+            ps.setInt(2, id);
 
-        message = new Message(rs.getInt("id"), rs.getString("message"),
-                rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
-      }
-      }
-    catch (SQLException ex)
-    {
-      throw new RuntimeException(ex);
+            ps.executeUpdate();
+        } catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
-    return message;
-  }
 
-  public void updateMessage(int id, Message newMessage)
-  {
-    try(Connection connection = getConnection())
+
+    private Connection getConnection() throws SQLException
     {
-      PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
-
-      ps.setString(1, newMessage.getMessage());
-      ps.setInt(2, id);
-
-      ps.executeUpdate();
+        return DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres", "password");
     }
-    catch (SQLException e)
-    {
-      System.err.println(e.getMessage());
-    }
-  }
-
-  public void deleteMessage(int id)
-  {
-    Message message = new Message();
-    try(Connection connection = getConnection())
-    {
-      String temp = "deleted message";
-
-      PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
-
-      ps.setString(1,temp);
-      ps.setInt(2,id);
-
-      ps.executeUpdate();
-    }
-    catch (SQLException e)
-    {
-      System.err.println(e.getMessage());
-    }
-  }
-
-
-
-  private Connection getConnection() throws SQLException
-  {
-    return DriverManager.getConnection(
-        "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2","postgres","password");
-  }
 }

@@ -30,8 +30,6 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     @Override
     public void propertyChange(RemotePropertyChangeEvent<Boolean> remotePropertyChangeEvent) throws RemoteException
     {
-        System.out.println("Property change was called");
-
         switch (remotePropertyChangeEvent.getPropertyName())
         {
             case "new message" -> {
@@ -58,8 +56,6 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     {
         return serverModel.login(username, password);
     }
-
-
 
     @Override
     public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
