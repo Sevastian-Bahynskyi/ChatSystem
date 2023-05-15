@@ -12,9 +12,7 @@ import java.util.Collection;
 public class  MessageDBManager
 {
   public MessageDBManager()
-  {
-
-  }
+  {}
 
   public void createMessage(Message message)
   {
