@@ -24,9 +24,17 @@ public class Message implements Serializable
         this.channel_id = channel_id;
     }
 
-    public Message( int id,String message,UserInterface user,int channel_id)
+    public Message(int id, String message, UserInterface user, int channel_id)
     {
         this.id = id;
+        this.message = message;
+        this.time = new Date();
+        this.user = user;
+        this.channel_id = channel_id;
+    }
+
+    public Message(String message, UserInterface user, int channel_id)
+    {
         this.message = message;
         this.time = new Date();
         this.user = user;

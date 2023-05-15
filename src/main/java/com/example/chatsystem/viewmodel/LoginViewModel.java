@@ -8,6 +8,7 @@ public class LoginViewModel implements ViewModel
 {
     private Model model;
     private SimpleStringProperty usernameProperty;
+    private SimpleStringProperty idProperty;
     private SimpleStringProperty passwordProperty;
     private SimpleStringProperty errorProperty;
     private String imageUrl;
@@ -16,6 +17,7 @@ public class LoginViewModel implements ViewModel
         this.model = model;
         usernameProperty = new SimpleStringProperty();
         passwordProperty = new SimpleStringProperty();
+        idProperty = new SimpleStringProperty();
         errorProperty = new SimpleStringProperty("");
     }
 
@@ -23,7 +25,7 @@ public class LoginViewModel implements ViewModel
     {
         try
         {
-            model.login(usernameProperty.get(), passwordProperty.get());
+            model.login(idProperty.get(), usernameProperty.get(), passwordProperty.get());
         }
         catch (Exception e)
         {
@@ -43,6 +45,12 @@ public class LoginViewModel implements ViewModel
     {
         usernameProperty.bind(property);
     }
+
+    public void bindId(StringProperty property)
+    {
+        idProperty.bind(property);
+    }
+
 
     public void bindError(StringProperty property)
     {

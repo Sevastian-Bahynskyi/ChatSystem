@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +32,14 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
         switch (remotePropertyChangeEvent.getPropertyName())
         {
             case "new message" -> {
-                var userList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId()));
+                var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId()));
 
-                modelManager.sendOthersMessage(userList.get(userList.size() - 1));
+                modelManager.sendOthersMessage(messageList.get(messageList.size() - 1));
             }
-            case "register" -> this.modelManager.receiveData();
+            case "register" -> {
+                var userList = data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
+                this.modelManager.receiveUsersInRoom((ArrayList<UserInterface>) userList);
+            }
         }
     }
 
@@ -69,6 +73,24 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     public Data getData() throws RemoteException
     {
         return serverModel.getData();
+    }
+
+    @Override
+    public List<Message> getAllMessagesByChannel(int channelID) throws IOException
+    {
+        return serverModel.getAllMessagesByChannel(channelID);
+    }
+
+    @Override
+    public Channel getChannel(int id) throws RemoteException, IOException, SQLException
+    {
+        return serverModel.getChannel(id);
+    }
+
+    @Override
+    public Room getRoom(int id) throws RemoteException, IOException
+    {
+        return serverModel.getRoom(id);
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +54,9 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public List<Object> login(String username, String password) throws RemoteException, IOException
+    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
     {
-        return listener.login(username, password);
+        return listener.login(viaID, username, password);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public List<Object> register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
+    public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
     {
         return listener.register(VIAid, username, password, imageUrl);
     }
@@ -86,5 +87,23 @@ public class Client implements Runnable, ServerModel
     public Data getData() throws RemoteException
     {
         return listener.getData();
+    }
+
+    @Override
+    public List<Message> getAllMessagesByChannel(int channelID) throws IOException
+    {
+        return listener.getAllMessagesByChannel(channelID);
+    }
+
+    @Override
+    public Channel getChannel(int id) throws RemoteException, IOException, SQLException
+    {
+        return listener.getChannel(id);
+    }
+
+    @Override
+    public Room getRoom(int id) throws RemoteException, IOException
+    {
+        return listener.getRoom(id);
     }
 }

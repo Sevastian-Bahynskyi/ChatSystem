@@ -57,7 +57,7 @@ public class ViewHandler
         stage.setScene(currentScene);
         stage.sizeToScene();
         stage.centerOnScreen();
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setOnCloseRequest(event ->
         {
             try
@@ -98,7 +98,7 @@ public class ViewHandler
         Scene parallelScene = new Scene(root);
         parallelStage.setScene(parallelScene);
         parallelStage.sizeToScene();
-        parallelStage.setResizable(false);
+        parallelStage.setResizable(true);
         parallelStage.show();
     }
 

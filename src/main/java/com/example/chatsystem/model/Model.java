@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public interface Model
 {
-    void login(String username, String password) throws IOException;
-
     void addMessage(String message) throws IOException;
     void addPropertyChangeListener(PropertyChangeListener listener);
+
+    void login(String viaID, String username, String password) throws IOException;
 
     void register(String VIAid, String username, String password, String imageUrl) throws IOException;
 
@@ -22,4 +22,6 @@ public interface Model
     ArrayList<UserInterface> getUserList() throws IOException;
 
     int getChannelId();
+
+    int getRoomId();
 }

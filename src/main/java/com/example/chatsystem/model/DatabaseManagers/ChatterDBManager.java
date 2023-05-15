@@ -65,7 +65,7 @@ public class ChatterDBManager{
         UserInterface userInterface = null;
         // Open a connection
         try(Connection conn = getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter WHERE id = ?");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter WHERE VIAid = ?");
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
@@ -83,6 +83,23 @@ public class ChatterDBManager{
         try(Connection conn = getConnection()) {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter");
             ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                userList.add(new Chatter(rs.getString(1), rs.getString(2), rs.getString(3)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+
+    public Collection<UserInterface> readAllByRoomID(int roomID)
+    {
+        List<UserInterface> userList = new ArrayList<>();
+        try(Connection conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT chatter_id FROM chatterroomlist where room_id = ?");
+            ps.setInt(1, roomID);
+            ResultSet rs = ps.executeQuery();
+
             while (rs.next()){
                 userList.add(new Chatter(rs.getString(1), rs.getString(2), rs.getString(3)));
             }

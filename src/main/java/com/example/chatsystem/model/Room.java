@@ -2,9 +2,10 @@ package com.example.chatsystem.model;
 
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Room
+public class Room implements Serializable
 {
     public static final int MIN_ROOM_NAME_LENGTH = 4;
     public static final int MAX_ROOM_NAME_LENGTH = 20;

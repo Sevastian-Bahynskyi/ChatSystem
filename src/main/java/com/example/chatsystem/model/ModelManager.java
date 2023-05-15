@@ -13,54 +13,51 @@ public class ModelManager implements Model
 {
     private Client server;
     private UserInterface user;
+    private Room room;
     private Channel channel;
     private final int port = 5050;
     private PropertyChangeSupport support;
 
-    private Data data;
     private ArrayList<Message> messages;
 
-    public ModelManager() throws IOException, InterruptedException
+    public ModelManager() throws IOException, InterruptedException, SQLException
     {
         this.server = new Client(port, this);
-        server.run();
-        try
-        {//Register the postgres driver. Add the driver jar file to the module first
+        try{
             DriverManager.registerDriver(new org.postgresql.Driver());
         }
         catch (SQLException e)
         {
             System.err.println(e.getMessage());
         }
+        server.run();
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
+
+        // todo initialize room and channel
+        channel = server.getChannel(1);
+        int i = 0;
     }
 
     @Override
-    public void login(String username, String password) throws IOException
+    public void login(String viaID, String username, String password) throws IOException
     {
-        var res = server.login(username, password);
-        user = (Chatter) res.get(0);
-        var messages = (ArrayList<Message>) res.get(1);
-        this.messages = messages;
+        user = server.login(viaID, username, password);
+        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
         support.firePropertyChange("user", null, user);
     }
 
     @Override
-    public void register(String VIAid, String username, String password, String imageUrl) throws IOException
+    public void register(String viaID, String username, String password, String imageUrl) throws IOException
     {
-        var res = server.register(VIAid, username, password, imageUrl);
-        user = (Chatter) res.get(0);
-
-        var messages = (ArrayList<Message>) res.get(1);
-        this.messages = messages;
+        user = server.register(viaID, username, password, imageUrl);
+        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
         support.firePropertyChange("user", null, user);
     }
 
-    public void receiveData(Data data)
+    public void receiveUsersInRoom(ArrayList<UserInterface> users)
     {
-        this.data = data;
-        support.firePropertyChange("update user list", null, data.getUsers());
+        support.firePropertyChange("update user list", null, users);
     }
 
     public ArrayList<Message> getMessages()
@@ -83,8 +80,8 @@ public class ModelManager implements Model
     @Override
     public void addMessage(String message) throws IOException
     {
-        //var mes = new Message(message, user);
-        //server.sendMessage(mes);
+        var mes = new Message(message, user, channel.getId());
+        server.sendMessage(mes);
     }
 
 
@@ -107,6 +104,12 @@ public class ModelManager implements Model
         return server.getUserList();
     }
 
+    @Override
+    public int getChannelId()
+    {
+        return channel.getId();
+    }
+
     public void sendOthersMessage(Message message)
     {
         System.out.println("Got message: " + message.getMessage() + " from " + message.getUser().getUsername());
@@ -115,8 +118,8 @@ public class ModelManager implements Model
     }
 
     @Override
-    public int getChannelId()
+    public int getRoomId()
     {
-        return channel.getId();
+        return room.getId();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
 import com.example.chatsystem.model.Channel;
+import com.example.chatsystem.model.Room;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class ChannelDBManager
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement1 = connection.prepareStatement("SELECT id FROM Channel WHERE name = ? AND room_id = ?;");
+      PreparedStatement statement1 = connection.prepareStatement("SELECT id FROM Channel WHERE name = ? AND room_id = ?");
       statement1.setString(1, name);
       statement1.setInt(2, room_id);
       ResultSet resultSet = statement1.executeQuery();
@@ -86,7 +87,7 @@ public class ChannelDBManager
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
+      PreparedStatement statement = connection.prepareStatement("DELETE FROM Channel WHERE id = ?");
       statement.setInt(1, id);
       statement.executeUpdate();
       for (int i = 0; i < channels.size(); i++)
@@ -123,18 +124,25 @@ public class ChannelDBManager
 
   public Channel getChannelById(int id) throws SQLException
   {
+    Channel channel = null;
     try (Connection connection = getConnection())
     {
-      PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Channel WHERE id = ?;");
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM channel WHERE id = ?");
       preparedStatement.setInt(1, id);
-      ResultSet resultSet = preparedStatement.executeQuery();
-      resultSet.next();
-      int idTemp = resultSet.getInt("id");
-      String name = resultSet.getString("name");
-      int room_id = resultSet.getInt("room_id");
-      Channel temp = new Channel(idTemp, name, room_id);
-      return temp;
+      ResultSet rs = preparedStatement.executeQuery();
+      if (rs.next())
+      {
+        if(rs.getInt("id") == id)
+          channel = new Channel(rs.getInt(1), rs.getString(2), rs.getInt(3));
+      }
+
     }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return channel;
+
   }
 
   public ArrayList<Channel> getChannelByName(String name) throws SQLException

@@ -1,15 +1,13 @@
 package com.example.chatsystem.server.client;
 
-import com.example.chatsystem.model.Data;
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Chatter;
-import com.example.chatsystem.model.UserInterface;
+import com.example.chatsystem.model.*;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 import dk.via.remote.observer.RemotePropertyChangeSupport;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,5 +83,24 @@ public class ServerModelImplementation implements ServerModel
     public Data getData()
     {
         return data;
+    }
+
+    @Override
+    public List<Message> getAllMessagesByChannel(int channelID)
+    {
+        return (List<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID);
+    }
+
+    @Override
+    public Channel getChannel(int id) throws RemoteException, IOException, SQLException
+    {
+        System.out.println("I was called");
+        return data.getChannelDBManager().getChannelById(id);
+    }
+
+    @Override
+    public Room getRoom(int id) throws RemoteException, IOException
+    {
+        return null;
     }
 }

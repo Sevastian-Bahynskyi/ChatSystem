@@ -63,6 +63,7 @@ public class LoginController implements Controller
         this.viewModel.bindPassword(passwordField.textProperty());
         this.viewModel.bindUsername(usernameField.textProperty());
         this.viewModel.bindError(errorLabel.textProperty());
+        this.viewModel.bindId(idField.textProperty());
         this.setImageLabel.setManaged(false);
     }
 

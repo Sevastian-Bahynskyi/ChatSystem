@@ -1,8 +1,11 @@
 package com.example.chatsystem.model;
 
+import com.example.chatsystem.server.shared.ServerModel;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Channel
+public class Channel implements Serializable
 {
   private ArrayList<Message> messages;
   private int id;
