@@ -82,8 +82,8 @@ public class ModelManager implements Model
     @Override
     public void addMessage(String message) throws IOException
     {
-        var mes = new Message(message, user);
-        server.sendMessage(mes);
+        //var mes = new Message(message, user);
+        //server.sendMessage(mes);
     }
 
 

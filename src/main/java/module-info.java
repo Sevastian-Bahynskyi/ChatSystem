@@ -9,7 +9,6 @@ module com.example.chatsystem {
     requires com.google.gson;
     requires java.sql;
   requires org.postgresql.jdbc;
-    requires javafx.swing;
 
     opens com.example.chatsystem to javafx.fxml;
     opens com.example.chatsystem.view to javafx.fxml;
