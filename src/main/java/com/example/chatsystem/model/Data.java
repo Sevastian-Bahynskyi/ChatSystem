@@ -38,6 +38,31 @@ public class Data implements Serializable
         return instance;
     }
 
+    public ChannelDBManager getChannelDBManager()
+    {
+        return channelDBManager;
+    }
+
+    public ChatterDBManager getChatterDBManager()
+    {
+        return chatterDBManager;
+    }
+
+    public MessageDBManager getMessageDBManager()
+    {
+        return messageDBManager;
+    }
+
+    public ModeratorDBManager getModeratorDBManager()
+    {
+        return moderatorDBManager;
+    }
+
+    public RoomDBManager getRoomDBManager()
+    {
+        return roomDBManager;
+    }
+
     public static String getDefaultImageUrl()
     {
         return defaultImageUrl;

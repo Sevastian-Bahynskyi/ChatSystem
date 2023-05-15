@@ -18,7 +18,7 @@ public class  MessageDBManager
   {
     try(Connection connection = getConnection())
     {
-      PreparedStatement ps = connection.prepareStatement("INSERT INTO (Message) VALUES(?)");
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO Message VALUES(?)");
       ps.setString(1,message.toString());
       ps.executeUpdate();
     }

@@ -6,7 +6,7 @@ public class ChatterDBManager{
     static final String DB_URL = "jdbc:postgresql://localhost/sep2?user=postgres&password=password&currentSchema=sep2";
     static final String QUERY = "SELECT VIAid, username, password, isModerator FROM sep2.Chatter";
 
-    public static void update(String VIAid, String username, String password, boolean isModerator) {
+    public void update(String VIAid, String username, String password, boolean isModerator) {
         // Open a connection
         try(Connection conn = DriverManager.getConnection(DB_URL)) {
             conn.setAutoCommit(false);
@@ -25,7 +25,7 @@ public class ChatterDBManager{
         }
         read();
     }
-    public static void insert(String VIAid, String username, String password, boolean isModerator) {
+    public void insert(String VIAid, String username, String password, boolean isModerator) {
         // Open a connection
         try(Connection conn = DriverManager.getConnection(DB_URL)){
             conn.setAutoCommit(false);
@@ -44,7 +44,7 @@ public class ChatterDBManager{
         }
         read();
     }
-    public static void delete(String VIAid) {
+    public void delete(String VIAid) {
         // Open a connection
         try(Connection conn = DriverManager.getConnection(DB_URL)) {
             conn.setAutoCommit(false);
@@ -60,7 +60,7 @@ public class ChatterDBManager{
         }
         read();
     }
-    public static void read() {
+    public void read() {
         // Open a connection
         try(Connection conn = DriverManager.getConnection(DB_URL);
             Statement stmt = conn.createStatement();
@@ -76,12 +76,5 @@ public class ChatterDBManager{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        read();
-        insert("222222","Insert","insert",false);
-        update("222222","NotInsert","insert",true);
-        delete("222222");
     }
 }

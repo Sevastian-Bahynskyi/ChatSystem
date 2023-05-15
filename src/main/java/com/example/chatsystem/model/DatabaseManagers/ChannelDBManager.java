@@ -36,7 +36,7 @@ public class ChannelDBManager
     }
   }
 
-  private static ArrayList<Channel> getChannels() throws SQLException
+  private ArrayList<Channel> getChannels() throws SQLException
   {
     try (Connection connection = getConnection())
     {
@@ -59,7 +59,7 @@ public class ChannelDBManager
     }
     return null;
   }
-  private static int getChannelId(String name, int room_id)
+  private int getChannelId(String name, int room_id)
   {
     try (Connection connection = getConnection())
     {
@@ -158,17 +158,8 @@ public class ChannelDBManager
     }
   }
 
-  public static Connection getConnection() throws SQLException
+  public Connection getConnection() throws SQLException
   {
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres","password");
-  }
-
-  public static void main(String[] args) throws SQLException
-  {
-    Driver driver = new org.postgresql.Driver();
-    DriverManager.registerDriver(driver);
-    ChannelDBManager channelDBManager = new ChannelDBManager();
-    channelDBManager.deleteChannelById(1);
-    System.out.println(channelDBManager.createChannel("Help", 1));
   }
 }
