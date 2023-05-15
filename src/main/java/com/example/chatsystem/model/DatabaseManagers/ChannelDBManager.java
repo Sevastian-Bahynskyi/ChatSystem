@@ -9,49 +9,26 @@ import java.util.Collection;
 
 public class ChannelDBManager
 {
-  private int nextId = 1;
-
-  public ChannelDBManager()
+  private ArrayList<Channel> channels;
+  public ChannelDBManager() throws SQLException
   {
-    updateNextId();
+    channels = getChannels();
   }
-
-  private void updateNextId()
+  public ArrayList<Channel> getArrayList()
   {
-    nextId = 1;
-    while (true)
-    {
-      try (Connection connection = getConnection())
-      {
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO Channel (id, name, room_id) VALUES (?, ?, ?);");
-        statement.setInt(1, nextId);
-        statement.setString(2, "test");
-        statement.setInt(3, 1);
-        statement.executeUpdate();
-        PreparedStatement statement1 = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
-        statement1.setInt(1, nextId);
-        statement1.executeUpdate();
-        break;
-      }
-      catch (SQLException e)
-      {
-        nextId++;
-      }
-    }
+    return channels;
   }
 
   public Channel createChannel(String name, int roomId)
   {
     try (Connection connection = getConnection())
     {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO Channel (id, name, room_id) VALUES (?, ?, ?);");
-      statement.setInt(1, nextId);
-      statement.setString(2, name);
-      statement.setInt(3, roomId);
-      int temp = nextId;
+      PreparedStatement statement = connection.prepareStatement("INSERT INTO Channel (name, room_id) VALUES (?, ?);");
+      statement.setString(1, name);
+      statement.setInt(2, roomId);
       statement.executeUpdate();
-      updateNextId();
-      return new Channel(temp, name, roomId);
+      int id = getChannelId(name, roomId);
+      return new Channel(id, name, roomId);
     }
     catch (SQLException e)
     {
@@ -59,15 +36,68 @@ public class ChannelDBManager
     }
   }
 
-  public void deleteChannelById(int id) throws SQLException
+  private static ArrayList<Channel> getChannels() throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement1 = connection.prepareStatement("SELECT * FROM Channel;");
+      ResultSet resultSet = statement1.executeQuery();
+      ArrayList<Channel> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String names = resultSet.getString("name");
+        int room_id = resultSet.getInt("room_id");
+        Channel tempo = new Channel(id, names, room_id);
+        temp.add(tempo);
+      }
+      return temp;
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+  private static int getChannelId(String name, int room_id)
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement1 = connection.prepareStatement("SELECT id FROM Channel WHERE name = ? AND room_id = ?;");
+      statement1.setString(1, name);
+      statement1.setInt(2, room_id);
+      ResultSet resultSet = statement1.executeQuery();
+      ArrayList<Integer> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        temp.add(id);
+      }
+      return temp.get(temp.size() - 1);
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return -1;
+  }
+
+  public Channel deleteChannelById(int id) throws SQLException
   {
     try (Connection connection = getConnection())
     {
       PreparedStatement statement = connection.prepareStatement("DELETE FROM Channel WHERE id = ?;");
       statement.setInt(1, id);
       statement.executeUpdate();
-      updateNextId();
+      for (int i = 0; i < channels.size(); i++)
+      {
+        if (channels.get(i).getId() == id)
+        {
+          return channels.remove(i);
+        }
+      }
     }
+    return null;
   }
 
   public Collection<Channel> getChannelsByRoom(int roomId) throws SQLException
@@ -139,6 +169,6 @@ public class ChannelDBManager
     DriverManager.registerDriver(driver);
     ChannelDBManager channelDBManager = new ChannelDBManager();
     channelDBManager.deleteChannelById(1);
-    System.out.println(channelDBManager.createChannel("Welcome", 1));
+    System.out.println(channelDBManager.createChannel("Help", 1));
   }
 }
