@@ -3,13 +3,14 @@ package com.example.chatsystem.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Message implements Serializable
 {
     private int id;
     private String message;
-    private Date time;
+    private Timestamp time;
     private UserInterface user;
 
     private int channel_id;
@@ -28,7 +29,7 @@ public class Message implements Serializable
     {
         this.id = id;
         this.message = message;
-        this.time = new Date();
+        this.time = Timestamp.valueOf(LocalDateTime.now());
         this.user = user;
         this.channel_id = channel_id;
     }
@@ -36,7 +37,7 @@ public class Message implements Serializable
     public Message(String message, UserInterface user, int channel_id)
     {
         this.message = message;
-        this.time = new Date();
+        this.time = Timestamp.valueOf(LocalDateTime.now());
         this.user = user;
         this.channel_id = channel_id;
     }
@@ -44,7 +45,7 @@ public class Message implements Serializable
     public Message()
     {
         this.message = "dummy";
-        time = new Date();
+        time = Timestamp.valueOf(LocalDateTime.now());
         //empty constructor to make dummy message
     }
 
@@ -53,6 +54,23 @@ public class Message implements Serializable
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         return format.format(time);
     }
+
+    public Timestamp getTimeStamp()
+    {
+        return time;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public int getChannelId()
+    {
+        return channel_id;
+    }
+
+
 
     public String getMessage()
     {

@@ -18,13 +18,16 @@ public class  MessageDBManager
   {
     try(Connection connection = getConnection())
     {
-      PreparedStatement ps = connection.prepareStatement("INSERT INTO Message VALUES(?)");
-      ps.setString(1,message.toString());
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO Message (channel_id, timestamp, chatter_id, message) VALUES(?, ?, ?, ?)");
+      ps.setInt(1, message.getChannelId());
+      ps.setTimestamp(2, message.getTimeStamp());
+      ps.setString(3, message.getUserId());
+      ps.setString(4, message.getMessage());
       ps.executeUpdate();
     }
     catch (SQLException e)
     {
-      System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
   public Message readMessage(int id)
@@ -50,7 +53,7 @@ public class  MessageDBManager
     }
     catch (SQLException e)
     {
-      System.err.println(e.getMessage());
+      e.printStackTrace();
     }
     return message;
   }

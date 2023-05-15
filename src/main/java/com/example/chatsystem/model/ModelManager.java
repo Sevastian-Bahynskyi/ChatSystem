@@ -35,8 +35,8 @@ public class ModelManager implements Model
         messages = new ArrayList<>();
 
         // todo initialize room and channel
-        channel = server.getChannel(1);
-        int i = 0;
+        // todo load channels
+        channel = server.getChannel(2);
     }
 
     @Override

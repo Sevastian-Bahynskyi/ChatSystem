@@ -94,7 +94,6 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public Channel getChannel(int id) throws RemoteException, IOException, SQLException
     {
-        System.out.println("I was called");
         return data.getChannelDBManager().getChannelById(id);
     }
 
