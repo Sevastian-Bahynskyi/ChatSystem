@@ -9,7 +9,9 @@ import dk.via.remote.observer.RemotePropertyChangeSupport;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ServerModelImplementation implements ServerModel
@@ -31,9 +33,9 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
+    public UserInterface login(String username, String password) throws RemoteException, IOException
     {
-        UserInterface user = data.getChatterDBManager().read(viaID);
+        UserInterface user = data.getChatterDBManager().read(username, password);
 
         if(user != null)
         {
@@ -60,7 +62,7 @@ public class ServerModelImplementation implements ServerModel
             user.setImageUrl(imageUrl);
         if(data.getChatterDBManager().read(VIAid) != null)
         {
-            throw new IllegalArgumentException("User is already registered.");
+            throw new IllegalArgumentException("User with such ID is already registered.");
         }
 
         data.getChatterDBManager().insert(VIAid, username, password);

@@ -57,9 +57,9 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
+    public UserInterface login(String username, String password) throws RemoteException, IOException
     {
-        return listener.login(viaID, username, password);
+        return listener.login(username, password);
     }
 
     @Override

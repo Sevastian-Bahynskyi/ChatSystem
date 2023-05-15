@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="parentNode" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
+<VBox fx:id="parentNode" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="500.0" spacing="15.0" styleClass="main-pane" stylesheets="@../css/login_view.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatsystem.view.LoginController">
    <children>
       <HBox alignment="CENTER_RIGHT">
          <children>
@@ -27,7 +27,7 @@
       </HBox>
       <HBox alignment="CENTER">
          <children>
-            <Circle fx:id="userImage" fill="DODGERBLUE" radius="50.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+            <Circle fx:id="userImage" fill="DODGERBLUE" radius="45.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
          </children>
       </HBox>
       <Label fx:id="setImageLabel" onMouseClicked="#onSetImage" styleClass="hyperlink-label" text="Set Image" textFill="WHITE" underline="true">
@@ -84,11 +84,7 @@
             </Button>
          </children>
       </HBox>
-      <Label fx:id="errorLabel" text="Error" textFill="RED">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
+      <Label fx:id="errorLabel" text="Error" textFill="RED" />
    </children>
    <padding>
       <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />

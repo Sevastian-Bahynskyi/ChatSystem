@@ -79,6 +79,24 @@ public class ChatterDBManager
         return userInterface;
     }
 
+
+    public UserInterface read(String username, String password) {
+        UserInterface userInterface = null;
+        // Open a connection
+        try(Connection conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter WHERE username = ? AND password = ?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                userInterface = new Chatter(rs.getString(1), rs.getString(2), rs.getString(3));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userInterface;
+    }
+
     public Collection<UserInterface> readAll()
     {
         List<UserInterface> userList = new ArrayList<>();

@@ -7,7 +7,9 @@ import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ModelManager implements Model
 {
@@ -42,7 +44,7 @@ public class ModelManager implements Model
     @Override
     public void login(String viaID, String username, String password) throws IOException
     {
-        user = server.login(viaID, username, password);
+        user = server.login(username, password);
         this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
         support.firePropertyChange("user", null, user);
     }

@@ -15,7 +15,7 @@ public interface ServerModel extends Remote
 {
     void sendMessage(Message message) throws RemoteException, IOException;
 
-    UserInterface login(String viaID, String username, String password) throws RemoteException, IOException;
+    UserInterface login(String username, String password) throws RemoteException, IOException;
 
     void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException;
 

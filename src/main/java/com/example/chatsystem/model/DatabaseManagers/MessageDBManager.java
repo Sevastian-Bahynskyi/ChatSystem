@@ -88,6 +88,33 @@ public class  MessageDBManager
     return messageArrayList;
   }
 
+
+  public Message getLastMessage(int channelId)
+  {
+    Message message = null;
+    try(Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+
+      ps.setInt(1, channelId);
+
+      ResultSet rs = ps.executeQuery();
+      UserInterface tempChatter = null;
+      while (rs.next())
+      {
+        tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
+
+        message = new Message(rs.getInt("id"), rs.getString("message"),
+                rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
+      }
+      }
+    catch (SQLException ex)
+    {
+      throw new RuntimeException(ex);
+    }
+    return message;
+  }
+
   public void updateMessage(int id, Message newMessage)
   {
     try(Connection connection = getConnection())

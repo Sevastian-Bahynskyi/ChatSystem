@@ -10,7 +10,9 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Listener extends UnicastRemoteObject implements RemotePropertyChangeListener<Boolean>, Serializable, ServerModel
@@ -33,9 +35,10 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
         switch (remotePropertyChangeEvent.getPropertyName())
         {
             case "new message" -> {
-                var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId()));
+                var lastMessage = (data.getMessageDBManager().getLastMessage(modelManager.getChannelId()));
 
-                modelManager.sendOthersMessage(messageList.get(messageList.size() - 1));
+                modelManager.sendOthersMessage(lastMessage);
+                System.out.println(LocalDateTime.now());
             }
             case "register" -> {
                 var userList = data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
@@ -51,9 +54,9 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public UserInterface login(String viaID, String username, String password) throws RemoteException, IOException
+    public UserInterface login(String username, String password) throws RemoteException, IOException
     {
-        return serverModel.login(viaID, username, password);
+        return serverModel.login(username, password);
     }
 
 

@@ -65,6 +65,8 @@ public class LoginController implements Controller
         this.viewModel.bindError(errorLabel.textProperty());
         this.viewModel.bindId(idField.textProperty());
         this.setImageLabel.setManaged(false);
+        this.idBox.setVisible(false);
+        this.idBox.setManaged(false);
     }
 
     @FXML
@@ -85,7 +87,6 @@ public class LoginController implements Controller
         isCurrentStateLogin = !isCurrentStateLogin;
         if(isCurrentStateLogin)
         {
-
             loginButton.setText("Login");
             register.setText("Register");
             usernameField.requestFocus();
@@ -96,10 +97,10 @@ public class LoginController implements Controller
             loginButton.setText("Register");
             register.setText("Login");
         }
-        idField.requestFocus();
 
         idBox.setVisible(!idBox.isVisible());
         idBox.setManaged(idBox.isVisible());
+        idField.requestFocus();
 
         setImageLabel.setVisible(!isCurrentStateLogin);
         setImageLabel.setManaged(!isCurrentStateLogin);
