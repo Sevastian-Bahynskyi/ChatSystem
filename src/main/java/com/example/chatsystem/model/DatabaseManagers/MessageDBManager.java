@@ -151,7 +151,6 @@ public class MessageDBManager
 
     private Connection getConnection() throws SQLException
     {
-        return DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres", "password");
+        return DriverManager.getConnection("jdbc:postgresql://familydrive.duckdns.org:5433/sep2?currentSchema=sep2", "postgres","password");
     }
 }
