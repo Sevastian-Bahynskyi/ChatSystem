@@ -1,17 +1,15 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
 
-import com.example.chatsystem.model.Chatter;
-import com.example.chatsystem.model.Message;
+import com.example.chatsystem.StartGui;
 import com.example.chatsystem.model.Room;
-import com.example.chatsystem.model.UserInterface;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.*;
-import java.util.Collection;
+
 
 public class RoomDBManager
 {
@@ -30,19 +28,29 @@ public class RoomDBManager
 
     public Room createRoom(String name, String code)
     {
-        Room room = null;
         try(Connection connection = getConnection())
         {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name, code) VALUES (?, ?)");
-//            ps.setInt(1, room.getId());
             ps.setString(1, name);
             ps.setString(2, code);
-            ResultSet rs = ps.executeQuery();
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return getLastRoom();
+    }
 
-            while(rs.next())
-            {
+    public Room getLastRoom()
+    {
+        Room room = null;
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Room");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
                 room = new Room(rs.getInt("id"), rs.getString("name"), rs.getString("code"));
-            }
         }
         catch (SQLException e)
         {
@@ -50,6 +58,7 @@ public class RoomDBManager
         }
         return room;
     }
+
     public Room readRoom(int id) // can I change the name to findRoom
     {
         Room room = null;
@@ -93,7 +102,7 @@ public class RoomDBManager
         }
     }
 
-    public void deleteMessage(int id)
+    public void deleteRoom(int id)
     {
         try(Connection connection = getConnection())
         {
