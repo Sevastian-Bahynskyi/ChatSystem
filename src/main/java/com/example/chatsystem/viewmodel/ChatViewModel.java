@@ -86,6 +86,14 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 Room room = (Room) evt.getNewValue();
                 Platform.runLater(() -> support.firePropertyChange("room added", null, room));
             }
+
+            case "message was edited" -> {
+                Platform.runLater(() -> support.firePropertyChange("message was edited", null, evt.getNewValue()));
+            }
+
+            case "message was deleted" -> {
+                Platform.runLater(() -> support.firePropertyChange("message was deleted", null, true));
+            }
         }
     }
 
@@ -115,6 +123,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
 
             model.editMessage(index, newMessage);
+            textFieldProperty.set("");
         }
         catch (IOException e)
         {
@@ -122,9 +131,16 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
     }
 
-    public void deleteMessage(int index) throws IOException
+    public void deleteMessage(int index)
     {
-        model.deleteMessage(index);
+        try
+        {
+            model.deleteMessage(index);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<UserInterface> getUsers() throws IOException

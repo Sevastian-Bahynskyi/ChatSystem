@@ -117,8 +117,8 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void deleteMessage(int index) throws RemoteException, IOException
+    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
     {
-        listener.deleteMessage(index);
+        listener.deleteMessage(index, channelID);
     }
 }

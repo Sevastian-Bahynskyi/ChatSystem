@@ -21,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -98,6 +99,8 @@ public class ChatController implements Controller, PropertyChangeListener
             if(!newValue)
                 newChannelField.setVisible(false);
         });
+        chatPane.getChildren().remove(messageMyTemplate);
+        chatPane.getChildren().remove(messageOthersTemplate);
 
         indexOfUserPaneAsChild = parent.getChildren().indexOf(userPane);
         addChannel("default");
@@ -113,7 +116,7 @@ public class ChatController implements Controller, PropertyChangeListener
         Label nameTimestampTemplate = (Label) template.getChildren().get(0);
         Label label_0 = new Label(message.getMetadata());
 
-        label_0.setTextFill((nameTimestampTemplate).getTextFill());
+        label_0.setTextFill(Color.WHITE);
         label_0.setFont(new Font(nameTimestampTemplate.getFont().getName(), nameTimestampTemplate.getFont().getSize()));
         label_0.setWrapText((nameTimestampTemplate).isWrapText());
         label_0.setPadding(nameTimestampTemplate.getPadding());
@@ -121,17 +124,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
         var messageUI = generateTemplate(template, image, message.getMessage(), imageRadius, fontSize);
 
-        HashMap<String, Runnable> options = new HashMap<>();
 
-
-        messageUI.setOnMouseClicked(event ->
-        {
-            if(event.getButton() == MouseButton.SECONDARY)
-            {
-
-                showContextMenu(options, event.getScreenX(), event.getScreenY());
-            }
-        });
         vBox.getChildren().add(messageUI);
         vBox.setAlignment(template.getAlignment());
         vBox.setPadding(template.getPadding());
@@ -151,22 +144,57 @@ public class ChatController implements Controller, PropertyChangeListener
 
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
-        indexOfMessageToChange = chatPane.getChildren().indexOf(vBox);
-        options.put("Edit", () -> editMessage(indexOfMessageToChange, message.getMessage()));
-        options.put("Delete", () -> deleteMessage(indexOfMessageToChange));
+        if(template.equals(messageMyTemplate) && !message.getMessage().equals("deleted message"))
+        {
+            HashMap<String, Runnable> options = new HashMap<>();
+
+            messageUI.setOnMouseClicked(event ->
+            {
+                if (event.getButton() == MouseButton.SECONDARY)
+                {
+                    indexOfMessageToChange = chatPane.getChildren().indexOf(vBox);
+                    System.out.println(indexOfMessageToChange);
+                    showContextMenu(options, event.getScreenX(), event.getScreenY());
+                }
+            });
+
+            options.put("Edit", () -> editMessage(indexOfMessageToChange, message.getMessage()));
+            options.put("Delete", () -> deleteMessage(vBox));
+        }
         animation.play();
     }
 
-    private void editMessage(int indexOfMessage, String message)
+    private void editMessage(int indexOfMessageToChange, String message)
     {
         isEditMessage = true;
         textField.requestFocus();
         textField.setText(message);
     }
 
-    private void deleteMessage(int indexOfMessage)
+    private void editMessageInUI(VBox template, String messageToChange)
     {
-        System.out.println(indexOfMessage);
+        HBox message = (HBox) template.getChildren().get(1);
+
+
+        for (Node node: message.getChildren())
+        {
+            if (node instanceof VBox) {
+                Label templateLabel = (Label) ((VBox) node).getChildren().get(0);
+                templateLabel.setText(messageToChange);
+
+                if(messageToChange.equals("deleted message"))
+                {
+                    templateLabel.setTextFill(Color.RED);
+                }
+            }
+        }
+    }
+
+    private void deleteMessage(VBox vBox)
+    {
+        int index = chatPane.getChildren().indexOf(vBox);
+        System.out.println(index);
+        this.viewModel.deleteMessage(index);
     }
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
@@ -190,8 +218,14 @@ public class ChatController implements Controller, PropertyChangeListener
                 Label label = new Label(labelText);
 
 
+
                 label.setFont(new Font(templateLabel.getFont().getName(), fontSize));
-                label.setTextFill((templateLabel).getTextFill());
+                if(labelText.equals("deleted message"))
+                    label.setTextFill(Color.RED);
+                else
+                {
+                    label.setTextFill((templateLabel).getTextFill());
+                }
                 label.setWrapText((templateLabel).isWrapText());
                 label.setMaxWidth(chatPane.getWidth() / 2);
 
@@ -223,9 +257,25 @@ public class ChatController implements Controller, PropertyChangeListener
         String t = textField.getText();
         if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
             return;
-        Message message = viewModel.onSendMessage();
-        addMessage(messageMyTemplate, profileImage.get(), message);
-        scrollPane.requestFocus();
+        else if(t.equals("deleted message"))
+        {
+            textField.setText("");
+            return;
+        }
+
+        if(isEditMessage)
+        {
+            isEditMessage = false;
+            System.out.println(indexOfMessageToChange);
+            this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
+
+        }
+        else
+        {
+            Message message = viewModel.onSendMessage();
+            addMessage(messageMyTemplate, profileImage.get(), message);
+            scrollPane.requestFocus();
+        }
     }
 
 
@@ -324,16 +374,9 @@ public class ChatController implements Controller, PropertyChangeListener
         {
             if(textField.isFocused())
             {
-                if(isEditMessage)
-                {
-                    isEditMessage = false;
-                    this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
-                }
-                else
-                {
-                    textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
-                    onSendMessage();
-                }
+                String s = textField.getText();
+                textField.setText(s.replace("\n", ""));
+                onSendMessage();
             }
             else if(newChannelField.isFocused())
             {
@@ -435,7 +478,6 @@ public class ChatController implements Controller, PropertyChangeListener
                 Platform.runLater(() ->
                 {
                     profileImage.set(message.getUser().getImage());
-                    System.out.println("Image url that controller received: " + message.getUser().getImageUrl());
                     if(isMessageOfTheUser)
                         addMessage(messageMyTemplate, profileImage.get(), message);
                     else
@@ -484,7 +526,7 @@ public class ChatController implements Controller, PropertyChangeListener
                     popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
                 });
 
-// hide the popup when the user moves the mouse away from the circle
+
                 circle.setOnMouseExited(event -> {
                     popup.hide();
                 });
@@ -495,6 +537,15 @@ public class ChatController implements Controller, PropertyChangeListener
 
                 }
                 roomList.getChildren().add(circle);
+            }
+
+            case "message was edited" -> {
+                String message = ((String) evt.getNewValue());
+                editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), message);
+            }
+
+            case "message was deleted" -> {
+                editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), "deleted message");
             }
         }
     }

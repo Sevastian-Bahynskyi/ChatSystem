@@ -33,5 +33,5 @@ public interface ServerModel extends Remote
 
     void editMessage(int index, String message, int channelID) throws RemoteException, IOException;
 
-    void deleteMessage(int index) throws RemoteException, IOException;
+    void deleteMessage(int index, int channelID) throws RemoteException, IOException;
 }

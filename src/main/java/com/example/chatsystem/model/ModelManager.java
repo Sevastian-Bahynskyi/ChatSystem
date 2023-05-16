@@ -125,14 +125,14 @@ public class ModelManager implements Model
     @Override
     public void deleteMessage(int index) throws IOException
     {
-        server.deleteMessage(index);
+        server.deleteMessage(index, channel.getId());
         support.firePropertyChange("message was deleted", null, true);
     }
 
     @Override
     public void editMessage(int index, String message) throws IOException
     {
-        server.editMessage(index - 1, message, channel.getId());
+        server.editMessage(index, message, channel.getId());
         support.firePropertyChange("message was edited", null, message);
     }
 }

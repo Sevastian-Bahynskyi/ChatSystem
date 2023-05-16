@@ -100,9 +100,9 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void deleteMessage(int index) throws RemoteException, IOException
+    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
     {
-        serverModel.deleteMessage(index);
+        serverModel.deleteMessage(index, channelID);
     }
 
     @Override

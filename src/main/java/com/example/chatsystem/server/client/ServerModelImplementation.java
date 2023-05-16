@@ -107,14 +107,17 @@ public class ServerModelImplementation implements ServerModel
     public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
     {
         var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
-        Message mes = messageList.get(index - 1);
-        System.out.println(message);
+        Message mes = messageList.get(index);
         mes.setMessage(message);
+        System.err.println(mes.getId());
+        data.getMessageDBManager().updateMessage(mes.getId(), mes);
     }
 
     @Override
-    public void deleteMessage(int index) throws RemoteException, IOException
+    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
     {
-
+        var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
+        Message mes = messageList.get(index);
+        data.getMessageDBManager().deleteMessage(mes.getId());
     }
 }

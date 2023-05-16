@@ -64,7 +64,7 @@ public class MessageDBManager
         ArrayList<Message> messageArrayList = new ArrayList<>();
         try (Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ? ORDER BY id ASC");
 
             ps.setInt(1, channelId);
 
@@ -120,7 +120,8 @@ public class MessageDBManager
         {
             PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
 
-            ps.setString(1, newMessage.getMessage());
+            String temp = newMessage.getMessage();
+            ps.setString(1, temp);
             ps.setInt(2, id);
 
             ps.executeUpdate();
@@ -132,7 +133,6 @@ public class MessageDBManager
 
     public void deleteMessage(int id)
     {
-        Message message = new Message();
         try (Connection connection = getConnection())
         {
             String temp = "deleted message";
