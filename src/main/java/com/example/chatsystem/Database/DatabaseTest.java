@@ -8,7 +8,7 @@ public class DatabaseTest
   {
     Driver driver = new org.postgresql.Driver();
     DriverManager.registerDriver(driver);
-    Connection connection = DriverManager.getConnection("jdbc:postgresql://familydrive.duckdns.org:5433/sep2?currentSchema=sep2", "postgres","password");
+    Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2","postgres","password");
     PreparedStatement statement = connection.prepareStatement("SELECT username FROM Chatter");
     ResultSet rs = statement.executeQuery();
     while(rs.next())

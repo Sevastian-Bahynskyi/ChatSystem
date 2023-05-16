@@ -8,7 +8,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 public class ChannelDBManager
 {
@@ -165,15 +164,6 @@ public class ChannelDBManager
 
   public Connection getConnection() throws SQLException
   {
-    return DriverManager.getConnection("jdbc:postgresql://familydrive.duckdns.org:5433/sep2?currentSchema=sep2", "postgres","password");
-  }
-
-  public static void main(String[] args) throws SQLException
-  {
-    Driver driver = new org.postgresql.Driver();
-    DriverManager.registerDriver(driver);
-    ChannelDBManager channelDBManager = new ChannelDBManager();
-    Connection connection = channelDBManager.getConnection();
-    System.out.println(channelDBManager.getChannelsByRoom(1));
+    return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres","password");
   }
 }
