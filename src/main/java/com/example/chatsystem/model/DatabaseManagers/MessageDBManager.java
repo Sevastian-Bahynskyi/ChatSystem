@@ -77,7 +77,6 @@ public class MessageDBManager
                 // message should be id,Message,timestamp,chatter_id,channel_id
                 Message message = new Message(rs.getInt("id"), rs.getString("message"),
                         rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
-                System.out.println(message);
                 // message should be id,Message,timestamp,chatter_id,channel_id
                 messageArrayList.add(message);
             }

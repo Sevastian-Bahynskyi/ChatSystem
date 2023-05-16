@@ -70,7 +70,6 @@ public class ViewHandler
             Platform.exit();
         });
         stage.show();
-        System.out.println(stage.getHeight());
 
         if(view == WINDOW.CHAT)
             support.firePropertyChange("load user list", null, true);

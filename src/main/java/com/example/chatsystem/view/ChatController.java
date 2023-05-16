@@ -195,7 +195,6 @@ public class ChatController implements Controller, PropertyChangeListener
     private void deleteMessage(VBox vBox)
     {
         int index = chatPane.getChildren().indexOf(vBox);
-        System.out.println(index);
         this.viewModel.deleteMessage(index);
     }
 
@@ -268,7 +267,6 @@ public class ChatController implements Controller, PropertyChangeListener
         if(isEditMessage)
         {
             isEditMessage = false;
-            System.out.println(indexOfMessageToChange);
             this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
 
         }
@@ -509,8 +507,6 @@ public class ChatController implements Controller, PropertyChangeListener
 
             case "room added" -> {
                 Room room = (Room) evt.getNewValue();
-                System.out.println(room);
-                System.out.println(room.getImage());
                 Circle circle = new Circle(30);
                 Label label = new Label(room.getName());
                 label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");

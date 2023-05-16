@@ -87,7 +87,6 @@ public class ModelManager implements Model
     public void addRoom(String name, String code, String imageURL)
     {
         Room room = new Room(1, name, code);
-        System.out.println(imageURL);
         room.setImageUrl(imageURL);
         // todo call server and create room in the table there
         support.firePropertyChange("room added", null, room);
