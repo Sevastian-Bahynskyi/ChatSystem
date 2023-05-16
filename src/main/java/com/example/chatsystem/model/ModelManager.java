@@ -36,9 +36,9 @@ public class ModelManager implements Model
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
 
-        // todo initialize room and channel
-        // todo load channels
         channel = server.getChannel(2);
+        messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
+        int i =0;
     }
 
     @Override

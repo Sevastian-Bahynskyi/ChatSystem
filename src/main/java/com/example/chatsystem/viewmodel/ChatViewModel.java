@@ -51,7 +51,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
             support.firePropertyChange("new message", null,
                     List.of(message, message.getUser().equals(model.getUser())));
-
         }
     }
 
