@@ -37,15 +37,16 @@ public class ModelManager implements Model
         messages = new ArrayList<>();
 
         channel = server.getChannel(2);
-        messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
-        int i =0;
+        messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
+
+        int i = 0;
     }
 
     @Override
     public void login(String viaID, String username, String password) throws IOException
     {
         user = server.login(username, password);
-        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
+        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
         support.firePropertyChange("user", null, user);
     }
 
@@ -53,7 +54,7 @@ public class ModelManager implements Model
     public void register(String viaID, String username, String password, String imageUrl) throws IOException
     {
         user = server.register(viaID, username, password, imageUrl);
-        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getRoomId());
+        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
         support.firePropertyChange("user", null, user);
     }
 
