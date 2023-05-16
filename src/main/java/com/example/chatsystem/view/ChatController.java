@@ -504,6 +504,8 @@ public class ChatController implements Controller, PropertyChangeListener
         viewHandler.openParallelView(WINDOW.ADD_ROOM);
     }
 
+    
+
 
 
     // todo
