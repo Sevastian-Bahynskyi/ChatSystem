@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public interface Model
 {
-    Message addMessage(String message) throws IOException;
+    void addMessage(String message) throws IOException;
     void addPropertyChangeListener(PropertyChangeListener listener);
 
     void login(String viaID, String username, String password) throws IOException;
