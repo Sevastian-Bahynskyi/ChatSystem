@@ -103,14 +103,23 @@ public class ChatController implements Controller, PropertyChangeListener
         addChannel("default");
     }
 
-    void addMessage(VBox template, Image image, String message)
+    void addMessage(VBox template, Image image, Message message)
     {
         double imageRadius = 25;
         double fontSize = 16;
 
         VBox vBox = new VBox();
 
-        var messageUI = generateTemplate(template, image, message, imageRadius, fontSize);
+        Label nameTimestampTemplate = (Label) template.getChildren().get(0);
+        Label label_0 = new Label(message.getMetadata());
+
+        label_0.setTextFill((nameTimestampTemplate).getTextFill());
+        label_0.setFont(new Font(nameTimestampTemplate.getFont().getName(), nameTimestampTemplate.getFont().getSize()));
+        label_0.setWrapText((nameTimestampTemplate).isWrapText());
+        label_0.setPadding(nameTimestampTemplate.getPadding());
+        vBox.getChildren().add(label_0);
+
+        var messageUI = generateTemplate(template, image, message.getMessage(), imageRadius, fontSize);
 
         HashMap<String, Runnable> options = new HashMap<>();
 
@@ -143,7 +152,7 @@ public class ChatController implements Controller, PropertyChangeListener
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
         indexOfMessageToChange = chatPane.getChildren().indexOf(vBox);
-        options.put("Edit", () -> editMessage(indexOfMessageToChange, message));
+        options.put("Edit", () -> editMessage(indexOfMessageToChange, message.getMessage()));
         options.put("Delete", () -> deleteMessage(indexOfMessageToChange));
         animation.play();
     }
@@ -162,7 +171,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
     {
-        HBox message = (HBox) template.getChildren().get(0);
+        HBox message = (HBox) template.getChildren().get(1);
         ArrayList<Node> copiedNodes = new ArrayList<>();
 
 
@@ -214,8 +223,8 @@ public class ChatController implements Controller, PropertyChangeListener
         String t = textField.getText();
         if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
             return;
-        viewModel.onSendMessage();
-        addMessage(messageMyTemplate, profileImage.get(), t);
+        Message message = viewModel.onSendMessage();
+        addMessage(messageMyTemplate, profileImage.get(), message);
         scrollPane.requestFocus();
     }
 
@@ -428,10 +437,10 @@ public class ChatController implements Controller, PropertyChangeListener
                     profileImage.set(message.getUser().getImage());
                     System.out.println("Image url that controller received: " + message.getUser().getImageUrl());
                     if(isMessageOfTheUser)
-                        addMessage(messageMyTemplate, profileImage.get(), message.getMessage());
+                        addMessage(messageMyTemplate, profileImage.get(), message);
                     else
                     {
-                        addMessage(messageOthersTemplate, profileImage.get(), message.getMessage());
+                        addMessage(messageOthersTemplate, profileImage.get(), message);
                     }
                 });
             }
