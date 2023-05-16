@@ -93,4 +93,11 @@ public class Message implements Serializable
         return "Message: " + message + "\nTime: " + getTime() +
                 "\nUsername: " + user.getUsername() + "\nImage url: "  +  user.getImageUrl();
     }
+
+    public String getMetadata()
+    {
+        String metadeta = new String();
+        metadeta = user.getUsername() + " sent at: " + getTime();
+        return metadeta;
+    }
 }
