@@ -76,10 +76,11 @@ public class ModelManager implements Model
     }
 
     @Override
-    public void addMessage(String message) throws IOException
+    public Message addMessage(String message) throws IOException
     {
-        var mes = new Message(message, user, channel.getId());
+        Message mes = new Message(message, user, channel.getId());
         server.sendMessage(mes);
+        return mes;
     }
 
 

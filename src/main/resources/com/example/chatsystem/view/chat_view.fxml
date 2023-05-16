@@ -101,6 +101,14 @@
                      <children>
                         <VBox fx:id="messageMyTemplate" alignment="BOTTOM_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
                            <children>
+                              <Label text="NameTimestamp">
+                                 <padding>
+                                    <Insets right="20.0" />
+                                 </padding>
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
                               <HBox alignment="TOP_RIGHT" maxWidth="-Infinity" spacing="20.0" VBox.vgrow="NEVER">
                                  <children>
                                     <VBox alignment="CENTER">
@@ -125,6 +133,17 @@
                         </VBox>
                         <VBox fx:id="messageOthersTemplate" alignment="BOTTOM_LEFT" minHeight="-Infinity" minWidth="-Infinity">
                            <children>
+                              <Label text="NameTimestamp">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets left="20.0" />
+                                 </padding>
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
                               <HBox maxWidth="-Infinity" spacing="20.0" styleClass="message-template" VBox.vgrow="NEVER">
                                  <children>
                                     <Circle fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" />

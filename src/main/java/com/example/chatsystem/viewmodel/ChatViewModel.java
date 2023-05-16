@@ -31,11 +31,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         model.addPropertyChangeListener(this);
     }
 
-    public void onSendMessage() throws IOException
+    public Message onSendMessage() throws IOException
     {
         userImage.set(model.getUser().getImage());
-        model.addMessage(textFieldProperty.get());
+        Message sentMessage = model.addMessage(textFieldProperty.get());
         textFieldProperty.set("");
+        return sentMessage;
     }
 
     public Image getUserImage()
