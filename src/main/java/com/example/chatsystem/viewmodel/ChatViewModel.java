@@ -87,14 +87,15 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 Platform.runLater(() -> support.firePropertyChange("room added", null, room));
             }
 
-            case "message was edited" -> {
-                Platform.runLater(() -> support.firePropertyChange("message was edited", null, evt.getNewValue()));
-            }
-
-            case "message was deleted" -> {
-                Platform.runLater(() -> support.firePropertyChange("message was deleted", null, true));
+            case "reload messages" -> {
+                Platform.runLater(() -> support.firePropertyChange("reload messages", null, evt.getNewValue()));
             }
         }
+    }
+
+    public boolean isMyMessage(Message message)
+    {
+        return message.getUser().equals(model.getUser());
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)

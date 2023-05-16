@@ -109,8 +109,8 @@ public class ServerModelImplementation implements ServerModel
         var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
         Message mes = messageList.get(index);
         mes.setMessage(message);
-        System.err.println(mes.getId());
         data.getMessageDBManager().updateMessage(mes.getId(), mes);
+        support.firePropertyChange("message was edited", null, true);
     }
 
     @Override
@@ -119,5 +119,6 @@ public class ServerModelImplementation implements ServerModel
         var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
         Message mes = messageList.get(index);
         data.getMessageDBManager().deleteMessage(mes.getId());
+        support.firePropertyChange("message was deleted", null, true);
     }
 }

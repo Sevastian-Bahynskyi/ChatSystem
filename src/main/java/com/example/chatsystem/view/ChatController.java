@@ -106,7 +106,7 @@ public class ChatController implements Controller, PropertyChangeListener
         addChannel("default");
     }
 
-    void addMessage(VBox template, Image image, Message message)
+    void addMessage(VBox template, Image image, Message message, boolean isNeedAnimation)
     {
         double imageRadius = 25;
         double fontSize = 16;
@@ -139,7 +139,8 @@ public class ChatController implements Controller, PropertyChangeListener
             transitionValue = -transitionValue;
         }
 
-        vBox.setTranslateX(transitionValue);
+        if(isNeedAnimation)
+            vBox.setTranslateX(transitionValue);
         TranslateTransition animation = new TranslateTransition(Duration.seconds(1), vBox);
 
         animation.setByX(-transitionValue);
@@ -153,22 +154,23 @@ public class ChatController implements Controller, PropertyChangeListener
                 if (event.getButton() == MouseButton.SECONDARY)
                 {
                     indexOfMessageToChange = chatPane.getChildren().indexOf(vBox);
-                    System.out.println(indexOfMessageToChange);
                     showContextMenu(options, event.getScreenX(), event.getScreenY());
                 }
             });
 
-            options.put("Edit", () -> editMessage(indexOfMessageToChange, message.getMessage()));
+            options.put("Edit", () -> editMessage(message.getMessage()));
             options.put("Delete", () -> deleteMessage(vBox));
         }
-        animation.play();
+        if(isNeedAnimation)
+            animation.play();
     }
 
-    private void editMessage(int indexOfMessageToChange, String message)
+    private void editMessage(String message)
     {
         isEditMessage = true;
         textField.requestFocus();
         textField.setText(message);
+        textField.positionCaret(textField.getLength());
     }
 
     private void editMessageInUI(VBox template, String messageToChange)
@@ -273,7 +275,7 @@ public class ChatController implements Controller, PropertyChangeListener
         else
         {
             Message message = viewModel.onSendMessage();
-            addMessage(messageMyTemplate, profileImage.get(), message);
+            addMessage(messageMyTemplate, profileImage.get(), message, true);
             scrollPane.requestFocus();
         }
     }
@@ -304,7 +306,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
     }
 
-    // takes map of choices and functions that choice should provide
+
     private void showContextMenu(Map<String, Runnable> options, double screenX, double screenY)
     {
         ContextMenu popup = new ContextMenu();
@@ -398,7 +400,6 @@ public class ChatController implements Controller, PropertyChangeListener
                 if(isEditChannel)
                 {
                     isEditChannel = false;
-
                     selectedChannel.setText(newChannelField.getText());
                 }
                 else {
@@ -479,10 +480,10 @@ public class ChatController implements Controller, PropertyChangeListener
                 {
                     profileImage.set(message.getUser().getImage());
                     if(isMessageOfTheUser)
-                        addMessage(messageMyTemplate, profileImage.get(), message);
+                        addMessage(messageMyTemplate, profileImage.get(), message, true);
                     else
                     {
-                        addMessage(messageOthersTemplate, profileImage.get(), message);
+                        addMessage(messageOthersTemplate, profileImage.get(), message, true);
                     }
                 });
             }
@@ -533,19 +534,23 @@ public class ChatController implements Controller, PropertyChangeListener
 
                 if(room.getImage() != null)
                     circle.setFill(new ImagePattern(room.getImage()));
-                else {
 
-                }
                 roomList.getChildren().add(circle);
             }
 
-            case "message was edited" -> {
-                String message = ((String) evt.getNewValue());
-                editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), message);
-            }
-
-            case "message was deleted" -> {
-                editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), "deleted message");
+            case "reload messages" -> {
+                ArrayList<Message> messages = (ArrayList<Message>) evt.getNewValue();
+                chatPane.getChildren().clear();
+                for (var message:messages)
+                {
+                    if(viewModel.isMyMessage(message))
+                    {
+                        addMessage(messageMyTemplate, message.getUser().getImage(), message, false);
+                    }
+                    else {
+                        addMessage(messageOthersTemplate, message.getUser().getImage(), message, false);
+                    }
+                }
             }
         }
     }

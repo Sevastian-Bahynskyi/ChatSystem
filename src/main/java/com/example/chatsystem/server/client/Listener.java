@@ -36,12 +36,18 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
                 var lastMessage = (data.getMessageDBManager().getLastMessage(modelManager.getChannelId()));
 
                 modelManager.sendOthersMessage(lastMessage);
-                System.out.println(LocalDateTime.now());
             }
+
             case "register" -> {
                 var userList = data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
                 this.modelManager.receiveUsersInRoom((ArrayList<UserInterface>) userList);
             }
+
+            case "message was edited", "message was deleted" -> {
+                ArrayList<Message> messages = (ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId());
+                this.modelManager.reloadMessages(messages);
+            }
+
         }
     }
 

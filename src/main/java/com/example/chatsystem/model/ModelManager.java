@@ -111,7 +111,6 @@ public class ModelManager implements Model
 
     public void sendOthersMessage(Message message)
     {
-        System.out.println("Got message: " + message.getMessage() + " from " + message.getUser().getUsername());
         if(!message.getUser().equals(user))
             support.firePropertyChange("new message", null, message);
     }
@@ -126,13 +125,16 @@ public class ModelManager implements Model
     public void deleteMessage(int index) throws IOException
     {
         server.deleteMessage(index, channel.getId());
-        support.firePropertyChange("message was deleted", null, true);
     }
 
     @Override
     public void editMessage(int index, String message) throws IOException
     {
         server.editMessage(index, message, channel.getId());
-        support.firePropertyChange("message was edited", null, message);
+    }
+
+    public void reloadMessages(ArrayList<Message> messages)
+    {
+        support.firePropertyChange("reload messages", null, messages);
     }
 }
