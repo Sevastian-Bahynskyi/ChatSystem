@@ -152,6 +152,7 @@ public class ChatController implements Controller, PropertyChangeListener
     {
         isEditMessage = true;
         textField.requestFocus();
+        textField.setText(message);
     }
 
     private void deleteMessage(int indexOfMessage)
@@ -314,13 +315,15 @@ public class ChatController implements Controller, PropertyChangeListener
         {
             if(textField.isFocused())
             {
-                textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
-                if(!isEditMessage)
-                    onSendMessage();
-                else
+                if(isEditMessage)
                 {
                     isEditMessage = false;
                     this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
+                }
+                else
+                {
+                    textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+                    onSendMessage();
                 }
             }
             else if(newChannelField.isFocused())
