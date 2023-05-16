@@ -7,9 +7,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ModelManager implements Model
 {
@@ -37,9 +35,6 @@ public class ModelManager implements Model
         messages = new ArrayList<>();
 
         channel = server.getChannel(2);
-        messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
-
-        int i = 0;
     }
 
     @Override
@@ -124,5 +119,19 @@ public class ModelManager implements Model
     public int getRoomId()
     {
         return room.getId();
+    }
+
+    @Override
+    public void deleteMessage(int index) throws IOException
+    {
+        server.deleteMessage(index);
+        support.firePropertyChange("message was deleted", null, true);
+    }
+
+    @Override
+    public void editMessage(int index, String message) throws IOException
+    {
+        server.editMessage(index - 1, message, channel.getId());
+        support.firePropertyChange("message was edited", null, message);
     }
 }

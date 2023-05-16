@@ -2,16 +2,13 @@ package com.example.chatsystem.server.client;
 
 import com.example.chatsystem.model.*;
 import com.example.chatsystem.server.shared.ServerModel;
-import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 import dk.via.remote.observer.RemotePropertyChangeSupport;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ServerModelImplementation implements ServerModel
@@ -104,5 +101,20 @@ public class ServerModelImplementation implements ServerModel
     public Room getRoom(int id) throws RemoteException, IOException
     {
         return null;
+    }
+
+    @Override
+    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    {
+        var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
+        Message mes = messageList.get(index - 1);
+        System.out.println(message);
+        mes.setMessage(message);
+    }
+
+    @Override
+    public void deleteMessage(int index) throws RemoteException, IOException
+    {
+
     }
 }

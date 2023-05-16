@@ -109,4 +109,16 @@ public class Client implements Runnable, ServerModel
     {
         return listener.getRoom(id);
     }
+
+    @Override
+    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    {
+        listener.editMessage(index, message, channelID);
+    }
+
+    @Override
+    public void deleteMessage(int index) throws RemoteException, IOException
+    {
+        listener.deleteMessage(index);
+    }
 }

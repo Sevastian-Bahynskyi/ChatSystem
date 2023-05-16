@@ -24,4 +24,8 @@ public interface Model
     int getChannelId();
 
     int getRoomId();
+
+    void deleteMessage(int index) throws IOException;
+
+    void editMessage(int index, String message) throws IOException;
 }

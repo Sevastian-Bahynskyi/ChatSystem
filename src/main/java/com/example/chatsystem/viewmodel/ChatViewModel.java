@@ -9,9 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
@@ -108,6 +106,24 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     public void deleteUser()
     {
         System.out.println("delete option was chosen");
+    }
+
+    public void editMessage(int index, String newMessage)
+    {
+        try
+        {
+
+            model.editMessage(index, newMessage);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteMessage(int index) throws IOException
+    {
+        model.deleteMessage(index);
     }
 
     public ArrayList<UserInterface> getUsers() throws IOException

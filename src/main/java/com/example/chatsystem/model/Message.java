@@ -70,7 +70,10 @@ public class Message implements Serializable
         return channel_id;
     }
 
-
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
 
     public String getMessage()
     {

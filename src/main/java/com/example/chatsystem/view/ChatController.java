@@ -58,6 +58,9 @@ public class ChatController implements Controller, PropertyChangeListener
     private Label selectedChannel;
     private int indexOfUserPaneAsChild;
     private boolean isEditChannel = false;
+    private boolean isEditMessage = false;
+
+    private int indexOfMessageToChange = -1;
 
 
 
@@ -107,7 +110,20 @@ public class ChatController implements Controller, PropertyChangeListener
 
         VBox vBox = new VBox();
 
-        vBox.getChildren().add(generateTemplate(template, image, message, imageRadius, fontSize));
+        var messageUI = generateTemplate(template, image, message, imageRadius, fontSize);
+
+        HashMap<String, Runnable> options = new HashMap<>();
+
+
+        messageUI.setOnMouseClicked(event ->
+        {
+            if(event.getButton() == MouseButton.SECONDARY)
+            {
+
+                showContextMenu(options, event.getScreenX(), event.getScreenY());
+            }
+        });
+        vBox.getChildren().add(messageUI);
         vBox.setAlignment(template.getAlignment());
         vBox.setPadding(template.getPadding());
         vBox.setPrefSize(template.getPrefWidth(), template.getPrefHeight());
@@ -126,7 +142,21 @@ public class ChatController implements Controller, PropertyChangeListener
 
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
+        indexOfMessageToChange = chatPane.getChildren().indexOf(vBox);
+        options.put("Edit", () -> editMessage(indexOfMessageToChange, message));
+        options.put("Delete", () -> deleteMessage(indexOfMessageToChange));
         animation.play();
+    }
+
+    private void editMessage(int indexOfMessage, String message)
+    {
+        isEditMessage = true;
+        textField.requestFocus();
+    }
+
+    private void deleteMessage(int indexOfMessage)
+    {
+        System.out.println(indexOfMessage);
     }
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
@@ -285,11 +315,16 @@ public class ChatController implements Controller, PropertyChangeListener
             if(textField.isFocused())
             {
                 textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
-                onSendMessage();
+                if(!isEditMessage)
+                    onSendMessage();
+                else
+                {
+                    isEditMessage = false;
+                    this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
+                }
             }
             else if(newChannelField.isFocused())
             {
-
                 if(newChannelField.getText().isEmpty() || newChannelField.getText().matches("^(\n)+$"))
                 {
                     return;
@@ -303,8 +338,6 @@ public class ChatController implements Controller, PropertyChangeListener
                             return;
                         }
                     }
-
-                    // if nothing was entered or entered value already exists in channel list not add a new channel
                 }
 
                 if(isEditChannel)
@@ -371,7 +404,6 @@ public class ChatController implements Controller, PropertyChangeListener
 
     private void editChannel()
     {
-        // not works
         isEditChannel = true;
         newChannelField.setVisible(true);
         newChannelField.requestFocus();

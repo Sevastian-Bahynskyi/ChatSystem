@@ -30,4 +30,8 @@ public interface ServerModel extends Remote
     List<Message> getAllMessagesByChannel(int channelID) throws RemoteException, IOException;
     Channel getChannel(int id) throws RemoteException, IOException, SQLException;
     Room getRoom(int id) throws RemoteException, IOException;
+
+    void editMessage(int index, String message, int channelID) throws RemoteException, IOException;
+
+    void deleteMessage(int index) throws RemoteException, IOException;
 }

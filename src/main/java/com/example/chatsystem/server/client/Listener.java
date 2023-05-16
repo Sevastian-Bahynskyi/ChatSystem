@@ -94,6 +94,18 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
+    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    {
+        serverModel.editMessage(index, message, channelID);
+    }
+
+    @Override
+    public void deleteMessage(int index) throws RemoteException, IOException
+    {
+        serverModel.deleteMessage(index);
+    }
+
+    @Override
     public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
     {
         serverModel.addPropertyChangeListener(listener);

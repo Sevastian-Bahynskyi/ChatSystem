@@ -77,8 +77,7 @@
 }
 
 .context-menu .text{
-    -fx-font-size: 16;
-    -fx-font-weight: bold;
+    -fx-font-size: 14;
 }
 
 .context-menu .menu-item{
@@ -93,7 +92,6 @@
 .channel:hover{
     -fx-background-color: #6d267c;
 }
-
 
 .channel{
     -fx-background-color: transparent;
