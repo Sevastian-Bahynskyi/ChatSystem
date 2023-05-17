@@ -195,7 +195,8 @@ public class ChatController implements Controller, PropertyChangeListener
     private void deleteMessage(VBox vBox)
     {
         int index = chatPane.getChildren().indexOf(vBox);
-        this.viewModel.deleteMessage(index);
+        editMessageInUI(vBox, "deleted message");
+        new Thread(() -> this.viewModel.deleteMessage(index)).start();
     }
 
     private HBox generateTemplate(VBox template, Image circleImage, String labelText, double circleRadius, double fontSize)
@@ -267,8 +268,10 @@ public class ChatController implements Controller, PropertyChangeListener
         if(isEditMessage)
         {
             isEditMessage = false;
-            this.viewModel.editMessage(indexOfMessageToChange, textField.getText());
-
+            String temp = textField.getText();
+            textField.clear();
+            editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), temp);
+            new Thread(() -> this.viewModel.editMessage(indexOfMessageToChange, temp)).start();
         }
         else
         {
@@ -547,6 +550,7 @@ public class ChatController implements Controller, PropertyChangeListener
                         addMessage(messageOthersTemplate, message.getUser().getImage(), message, false);
                     }
                 }
+                System.out.println("done");
             }
         }
     }

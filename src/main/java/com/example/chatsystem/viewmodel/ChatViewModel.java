@@ -124,7 +124,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
 
             model.editMessage(index, newMessage);
-            textFieldProperty.set("");
         }
         catch (IOException e)
         {

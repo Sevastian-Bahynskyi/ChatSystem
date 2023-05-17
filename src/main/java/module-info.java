@@ -16,6 +16,7 @@ module com.example.chatsystem {
     opens com.example.chatsystem.model to com.google.gson;
     exports com.example.chatsystem.model to java.rmi;
     exports com.example.chatsystem.server.shared to java.rmi;
+    exports com.example.chatsystem.server.client to java.rmi;
     exports com.example.chatsystem;
     exports com.example.chatsystem.view;
 }
