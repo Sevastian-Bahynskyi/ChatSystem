@@ -28,6 +28,7 @@ class ChatViewModelTest
   private ChatViewModel chatViewModel;
   private ChatController controllerMock;
   private String dummyString = "dummy message";
+  private ArrayList<Message> messagesDummy = new ArrayList<>();
   private UserInterface Dummy = new Chatter("111111","Blahaj","shorks123");
   private Message dummyMessage = new Message("dummy message",Dummy,1);
   private ArrayList<UserInterface> dummyList = new ArrayList<>();
@@ -40,20 +41,27 @@ class ChatViewModelTest
     dummyList.add(Dummy);
     modelMock  = Mockito.mock(Model.class);
     this.chatViewModel = new ChatViewModel(modelMock);
-    Mockito.when(modelMock.getUser()).thenReturn(Dummy);
     Mockito.when(modelMock.addMessage(dummyString)).thenReturn(dummyMessage);
     Mockito.when(modelMock.getUserList()).thenReturn(dummyList);
+    messagesDummy.add(dummyMessage);
+    Mockito.when(modelMock.getMessages()).thenReturn(messagesDummy);
 
   }
 
   @Test void onSendMessage_calls_addmessage_in_model_and_returns_message()
       throws IOException
   {
+    Mockito.when(modelMock.getUser()).thenReturn(Dummy);
     StringProperty temp = new SimpleStringProperty();
     chatViewModel.bindTextFieldProperty(temp);
     temp.setValue("dummy message");
     Message message = chatViewModel.onSendMessage();
     assertEquals(dummyMessage,message);
+  }
+  @Test void load_messages_throws_runs_the_for_loop()
+  {
+    Mockito.when(modelMock.getUser()).thenThrow(new ArithmeticException());
+    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessages());
   }
 
   @Test void getUserImage_returns_an_Image_object()
