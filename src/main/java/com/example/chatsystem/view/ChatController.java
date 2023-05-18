@@ -1,5 +1,6 @@
 package com.example.chatsystem.view;
 
+import com.example.chatsystem.model.Channel;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Room;
 import com.example.chatsystem.model.UserInterface;
@@ -31,6 +32,7 @@ import javafx.util.Duration;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -62,6 +64,7 @@ public class ChatController implements Controller, PropertyChangeListener
     private boolean isEditMessage = false;
 
     private int indexOfMessageToChange = -1;
+    private int indexOfChannelToChange = -1;
 
 
 
@@ -77,7 +80,6 @@ public class ChatController implements Controller, PropertyChangeListener
         this.viewHandler.addPropertyChangeListener(this);
         this.messageMyTemplate.setManaged(false);
         this.messageOthersTemplate.setManaged(false);
-        this.viewModel.loadMessages();
         this.textField.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 8000 ? change : null));
 
@@ -103,7 +105,6 @@ public class ChatController implements Controller, PropertyChangeListener
         chatPane.getChildren().remove(messageOthersTemplate);
 
         indexOfUserPaneAsChild = parent.getChildren().indexOf(userPane);
-        addChannel("default");
     }
 
     void addMessage(VBox template, Image image, Message message, boolean isNeedAnimation)
@@ -191,6 +192,7 @@ public class ChatController implements Controller, PropertyChangeListener
             }
         }
     }
+
 
     private void deleteMessage(VBox vBox)
     {
@@ -366,7 +368,7 @@ public class ChatController implements Controller, PropertyChangeListener
     }
 
     @FXML
-    void onEnter(KeyEvent event) throws IOException
+    void onEnter(KeyEvent event) throws IOException, SQLException
     {
         if(event.getCode().equals(KeyCode.ENTER) && event.isShiftDown())
         {
@@ -402,9 +404,10 @@ public class ChatController implements Controller, PropertyChangeListener
                 {
                     isEditChannel = false;
                     selectedChannel.setText(newChannelField.getText());
+                    viewModel.editChannel(viewModel.getChannelByIndex(indexOfChannelToChange).getName(), newChannelField.getText());
                 }
                 else {
-                    addChannel(newChannelField.getText());
+                    this.viewModel.addChannel(newChannelField.getText());
                 }
 
                 newChannelField.setVisible(false);
@@ -413,29 +416,55 @@ public class ChatController implements Controller, PropertyChangeListener
         }
     }
 
-    private void addChannel(String channelName)
+    private void addChannel(String channelName) throws IOException
     {
         Map<String, Runnable> options = new HashMap<>();
-        options.put("Edit", this::editChannel);
-        options.put("Delete", this::deleteChannel);
+
 
         Label label = new Label();
         label.setPadding(new Insets(10));
         label.setMaxWidth(Double.MAX_VALUE);
         label.setText(channelName);
         label.getStyleClass().set(0, "channel-selected");
+
+
+
+        options.put("Edit", this::editChannel);
+        options.put("Delete", this::deleteChannel);
+
+        channelListPane.getChildren().add(0, label);
+        int indexOfChannel = channelListPane.getChildren().size() - 1;
+
+
         label.setOnMouseClicked(event -> {
+
+
+
             if(event.getButton() == MouseButton.SECONDARY)
+            {
+                indexOfChannelToChange = channelListPane.getChildren().size() - channelListPane.getChildren().indexOf(label) - 1;
+                System.out.println("Index of channel: " + indexOfChannelToChange);
+
                 showContextMenu(options, event.getScreenX(), event.getScreenY());
+            }
             else if(event.getButton() == MouseButton.PRIMARY)
+            {
                 onChannelClick(event);
+
+                try
+                {
+                    viewModel.loadMessages(indexOfChannel);
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
         });
         if (selectedChannel != null) {
             selectedChannel.getStyleClass().set(0, "channel");
         }
         selectedChannel = label;
 
-        channelListPane.getChildren().add(0, label);
     }
 
     @FXML
@@ -464,6 +493,8 @@ public class ChatController implements Controller, PropertyChangeListener
         isEditChannel = true;
         newChannelField.setVisible(true);
         newChannelField.requestFocus();
+        newChannelField.setText(viewModel.getChannelByIndex(indexOfChannelToChange).getName());
+        newChannelField.positionCaret(newChannelField.getLength());
     }
 
 
@@ -560,6 +591,42 @@ public class ChatController implements Controller, PropertyChangeListener
 
                 editMessageInUI((VBox) chatPane.getChildren().get(index), mes.getMessage());
                 System.out.println("done");
+            }
+
+            case "new channel" -> {
+                Channel channel = (Channel) evt.getNewValue();
+                try
+                {
+                    addChannel(channel.getName());
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            case "clear messages" -> {
+                chatPane.getChildren().clear();
+            }
+
+            case "reload channel" -> {
+                List<Object> t = (List<Object>) evt.getNewValue();
+                Channel mes = (Channel) t.get(0);
+                int index = (int) t.get(1);
+                ((Label) channelListPane.getChildren().get(index)).setText(mes.getName());
+            }
+
+            case "load channels" -> {
+                ArrayList<Channel> channels = (ArrayList<Channel>) evt.getNewValue();
+                for (Channel ch:channels)
+                {
+                    try
+                    {
+                        addChannel(ch.getName());
+                    } catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }
     }

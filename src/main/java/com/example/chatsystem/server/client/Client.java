@@ -121,4 +121,22 @@ public class Client implements Runnable, ServerModel
     {
         listener.deleteMessage(id, channelID);
     }
+
+    @Override
+    public void createChannel(String channelName, int roomId) throws IOException
+    {
+        listener.createChannel(channelName, roomId);
+    }
+
+    @Override
+    public ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException
+    {
+        return listener.getChannelsInTheRoom(roomId);
+    }
+
+    @Override
+    public void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException
+    {
+        listener.editChannel(id, newChannelName);
+    }
 }

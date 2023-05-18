@@ -34,15 +34,23 @@ public class ModelManager implements Model
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
 
-        channel = server.getChannel(2);
+        room = new Room(1, "dummy", "qeq3q3y");
+
     }
 
     @Override
-    public void login(String viaID, String username, String password) throws IOException
+    public void login(String viaID, String username, String password) throws IOException, InterruptedException
     {
+
+        ArrayList<Channel> channels = server.getChannelsInTheRoom(room.getId());
         user = server.login(username, password);
+
+        channel = channels.get(channels.size() - 1);
+
+        support.firePropertyChange("load channels", null, channels);
         this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
         support.firePropertyChange("user", null, user);
+
     }
 
     @Override
@@ -58,9 +66,12 @@ public class ModelManager implements Model
         support.firePropertyChange("update user list", null, users);
     }
 
-    public ArrayList<Message> getMessages()
+    @Override
+    public ArrayList<Message> getMessages(int channelId) throws IOException
     {
-        return messages;
+        if(channelId == -1)
+            return messages;
+        else return (ArrayList<Message>) server.getAllMessagesByChannel(channelId);
     }
 
     @Override
@@ -136,6 +147,12 @@ public class ModelManager implements Model
         server.editMessage(id, message, channel.getId());
     }
 
+    @Override
+    public void createChannel(String channelName) throws IOException
+    {
+        server.createChannel(channelName, channel.getRoomId());
+    }
+
     public void reloadMessages(ArrayList<Message> messages)
     {
         support.firePropertyChange("reload messages", null, messages);
@@ -144,5 +161,22 @@ public class ModelManager implements Model
     public void reloadMessage(Message mes)
     {
         support.firePropertyChange("reload message", null, mes);
+    }
+
+    public void receiveNewChannel(Channel channel)
+    {
+        this.channel = channel;
+        support.firePropertyChange("new channel", null, channel);
+    }
+
+    @Override
+    public void editChannel(int id, String newChannelName) throws IOException, SQLException
+    {
+        server.editChannel(id, newChannelName);
+    }
+
+    public void reloadChannel(Channel channel)
+    {
+        support.firePropertyChange("reload channel", null, channel);
     }
 }

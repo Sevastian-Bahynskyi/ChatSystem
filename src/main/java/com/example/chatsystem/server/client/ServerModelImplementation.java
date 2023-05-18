@@ -25,7 +25,7 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public void sendMessage(Message message) throws IOException
     {
-        Message mes = data.getMessageDBManager().createMessage(message);
+        data.getMessageDBManager().createMessage(message);
         support.firePropertyChange("new message", null, 1);
     }
 
@@ -117,5 +117,33 @@ public class ServerModelImplementation implements ServerModel
     {
         data.getMessageDBManager().deleteMessage(id);
         support.firePropertyChange("message was deleted", null, id);
+    }
+
+    @Override
+    public void createChannel(String channelName, int roomId) throws RemoteException
+    {
+        Channel channel = data.getChannelDBManager().createChannel(channelName, roomId);
+        support.firePropertyChange("new channel", null, channel.getId());
+    }
+
+    @Override
+    public ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException
+    {
+        try
+        {
+            return data.getChannelDBManager().getChannelsByRoomID(roomId);
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException
+    {
+        Channel ch = data.getChannelDBManager().getChannelById(id);
+        data.getChannelDBManager().updateChannelById(id, newChannelName);
+        support.firePropertyChange("channel was edited", null, ch.getId());
+
     }
 }

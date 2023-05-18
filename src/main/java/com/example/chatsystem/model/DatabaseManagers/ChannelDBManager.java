@@ -57,6 +57,56 @@ public class ChannelDBManager
     }
     return null;
   }
+
+  public ArrayList<Channel> getChannelsByRoomID(int roomId) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Channel WHERE room_id=? ORDER BY id DESC");
+      ps.setInt(1, roomId);
+      ResultSet resultSet = ps.executeQuery();
+      ArrayList<Channel> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String names = resultSet.getString("name");
+        Channel tempo = new Channel(id, names, roomId);
+        temp.add(tempo);
+      }
+      return temp;
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public ArrayList<Channel> getChannelsInRoomByAsc(int roomId) throws SQLException
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement ps = connection.prepareStatement("SELECT * FROM Channel WHERE room_id=? ORDER BY id");
+      ps.setInt(1, roomId);
+      ResultSet resultSet = ps.executeQuery();
+      ArrayList<Channel> temp = new ArrayList<>();
+      while (resultSet.next())
+      {
+        int id = resultSet.getInt("id");
+        String names = resultSet.getString("name");
+        Channel tempo = new Channel(id, names, roomId);
+        temp.add(tempo);
+      }
+      return temp;
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+
   private int getChannelId(String name, int room_id)
   {
     try (Connection connection = getConnection())
@@ -65,13 +115,11 @@ public class ChannelDBManager
       statement1.setString(1, name);
       statement1.setInt(2, room_id);
       ResultSet resultSet = statement1.executeQuery();
-      ArrayList<Integer> temp = new ArrayList<>();
-      while (resultSet.next())
+
+      if(resultSet.next())
       {
-        int id = resultSet.getInt("id");
-        temp.add(id);
+        return resultSet.getInt("id");
       }
-      return temp.get(temp.size() - 1);
     }
     catch (SQLException e)
     {
@@ -116,6 +164,21 @@ public class ChannelDBManager
         channels.add(temp);
       }
       return channels;
+    }
+  }
+
+  public void updateChannelById(int id, String newChannelName)
+  {
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement preparedStatement = connection.prepareStatement("UPDATE channel set name=? WHERE id = ?");
+      preparedStatement.setString(1, newChannelName);
+      preparedStatement.setInt(2, id);
+      preparedStatement.executeUpdate();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
     }
   }
 

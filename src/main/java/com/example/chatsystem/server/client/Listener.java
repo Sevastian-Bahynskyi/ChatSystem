@@ -45,7 +45,38 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
                 Message mes = data.getMessageDBManager().readMessage(remotePropertyChangeEvent.getNewValue());
                 this.modelManager.reloadMessage(mes);
             }
+
+            case "new channel" -> {
+                try
+                {
+                    int channelId = remotePropertyChangeEvent.getNewValue();
+
+                    Channel channel = data.getChannelDBManager().getChannelById(channelId);
+                    this.modelManager.receiveNewChannel(channel);
+                } catch (SQLException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            case "channel was edited", "channel was deleted" -> {
+                try
+                {
+                    Channel channel = data.getChannelDBManager().getChannelById(remotePropertyChangeEvent.getNewValue());
+                    modelManager.reloadChannel(channel);
+                    System.out.println(channel.getName());
+                } catch (SQLException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+    }
+
+    @Override
+    public void createChannel(String channelName, int roomId) throws IOException
+    {
+        serverModel.createChannel(channelName, roomId);
     }
 
     @Override
@@ -118,5 +149,17 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     public void firePropertyChange(String propertyName, Integer oldValue, Integer newValue) throws RemoteException
     {
         serverModel.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    @Override
+    public ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException
+    {
+        return serverModel.getChannelsInTheRoom(roomId);
+    }
+
+    @Override
+    public void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException
+    {
+        serverModel.editChannel(id, newChannelName);
     }
 }

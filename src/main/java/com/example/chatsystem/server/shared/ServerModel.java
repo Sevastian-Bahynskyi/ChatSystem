@@ -33,4 +33,10 @@ public interface ServerModel extends Remote
     void editMessage(int id, String message, int channelID) throws RemoteException, IOException;
 
     void deleteMessage(int id, int channelID) throws RemoteException, IOException;
+
+    void createChannel(String channelName, int roomId) throws RemoteException, IOException;
+
+    ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException;
+
+    void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException;
 }
