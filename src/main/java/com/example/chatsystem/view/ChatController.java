@@ -103,7 +103,7 @@ public class ChatController implements Controller, PropertyChangeListener
         addChannel("default");
     }
 
-    void addMessage(VBox template, Image image, Message message)
+    private void addMessage(VBox template, Image image, Message message)
     {
         double imageRadius = 25;
         double fontSize = 16;

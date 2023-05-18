@@ -113,7 +113,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         try
         {
-
             model.editMessage(index, newMessage);
         }
         catch (IOException e)
