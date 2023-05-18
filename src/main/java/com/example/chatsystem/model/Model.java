@@ -25,7 +25,7 @@ public interface Model
 
     int getRoomId();
 
-    void deleteMessage(int index) throws IOException;
+    void deleteMessage(int id) throws IOException;
 
-    void editMessage(int index, String message) throws IOException;
+    void editMessage(int id, String message) throws IOException;
 }

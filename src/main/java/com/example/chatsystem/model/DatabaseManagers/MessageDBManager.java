@@ -1,12 +1,11 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
-import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.UserInterface;
 
-import java.io.Serializable;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,8 +15,9 @@ public class MessageDBManager
     {
     }
 
-    public void createMessage(Message message)
+    public Message createMessage(Message message)
     {
+        Message mes = null;
         try (Connection connection = getConnection())
         {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO Message (channel_id, timestamp, chatter_id, message) VALUES(?, ?, ?, ?)");
@@ -26,10 +26,12 @@ public class MessageDBManager
             ps.setString(3, message.getUserId());
             ps.setString(4, message.getMessage());
             ps.executeUpdate();
+            mes = getLastMessage(message.getChannelId());
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
+        return mes;
     }
 
     public Message readMessage(int id)
@@ -61,8 +63,9 @@ public class MessageDBManager
 
     public Collection<Message> getAllMessagesForAChannel(int channelId)
     {
+        System.out.println(LocalDateTime.now());
         ArrayList<Message> messageArrayList = new ArrayList<>();
-        try (Connection connection = getConnection())
+        try (Connection connection = DatabaseConfig.getDataSource().getConnection())
         {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ? ORDER BY id ASC");
 
@@ -74,16 +77,19 @@ public class MessageDBManager
             while (rs.next())
             {
                 tempChatter = Data.getInstance().getChatterDBManager().read(rs.getString("chatter_id"));
-                // message should be id,Message,timestamp,chatter_id,channel_id
+
+
                 Message message = new Message(rs.getInt("id"), rs.getString("message"),
                         rs.getTimestamp("timestamp"), tempChatter, rs.getInt("channel_id"));
-                // message should be id,Message,timestamp,chatter_id,channel_id
+
                 messageArrayList.add(message);
             }
         } catch (SQLException e)
         {
             System.err.println(e.getMessage());
         }
+        System.out.println(LocalDateTime.now());
+
         return messageArrayList;
     }
 
@@ -119,10 +125,8 @@ public class MessageDBManager
         {
             PreparedStatement ps = connection.prepareStatement("UPDATE Message SET message=? WHERE id=?");
 
-            String temp = newMessage.getMessage();
-            ps.setString(1, temp);
+            ps.setString(1, newMessage.getMessage());
             ps.setInt(2, id);
-
             ps.executeUpdate();
         } catch (SQLException e)
         {

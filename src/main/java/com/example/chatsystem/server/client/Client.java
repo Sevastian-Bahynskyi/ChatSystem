@@ -63,13 +63,13 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Integer> listener) throws RemoteException
     {
         serverModel.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Integer oldValue, Integer newValue) throws RemoteException
     {
         listener.firePropertyChange(propertyName, oldValue, newValue);
     }
@@ -111,14 +111,14 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    public void editMessage(int id, String message, int channelID) throws RemoteException, IOException
     {
-        listener.editMessage(index, message, channelID);
+        listener.editMessage(id, message, channelID);
     }
 
     @Override
-    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
+    public void deleteMessage(int id, int channelID) throws RemoteException, IOException
     {
-        listener.deleteMessage(index, channelID);
+        listener.deleteMessage(id, channelID);
     }
 }

@@ -60,6 +60,7 @@ public class Message implements Serializable
         return time;
     }
 
+
     public int getId()
     {
         return id;

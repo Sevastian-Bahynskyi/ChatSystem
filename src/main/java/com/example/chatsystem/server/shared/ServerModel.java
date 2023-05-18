@@ -1,7 +1,6 @@
 package com.example.chatsystem.server.shared;
 
 import com.example.chatsystem.model.*;
-import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
 import java.io.IOException;
@@ -17,9 +16,9 @@ public interface ServerModel extends Remote
 
     UserInterface login(String username, String password) throws RemoteException, IOException;
 
-    void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException;
+    void addPropertyChangeListener(RemotePropertyChangeListener<Integer> listener) throws RemoteException;
 
-    void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException;
+    void firePropertyChange(String propertyName, Integer oldValue, Integer newValue) throws RemoteException;
 
     UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
 
@@ -31,7 +30,7 @@ public interface ServerModel extends Remote
     Channel getChannel(int id) throws RemoteException, IOException, SQLException;
     Room getRoom(int id) throws RemoteException, IOException;
 
-    void editMessage(int index, String message, int channelID) throws RemoteException, IOException;
+    void editMessage(int id, String message, int channelID) throws RemoteException, IOException;
 
-    void deleteMessage(int index, int channelID) throws RemoteException, IOException;
+    void deleteMessage(int id, int channelID) throws RemoteException, IOException;
 }

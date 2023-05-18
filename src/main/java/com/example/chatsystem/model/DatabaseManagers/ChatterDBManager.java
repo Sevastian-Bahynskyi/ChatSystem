@@ -83,7 +83,7 @@ public class ChatterDBManager
     public UserInterface read(String username, String password) {
         UserInterface userInterface = null;
         // Open a connection
-        try(Connection conn = getConnection()) {
+        try(Connection conn = DatabaseConfig.getDataSource().getConnection()) {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatter WHERE username = ? AND password = ?");
             ps.setString(1, username);
             ps.setString(2, password);

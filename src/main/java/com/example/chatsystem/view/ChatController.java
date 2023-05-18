@@ -552,6 +552,15 @@ public class ChatController implements Controller, PropertyChangeListener
                 }
                 System.out.println("done");
             }
+
+            case "reload message" -> {
+                List<Object> t = (List<Object>) evt.getNewValue();
+                Message mes = (Message) t.get(0);
+                int index = (int) t.get(1);
+
+                editMessageInUI((VBox) chatPane.getChildren().get(index), mes.getMessage());
+                System.out.println("done");
+            }
         }
     }
 

@@ -74,6 +74,11 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/remoteobserver.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+        </dependency>
 
     </dependencies>
 

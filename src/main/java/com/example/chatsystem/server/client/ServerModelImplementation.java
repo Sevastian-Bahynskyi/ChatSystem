@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ServerModelImplementation implements ServerModel
 {
-    private final RemotePropertyChangeSupport<Boolean> support;
+    private final RemotePropertyChangeSupport<Integer> support;
     private final Data data;
 
     public ServerModelImplementation(Data data)
@@ -25,8 +25,8 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public void sendMessage(Message message) throws IOException
     {
-        data.getMessageDBManager().createMessage(message);
-        support.firePropertyChange("new message", null, true);
+        Message mes = data.getMessageDBManager().createMessage(message);
+        support.firePropertyChange("new message", null, 1);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ServerModelImplementation implements ServerModel
         if(user != null)
         {
             if(user.getUsername().equals(username) && user.getPassword().equals(password))
-                support.firePropertyChange("login", null, true);
+                support.firePropertyChange("login", null, 1);
         }
         else
             throw new IllegalArgumentException("User is not registered.");
@@ -46,7 +46,7 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Integer> listener) throws RemoteException
     {
         support.addPropertyChangeListener(listener);
     }
@@ -64,7 +64,7 @@ public class ServerModelImplementation implements ServerModel
 
         data.getChatterDBManager().insert(VIAid, username, password);
 
-        support.firePropertyChange("register", null, true);
+        support.firePropertyChange("register", null, 1);
         return user;
     }
 
@@ -74,7 +74,7 @@ public class ServerModelImplementation implements ServerModel
         return (ArrayList<UserInterface>) data.getChatterDBManager().readAll();
     }
 
-    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Integer oldValue, Integer newValue) throws RemoteException
     {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }
@@ -104,21 +104,18 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    public void editMessage(int id, String message, int channelID) throws RemoteException, IOException
     {
-        var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
-        Message mes = messageList.get(index);
+        Message mes = new Message();
         mes.setMessage(message);
-        data.getMessageDBManager().updateMessage(mes.getId(), mes);
-        support.firePropertyChange("message was edited", null, true);
+        data.getMessageDBManager().updateMessage(id, mes);
+        support.firePropertyChange("message was edited", null, id);
     }
 
     @Override
-    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
+    public void deleteMessage(int id, int channelID) throws RemoteException, IOException
     {
-        var messageList = ((ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(channelID));
-        Message mes = messageList.get(index);
-        data.getMessageDBManager().deleteMessage(mes.getId());
-        support.firePropertyChange("message was deleted", null, true);
+        data.getMessageDBManager().deleteMessage(id);
+        support.firePropertyChange("message was deleted", null, id);
     }
 }

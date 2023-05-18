@@ -75,12 +75,14 @@ public class ModelManager implements Model
 //        server.disconnect();
     }
 
+    private Message currentMessage;
+
     @Override
     public Message addMessage(String message) throws IOException
     {
         Message mes = new Message(message, user, channel.getId());
         server.sendMessage(mes);
-        return mes;
+        return currentMessage;
     }
 
 
@@ -110,6 +112,7 @@ public class ModelManager implements Model
 
     public void sendOthersMessage(Message message)
     {
+        currentMessage = message;
         if(!message.getUser().equals(user))
             support.firePropertyChange("new message", null, message);
     }
@@ -121,19 +124,25 @@ public class ModelManager implements Model
     }
 
     @Override
-    public void deleteMessage(int index) throws IOException
+    public void deleteMessage(int id) throws IOException
     {
-        server.deleteMessage(index, channel.getId());
+        server.deleteMessage(id, channel.getId());
     }
 
     @Override
-    public void editMessage(int index, String message) throws IOException
+    public void editMessage(int id, String message) throws IOException
     {
-        server.editMessage(index, message, channel.getId());
+        System.out.println(id);
+        server.editMessage(id, message, channel.getId());
     }
 
     public void reloadMessages(ArrayList<Message> messages)
     {
         support.firePropertyChange("reload messages", null, messages);
+    }
+
+    public void reloadMessage(Message mes)
+    {
+        support.firePropertyChange("reload message", null, mes);
     }
 }

@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class Listener extends UnicastRemoteObject implements RemotePropertyChangeListener<Boolean>, Serializable, ServerModel
+public class Listener extends UnicastRemoteObject implements RemotePropertyChangeListener<Integer>, Serializable, ServerModel
 {
 
     private ModelManager modelManager;
@@ -28,7 +26,7 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void propertyChange(RemotePropertyChangeEvent<Boolean> remotePropertyChangeEvent) throws RemoteException
+    public void propertyChange(RemotePropertyChangeEvent<Integer> remotePropertyChangeEvent) throws RemoteException
     {
         switch (remotePropertyChangeEvent.getPropertyName())
         {
@@ -44,10 +42,9 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
             }
 
             case "message was edited", "message was deleted" -> {
-                ArrayList<Message> messages = (ArrayList<Message>) data.getMessageDBManager().getAllMessagesForAChannel(modelManager.getChannelId());
-                this.modelManager.reloadMessages(messages);
+                Message mes = data.getMessageDBManager().readMessage(remotePropertyChangeEvent.getNewValue());
+                this.modelManager.reloadMessage(mes);
             }
-
         }
     }
 
@@ -100,25 +97,25 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void editMessage(int index, String message, int channelID) throws RemoteException, IOException
+    public void editMessage(int id, String message, int channelID) throws RemoteException, IOException
     {
-        serverModel.editMessage(index, message, channelID);
+        serverModel.editMessage(id, message, channelID);
     }
 
     @Override
-    public void deleteMessage(int index, int channelID) throws RemoteException, IOException
+    public void deleteMessage(int id, int channelID) throws RemoteException, IOException
     {
-        serverModel.deleteMessage(index, channelID);
+        serverModel.deleteMessage(id, channelID);
     }
 
     @Override
-    public void addPropertyChangeListener(RemotePropertyChangeListener<Boolean> listener) throws RemoteException
+    public void addPropertyChangeListener(RemotePropertyChangeListener<Integer> listener) throws RemoteException
     {
         serverModel.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void firePropertyChange(String propertyName, Boolean oldValue, Boolean newValue) throws RemoteException
+    public void firePropertyChange(String propertyName, Integer oldValue, Integer newValue) throws RemoteException
     {
         serverModel.firePropertyChange(propertyName, oldValue, newValue);
     }
