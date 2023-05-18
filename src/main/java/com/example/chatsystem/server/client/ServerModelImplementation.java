@@ -146,4 +146,24 @@ public class ServerModelImplementation implements ServerModel
         support.firePropertyChange("channel was edited", null, ch.getId());
 
     }
+
+    @Override
+    public void deleteChannel(int id) throws RemoteException, IOException
+    {
+        try
+        {
+            data.getChannelDBManager().deleteChannelById(id);
+            support.firePropertyChange("channel was deleted", null, id);
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isModerator(String chatterId, int channelId)
+    {
+        Room room = data.getRoomDBManager().getRoomByChannel(channelId);
+        return data.getModeratorDBManager().isModeratorInRoom(chatterId, room.getId());
+    }
 }

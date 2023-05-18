@@ -9,6 +9,6 @@ public interface UserInterface
   String getImageUrl();
   void setImageUrl(String imageUrl);
   boolean equals(Object obj);
-
   String getViaId();
+  boolean isModerator();
 }

@@ -16,7 +16,7 @@ public class StartFirstGui extends Application
         Model model = new ModelManager();
         ViewModelFactory viewModelFactory = new ViewModelFactory(model);
         ViewHandler viewHandler = new ViewHandler(viewModelFactory);
-        viewHandler.start(primaryStage, WINDOW.CHAT);
         model.login("111111", "Dumy_1", "password_1");
+        viewHandler.start(primaryStage, WINDOW.CHAT);
     }
 }

@@ -39,4 +39,8 @@ public interface ServerModel extends Remote
     ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException;
 
     void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException;
+
+    void deleteChannel(int id) throws RemoteException, IOException;
+
+    boolean isModerator(String chatterId, int channelId) throws RemoteException;
 }

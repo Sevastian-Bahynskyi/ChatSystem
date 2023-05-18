@@ -124,5 +124,11 @@ public class Chatter implements UserInterface,Serializable
 
         return true;
     }
+
+    @Override
+    public boolean isModerator()
+    {
+        return false;
+    }
 }
 

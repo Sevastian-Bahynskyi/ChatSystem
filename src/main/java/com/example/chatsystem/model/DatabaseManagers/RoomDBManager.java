@@ -2,6 +2,7 @@ package com.example.chatsystem.model.DatabaseManagers;
 
 
 import com.example.chatsystem.StartGui;
+import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Room;
 
 import java.io.Serializable;
@@ -116,5 +117,25 @@ public class RoomDBManager
         }
     }
 
+    public Room getRoomByChannel(int channel_id)
+    {
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT room_id FROM channel JOIN Room R ON R.id = Channel.room_id WHERE Channel.id = ?");
+
+            ps.setInt(1, channel_id);
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next())
+            {
+                return readRoom(rs.getInt("room_id"));
+            }
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
 }
 

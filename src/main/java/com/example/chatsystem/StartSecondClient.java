@@ -18,7 +18,7 @@ public class StartSecondClient extends Application
         Model model = new ModelManager();
         ViewModelFactory viewModelFactory = new ViewModelFactory(model);
         ViewHandler viewHandler = new ViewHandler(viewModelFactory);
-        viewHandler.start(primaryStage, WINDOW.CHAT);
         model.login("111112", "Dumy_2", "password_2");
+        viewHandler.start(primaryStage, WINDOW.CHAT);
     }
 }

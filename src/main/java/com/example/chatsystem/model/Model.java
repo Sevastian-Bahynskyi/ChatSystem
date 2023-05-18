@@ -2,6 +2,7 @@ package com.example.chatsystem.model;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -32,5 +33,10 @@ public interface Model
 
     void createChannel(String channelName) throws IOException;
 
-    void editChannel(int id, String newChannelName) throws IOException, SQLException;
+    boolean editChannel(int id, String newChannelName) throws IOException, SQLException;
+
+    void deleteChannel(int id);
+
+    boolean isModerator(int channelId) throws RemoteException;
+    void loadEverything();
 }

@@ -5,6 +5,7 @@ import com.example.chatsystem.server.client.Client;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class ModelManager implements Model
     private PropertyChangeSupport support;
 
     private ArrayList<Message> messages;
+    private ArrayList<Channel> channels;
 
     public ModelManager() throws IOException, InterruptedException, SQLException
     {
@@ -34,31 +36,33 @@ public class ModelManager implements Model
         support = new PropertyChangeSupport(this);
         messages = new ArrayList<>();
 
-        room = new Room(1, "dummy", "qeq3q3y");
+        room = new Room(2, "dummy", "qeq3q3y");
 
     }
 
     @Override
     public void login(String viaID, String username, String password) throws IOException, InterruptedException
     {
-
-        ArrayList<Channel> channels = server.getChannelsInTheRoom(room.getId());
+        channels = server.getChannelsInTheRoom(room.getId());
         user = server.login(username, password);
-
         channel = channels.get(channels.size() - 1);
-
-        support.firePropertyChange("load channels", null, channels);
         this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
-        support.firePropertyChange("user", null, user);
 
+    }
+
+    public void loadEverything()
+    {
+        support.firePropertyChange("load channels", null, channels);
+        support.firePropertyChange("user", null, user);
     }
 
     @Override
     public void register(String viaID, String username, String password, String imageUrl) throws IOException
     {
+        channels = server.getChannelsInTheRoom(room.getId());
         user = server.register(viaID, username, password, imageUrl);
+        channel = channels.get(channels.size() - 1);
         this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
-        support.firePropertyChange("user", null, user);
     }
 
     public void receiveUsersInRoom(ArrayList<UserInterface> users)
@@ -143,7 +147,6 @@ public class ModelManager implements Model
     @Override
     public void editMessage(int id, String message) throws IOException
     {
-        System.out.println(id);
         server.editMessage(id, message, channel.getId());
     }
 
@@ -170,13 +173,39 @@ public class ModelManager implements Model
     }
 
     @Override
-    public void editChannel(int id, String newChannelName) throws IOException, SQLException
+    public boolean editChannel(int id, String newChannelName) throws IOException, SQLException
     {
-        server.editChannel(id, newChannelName);
+        if(user.isModerator())
+            server.editChannel(id, newChannelName);
+        return user.isModerator();
     }
 
     public void reloadChannel(Channel channel)
     {
         support.firePropertyChange("reload channel", null, channel);
+    }
+
+    @Override
+    public void deleteChannel(int id)
+    {
+        try
+        {
+            if(user.isModerator())
+                server.deleteChannel(id);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void receiveChannelToRemove(int channelId)
+    {
+        support.firePropertyChange("delete channel", null, channelId);
+    }
+
+    @Override
+    public boolean isModerator(int channelId) throws RemoteException
+    {
+        return server.isModerator(user.getViaId(), channelId);
     }
 }

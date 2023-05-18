@@ -139,4 +139,16 @@ public class Client implements Runnable, ServerModel
     {
         listener.editChannel(id, newChannelName);
     }
+
+    @Override
+    public void deleteChannel(int id) throws RemoteException, IOException
+    {
+        listener.deleteChannel(id);
+    }
+
+    @Override
+    public boolean isModerator(String chatterId, int roomId) throws RemoteException
+    {
+        return listener.isModerator(chatterId, roomId);
+    }
 }

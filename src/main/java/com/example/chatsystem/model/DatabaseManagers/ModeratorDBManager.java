@@ -30,6 +30,27 @@ public class ModeratorDBManager
         }
     }
 
+    public boolean isModeratorInRoom(String viaID, int room_id)
+    {
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement ps1 = connection.prepareStatement("SELECT COUNT(*) FROM ModeratorRoomList WHERE room_id=? AND moderator_id=?");
+            ps1.setInt(1, room_id);
+            ps1.setString(2, viaID);
+            ResultSet rs = ps1.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; // User is a moderator if count is greater than 0
+            }
+
+        } catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
     public void deleteModeratorByID(String viaID)
     {
         try (Connection connection = getConnection())

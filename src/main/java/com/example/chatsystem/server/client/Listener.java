@@ -59,7 +59,7 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
                 }
             }
 
-            case "channel was edited", "channel was deleted" -> {
+            case "channel was edited" -> {
                 try
                 {
                     Channel channel = data.getChannelDBManager().getChannelById(remotePropertyChangeEvent.getNewValue());
@@ -69,6 +69,10 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
                 {
                     throw new RuntimeException(e);
                 }
+            }
+
+            case "channel was deleted" -> {
+                modelManager.receiveChannelToRemove(remotePropertyChangeEvent.getNewValue());
             }
         }
     }
@@ -161,5 +165,17 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     public void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException
     {
         serverModel.editChannel(id, newChannelName);
+    }
+
+    @Override
+    public void deleteChannel(int id) throws RemoteException, IOException
+    {
+        serverModel.deleteChannel(id);
+    }
+
+    @Override
+    public boolean isModerator(String chatterId, int roomId) throws RemoteException
+    {
+        return serverModel.isModerator(chatterId, roomId);
     }
 }

@@ -78,6 +78,7 @@ public class ChatController implements Controller, PropertyChangeListener
         this.viewModel.bindUserImage(profileImage);
         this.viewModel.addPropertyChangeListener(this);
         this.viewHandler.addPropertyChangeListener(this);
+        this.viewModel.loadEverything();
         this.messageMyTemplate.setManaged(false);
         this.messageOthersTemplate.setManaged(false);
         this.textField.setTextFormatter(new TextFormatter<String>(change ->
@@ -146,7 +147,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
         animation.setByX(-transitionValue);
         chatPane.getChildren().add(vBox);
-        if(template.equals(messageMyTemplate) && !message.getMessage().equals("deleted message"))
+        if((viewModel.isMyMessage(message) || viewModel.isModerator(message.getChannelId())) && !message.getMessage().equals("deleted message"))
         {
             HashMap<String, Runnable> options = new HashMap<>();
 
@@ -159,7 +160,9 @@ public class ChatController implements Controller, PropertyChangeListener
                 }
             });
 
-            options.put("Edit", () -> editMessage(message.getMessage()));
+            if(!viewModel.isModerator(message.getChannelId()))
+                options.put("Edit", () -> editMessage(message.getMessage()));
+
             options.put("Delete", () -> deleteMessage(vBox));
         }
         if(isNeedAnimation)
@@ -403,7 +406,6 @@ public class ChatController implements Controller, PropertyChangeListener
                 if(isEditChannel)
                 {
                     isEditChannel = false;
-                    selectedChannel.setText(newChannelField.getText());
                     viewModel.editChannel(viewModel.getChannelByIndex(indexOfChannelToChange).getName(), newChannelField.getText());
                 }
                 else {
@@ -484,7 +486,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
     private void deleteChannel()
     {
-        channelListPane.getChildren().remove(selectedChannel);
+        viewModel.deleteChannel(indexOfChannelToChange);
     }
 
 
@@ -627,6 +629,12 @@ public class ChatController implements Controller, PropertyChangeListener
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            case "delete channel" -> {
+                int index = (int) evt.getNewValue();
+                channelListPane.getChildren().remove(index);
+                System.out.println("Bruhhhhhhhhhhhhhhhhhhh");
             }
         }
     }

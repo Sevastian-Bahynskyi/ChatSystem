@@ -72,7 +72,7 @@ public class LoginController implements Controller
     @FXML
     void onLogin()
     {
-        if(isCurrentStateLogin && viewModel.onLogin()) // if login successfull
+        if(isCurrentStateLogin && viewModel.onLogin())
             viewHandler.openView(WINDOW.CHAT);
         else if (!isCurrentStateLogin && viewModel.onRegister())
         {

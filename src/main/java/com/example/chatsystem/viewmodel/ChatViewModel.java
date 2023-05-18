@@ -9,9 +9,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -64,6 +64,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
 
         support.firePropertyChange("clear messages", null, true);
+        messageIdList.clear();
         for (Message message:messages)
         {
             messageIdList.add(message.getId());
@@ -154,6 +155,18 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
                 Platform.runLater(() -> support.firePropertyChange("reload channel", null, List.of(channel, index)));
             }
+
+            case "delete channel" -> {
+                for (var ch:channelList)
+                {
+                    if(ch.getId() == (int) evt.getNewValue())
+                    {
+                        int index = channelList.indexOf(ch);
+                        support.firePropertyChange("delete channel", null, index);
+                        channelList.remove(index);
+                    }
+                }
+            }
         }
     }
 
@@ -186,7 +199,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         try
         {
-
             model.editMessage(messageIdList.get(index), newMessage);
         }
         catch (IOException e)
@@ -226,8 +238,31 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         for (var ch:channelList)
         {
-            if(ch.getName().equals(oldChannelName))
-                model.editChannel(ch.getId(), newChannelName);
+            if(ch.getName().equals(oldChannelName) && model.editChannel(ch.getId(), newChannelName))
+            {
+                ch.setName(newChannelName);
+            }
         }
+    }
+
+    public void deleteChannel(int indexOfChannelToChange)
+    {
+        model.deleteChannel(channelList.get(indexOfChannelToChange).getId());
+    }
+
+    public boolean isModerator(int channelId)
+    {
+        try
+        {
+            return model.isModerator(channelId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void loadEverything()
+    {
+        model.loadEverything();
     }
 }
