@@ -43,4 +43,8 @@ public interface ServerModel extends Remote
     void deleteChannel(int id) throws RemoteException, IOException;
 
     boolean isModerator(String chatterId, int channelId) throws RemoteException;
+
+    void createRoom(String name, String code) throws RemoteException;
+
+    ArrayList<Room> getRooms() throws RemoteException;
 }

@@ -24,6 +24,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     private ObjectProperty<Image> userImage;
     private ArrayList<Integer> messageIdList;
     private ArrayList<Channel> channelList;
+    private ArrayList<Room> roomList;
     private PropertyChangeSupport support;
 
 
@@ -36,6 +37,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.users = new SimpleListProperty<>();
         this.messageIdList = new ArrayList<>();
         this.channelList = new ArrayList<>();
+        this.roomList = new ArrayList<>();
         model.addPropertyChangeListener(this);
     }
 
@@ -166,6 +168,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                         channelList.remove(index);
                     }
                 }
+            }
+
+            case "load rooms" -> {
+                ArrayList<Room> rooms = (ArrayList<Room>) evt.getNewValue();
+                roomList.addAll(rooms);
+                support.firePropertyChange("load rooms", null, evt.getNewValue());
             }
         }
     }

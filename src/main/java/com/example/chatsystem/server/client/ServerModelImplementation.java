@@ -166,4 +166,17 @@ public class ServerModelImplementation implements ServerModel
         Room room = data.getRoomDBManager().getRoomByChannel(channelId);
         return data.getModeratorDBManager().isModeratorInRoom(chatterId, room.getId());
     }
+
+    @Override
+    public void createRoom(String name, String code) throws RemoteException
+    {
+        Room room = data.getRoomDBManager().createRoom(name, code);
+        support.firePropertyChange("room was added", null, room.getId());
+    }
+
+    @Override
+    public ArrayList<Room> getRooms()
+    {
+        return (ArrayList<Room>) data.getRoomDBManager().getRooms();
+    }
 }

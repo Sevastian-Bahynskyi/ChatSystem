@@ -151,4 +151,16 @@ public class Client implements Runnable, ServerModel
     {
         return listener.isModerator(chatterId, roomId);
     }
+
+    @Override
+    public void createRoom(String name, String code) throws RemoteException
+    {
+        listener.createRoom(name, code);
+    }
+
+    @Override
+    public ArrayList<Room> getRooms()
+    {
+        return listener.getRooms();
+    }
 }

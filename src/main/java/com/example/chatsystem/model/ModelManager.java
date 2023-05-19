@@ -21,6 +21,7 @@ public class ModelManager implements Model
 
     private ArrayList<Message> messages;
     private ArrayList<Channel> channels;
+    private ArrayList<Room> rooms;
 
     public ModelManager() throws IOException, InterruptedException, SQLException
     {
@@ -34,24 +35,18 @@ public class ModelManager implements Model
         }
         server.run();
         support = new PropertyChangeSupport(this);
-        messages = new ArrayList<>();
-
-        room = new Room(2, "dummy", "qeq3q3y");
-
     }
 
     @Override
     public void login(String viaID, String username, String password) throws IOException, InterruptedException
     {
-        channels = server.getChannelsInTheRoom(room.getId());
         user = server.login(username, password);
-        channel = channels.get(channels.size() - 1);
-        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
-
+        doFirstLoad();
     }
 
     public void loadEverything()
     {
+        support.firePropertyChange("load rooms", null, rooms);
         support.firePropertyChange("load channels", null, channels);
         support.firePropertyChange("user", null, user);
     }
@@ -59,10 +54,24 @@ public class ModelManager implements Model
     @Override
     public void register(String viaID, String username, String password, String imageUrl) throws IOException
     {
-        channels = server.getChannelsInTheRoom(room.getId());
         user = server.register(viaID, username, password, imageUrl);
-        channel = channels.get(channels.size() - 1);
-        this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
+        doFirstLoad();
+    }
+
+    private void doFirstLoad() throws IOException
+    {
+        rooms = server.getRooms();
+        if(!rooms.isEmpty())
+            room = rooms.get(0);
+
+        channels = server.getChannelsInTheRoom(room.getId());
+
+        if(!channels.isEmpty())
+            channel = channels.get(0);
+
+        if(channel != null)
+            this.messages = (ArrayList<Message>) server.getAllMessagesByChannel(channel.getId());
+        else this.messages = new ArrayList<>();
     }
 
     public void receiveUsersInRoom(ArrayList<UserInterface> users)
@@ -105,8 +114,13 @@ public class ModelManager implements Model
     {
         Room room = new Room(1, name, code);
         room.setImageUrl(imageURL);
-        // todo call server and create room in the table there
-        support.firePropertyChange("room added", null, room);
+        try
+        {
+            server.createRoom(name, code);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -207,5 +221,10 @@ public class ModelManager implements Model
     public boolean isModerator(int channelId) throws RemoteException
     {
         return server.isModerator(user.getViaId(), channelId);
+    }
+
+    public void receiveNewRoom(Room room)
+    {
+        support.firePropertyChange("room added", null, room);
     }
 }

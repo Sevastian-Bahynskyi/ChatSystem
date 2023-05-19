@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class RoomDBManager
@@ -22,8 +24,7 @@ public class RoomDBManager
 
     private Connection getConnection() throws SQLException
     {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2",
-                "postgres","password");
+        return DatabaseConfig.getDataSource().getConnection();
     }
 
     public Room createRoom(String name, String code)
@@ -47,9 +48,9 @@ public class RoomDBManager
         Room room = null;
         try(Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Room");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Room ORDER BY id DESC LIMIT 1");
             ResultSet rs = ps.executeQuery();
-            while (rs.next())
+            if (rs.next())
                 room = new Room(rs.getInt("id"), rs.getString("name"), rs.getString("code"));
         }
         catch (SQLException e)
@@ -57,6 +58,27 @@ public class RoomDBManager
             System.err.println(e.getMessage());
         }
         return room;
+    }
+
+
+    public List<Room> getRooms()
+    {
+        ArrayList<Room> rooms = new ArrayList<>();
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Room ORDER BY id DESC");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+            {
+                Room room = new Room(rs.getInt("id"), rs.getString("name"), rs.getString("code"));
+                rooms.add(room);
+            }
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+        return rooms;
     }
 
     public Room readRoom(int id) // can I change the name to findRoom

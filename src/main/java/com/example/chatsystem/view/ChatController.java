@@ -499,6 +499,35 @@ public class ChatController implements Controller, PropertyChangeListener
         newChannelField.positionCaret(newChannelField.getLength());
     }
 
+    private void addRoom(Room room)
+    {
+        Circle circle = new Circle(30);
+        Label label = new Label(room.getName());
+        label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
+        Popup popup = new Popup();
+
+
+        VBox vbox = new VBox(label);
+        vbox.setStyle("-fx-background-color: #4C956C;");
+        vbox.setPadding(new Insets(0, 10, 0,10));
+        popup.getContent().add(vbox);
+
+
+        circle.setOnMouseEntered(event -> {
+            popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
+        });
+
+
+        circle.setOnMouseExited(event -> {
+            popup.hide();
+        });
+
+        if(room.getImage() != null)
+            circle.setFill(new ImagePattern(room.getImage()));
+
+        roomList.getChildren().add(circle);
+    }
+
 
     @Override
     public void propertyChange(PropertyChangeEvent evt)
@@ -543,31 +572,7 @@ public class ChatController implements Controller, PropertyChangeListener
 
             case "room added" -> {
                 Room room = (Room) evt.getNewValue();
-                Circle circle = new Circle(30);
-                Label label = new Label(room.getName());
-                label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
-                Popup popup = new Popup();
-
-
-                VBox vbox = new VBox(label);
-                vbox.setStyle("-fx-background-color: #4C956C;");
-                vbox.setPadding(new Insets(0, 10, 0,10));
-                popup.getContent().add(vbox);
-
-
-                circle.setOnMouseEntered(event -> {
-                    popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
-                });
-
-
-                circle.setOnMouseExited(event -> {
-                    popup.hide();
-                });
-
-                if(room.getImage() != null)
-                    circle.setFill(new ImagePattern(room.getImage()));
-
-                roomList.getChildren().add(circle);
+                addRoom(room);
             }
 
             case "reload messages" -> {
@@ -628,6 +633,14 @@ public class ChatController implements Controller, PropertyChangeListener
                     {
                         throw new RuntimeException(e);
                     }
+                }
+            }
+
+            case "load rooms" -> {
+                ArrayList<Room> rooms = (ArrayList<Room>) evt.getNewValue();
+                for (var r:rooms)
+                {
+                    addRoom(r);
                 }
             }
 

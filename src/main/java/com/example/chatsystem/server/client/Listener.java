@@ -74,6 +74,11 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
             case "channel was deleted" -> {
                 modelManager.receiveChannelToRemove(remotePropertyChangeEvent.getNewValue());
             }
+
+            case "room was added" -> {
+                Room room = data.getRoomDBManager().readRoom(remotePropertyChangeEvent.getNewValue());
+                modelManager.receiveNewRoom(room);
+            }
         }
     }
 
@@ -168,14 +173,50 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void deleteChannel(int id) throws RemoteException, IOException
+    public void deleteChannel(int id)
     {
-        serverModel.deleteChannel(id);
+        try
+        {
+            serverModel.deleteChannel(id);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public boolean isModerator(String chatterId, int roomId) throws RemoteException
+    public boolean isModerator(String chatterId, int roomId)
     {
-        return serverModel.isModerator(chatterId, roomId);
+        try
+        {
+            return serverModel.isModerator(chatterId, roomId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void createRoom(String name, String code)
+    {
+        try
+        {
+            serverModel.createRoom(name, code);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<Room> getRooms()
+    {
+        try
+        {
+            return serverModel.getRooms();
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
