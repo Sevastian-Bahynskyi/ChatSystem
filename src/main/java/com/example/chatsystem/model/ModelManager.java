@@ -80,11 +80,29 @@ public class ModelManager implements Model
     }
 
     @Override
-    public ArrayList<Message> getMessages(int channelId) throws IOException
+    public ArrayList<Message> getMessages(int channelId)
     {
         if(channelId == -1)
             return messages;
-        else return (ArrayList<Message>) server.getAllMessagesByChannel(channelId);
+        else {
+
+            try
+            {
+                this.channel = server.getChannel(channelId);
+            } catch (IOException | SQLException e)
+            {
+                throw new RuntimeException(e);
+            }
+            return (ArrayList<Message>) server.getAllMessagesByChannel(channelId);
+        }
+    }
+
+    @Override
+    public ArrayList<Channel> getChannels(int roomId)
+    {
+        if(roomId == -1)
+            return channels;
+        else return server.getChannelsInTheRoom(roomId);
     }
 
     @Override

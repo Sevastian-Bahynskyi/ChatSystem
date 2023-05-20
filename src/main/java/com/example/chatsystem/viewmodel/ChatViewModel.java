@@ -55,14 +55,14 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         return userImage.get();
     }
 
-    public void loadMessages(int index) throws IOException
+    public void loadMessagesByChannelIndex(int channelIndex)
     {
         ArrayList<Message> messages = null;
-        if(index == -1)
+        if(channelIndex == -1)
             messages = model.getMessages(-1);
         else
         {
-            messages = model.getMessages(channelList.get(index).getId());
+            messages = model.getMessages(channelList.get(channelIndex).getId());
         }
 
         support.firePropertyChange("clear messages", null, true);
@@ -73,6 +73,30 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
             support.firePropertyChange("new message", null,
                     List.of(message, message.getUser().equals(model.getUser())));
         }
+    }
+
+    public void loadChannelsByRoomIndex(int roomIndex)
+    {
+        ArrayList<Channel> channels = null;
+        if(roomIndex == -1)
+            channels = model.getChannels(-1);
+        else
+        {
+            channels = model.getChannels(roomList.get(roomIndex).getId());
+        }
+
+        support.firePropertyChange("clear channels", null, true);
+        channelList.clear();
+        channelList.addAll(channels);
+        for (var ch:channels)
+        {
+            support.firePropertyChange("new channel", null, ch);
+        }
+
+        if(!channelList.isEmpty())
+            loadMessagesByChannelIndex(0);
+
+        // todo catch events and handle them in controller
     }
 
     public void bindUserImage(ObjectProperty<Image> property)
@@ -101,13 +125,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
             case "user" -> {
                 userImage.set(((Chatter) evt.getNewValue()).getImage());
-                try
-                {
-                    loadMessages(-1);
-                } catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
+                loadMessagesByChannelIndex(-1);
             }
 
             case "update user list" -> {
@@ -117,6 +135,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
             case "room added" -> {
                 Room room = (Room) evt.getNewValue();
+                roomList.add(room);
                 Platform.runLater(() -> support.firePropertyChange("room added", null, room));
             }
 
@@ -130,11 +149,8 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
             }
 
             case "new channel" -> {
-
-                Platform.runLater(() -> {
-                    channelList.add(((Channel) evt.getNewValue()));
-                    support.firePropertyChange("new channel", null, evt.getNewValue());
-                });
+                channelList.add(((Channel) evt.getNewValue()));
+                support.firePropertyChange("new channel", null, evt.getNewValue());
             }
 
             case "load channels" -> {

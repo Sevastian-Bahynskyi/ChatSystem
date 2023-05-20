@@ -15,7 +15,8 @@ public interface Model
 
     void register(String VIAid, String username, String password, String imageUrl) throws IOException;
 
-    ArrayList<Message> getMessages(int channelId) throws IOException;
+    ArrayList<Message> getMessages(int channelId);
+    ArrayList<Channel> getChannels(int roomId);
 
     UserInterface getUser();
 

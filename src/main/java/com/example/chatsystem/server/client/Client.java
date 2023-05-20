@@ -93,9 +93,15 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public List<Message> getAllMessagesByChannel(int channelID) throws IOException
+    public List<Message> getAllMessagesByChannel(int channelID)
     {
-        return listener.getAllMessagesByChannel(channelID);
+        try
+        {
+            return listener.getAllMessagesByChannel(channelID);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -129,9 +135,15 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public ArrayList<Channel> getChannelsInTheRoom(int roomId) throws RemoteException, IOException
+    public ArrayList<Channel> getChannelsInTheRoom(int roomId)
     {
-        return listener.getChannelsInTheRoom(roomId);
+        try
+        {
+            return listener.getChannelsInTheRoom(roomId);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

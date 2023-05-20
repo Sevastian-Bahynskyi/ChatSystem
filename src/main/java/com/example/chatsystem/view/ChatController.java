@@ -12,6 +12,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -19,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -453,13 +455,7 @@ public class ChatController implements Controller, PropertyChangeListener
             {
                 onChannelClick(event);
 
-                try
-                {
-                    viewModel.loadMessages(indexOfChannel);
-                } catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
+                viewModel.loadMessagesByChannelIndex(indexOfChannel);
             }
         });
         if (selectedChannel != null) {
@@ -499,11 +495,13 @@ public class ChatController implements Controller, PropertyChangeListener
         newChannelField.positionCaret(newChannelField.getLength());
     }
 
+    private HBox currentRoom;
+
     private void addRoom(Room room)
     {
         Circle circle = new Circle(30);
         Label label = new Label(room.getName());
-        label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16");
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 14");
         Popup popup = new Popup();
 
 
@@ -512,9 +510,29 @@ public class ChatController implements Controller, PropertyChangeListener
         vbox.setPadding(new Insets(0, 10, 0,10));
         popup.getContent().add(vbox);
 
+        HBox imageRoomContainer = new HBox(circle);
+        imageRoomContainer.setMaxWidth(Double.MAX_VALUE);
+        imageRoomContainer.setAlignment(Pos.CENTER);
+
+
+        roomList.getChildren().add(imageRoomContainer);
+        if(roomList.getChildren().size() == 1)
+        {
+            currentRoom = imageRoomContainer;
+            imageRoomContainer.getStyleClass().add("room-selected");
+        }
 
         circle.setOnMouseEntered(event -> {
-            popup.show(circle.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
+            popup.show(imageRoomContainer.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
+        });
+
+        circle.setOnMouseClicked(event -> {
+            if(currentRoom != null)
+                currentRoom.getStyleClass().remove(currentRoom.getStyleClass().size() - 1);
+            currentRoom = imageRoomContainer;
+            imageRoomContainer.getStyleClass().add("room-selected");
+            int index = roomList.getChildren().indexOf(imageRoomContainer);
+            viewModel.loadChannelsByRoomIndex(index);
         });
 
 
@@ -525,7 +543,6 @@ public class ChatController implements Controller, PropertyChangeListener
         if(room.getImage() != null)
             circle.setFill(new ImagePattern(room.getImage()));
 
-        roomList.getChildren().add(circle);
     }
 
 
@@ -648,6 +665,10 @@ public class ChatController implements Controller, PropertyChangeListener
                 int index = (int) evt.getNewValue();
                 channelListPane.getChildren().remove(index);
                 System.out.println("Bruhhhhhhhhhhhhhhhhhhh");
+            }
+
+            case "clear channels" -> {
+                channelListPane.getChildren().clear();
             }
         }
     }
