@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ class ChatViewModelTest
     Mockito.when(modelMock.getUserList()).thenReturn(dummyList);
     messagesDummy.add(dummyMessage);
     Mockito.when(modelMock.getMessages()).thenReturn(messagesDummy);
+
+    controllerMock = Mockito.mock(ChatController.class);
 
   }
 
@@ -99,5 +102,34 @@ class ChatViewModelTest
     Mockito.doNothing().when(modelMock).editMessage(intValue.capture().intValue(),stringValue.capture());
     chatViewModel.editMessage(1,"dummy message captured");
     assertEquals("dummy message captured", stringValue.getValue());
+  }
+
+  @Test void delete_message_passes_the_index_and_calls_the_method_in_model() throws IOException
+  {
+    ArgumentCaptor<Integer> intValue = ArgumentCaptor.forClass(Integer.class);
+
+    Mockito.doNothing().when(modelMock).deleteMessage(intValue.capture().intValue());
+    chatViewModel.deleteMessage(1);
+    assertEquals(1 ,intValue.getValue());
+  }
+
+  @Test void get_users_calls_the_method_in_model_and_returns_an_array()
+      throws IOException
+  {
+    ArrayList<UserInterface> usersList = chatViewModel.getUsers();
+    ArrayList<UserInterface> compareList = new ArrayList<>();
+    compareList.add(Dummy);
+
+    assertEquals(compareList,usersList);
+  }
+
+  @Test void add_property_change_listener_adds_property_change_to_object()
+  {
+    chatViewModel.addPropertyChangeListener(controllerMock);
+  }
+
+  @Test void remove_property_change_listener_adds_property_change_to_object()
+  {
+    chatViewModel.removePropertyChangeListener(controllerMock);
   }
 }
