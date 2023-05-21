@@ -175,4 +175,28 @@ public class Client implements Runnable, ServerModel
     {
         return listener.getRooms();
     }
+
+    @Override
+    public void editRoom(int roomId, String roomName, String roomCode, String imageUrl)
+    {
+        try
+        {
+            listener.editRoom(roomId, roomName, roomCode, imageUrl);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isModeratorInRoom(String viaId, int roomId) throws RemoteException
+    {
+        return listener.isModeratorInRoom(viaId, roomId);
+    }
+
+    @Override
+    public ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException
+    {
+        return listener.getUserListInRoom(roomId);
+    }
 }

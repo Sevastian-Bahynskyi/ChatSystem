@@ -20,7 +20,7 @@ public class AddRoomController implements Controller
 {
 
     @FXML
-    private Button createRoomButton;
+    protected Button createRoomButton;
 
     @FXML
     private Label errorLabel, generateCode, setImageLabel;
@@ -36,8 +36,8 @@ public class AddRoomController implements Controller
 
 
     private Region root;
-    private RoomViewModel viewModel;
-    private ViewHandler viewHandler;
+    protected RoomViewModel viewModel;
+    protected ViewHandler viewHandler;
 
 
     @Override
@@ -53,20 +53,20 @@ public class AddRoomController implements Controller
     }
 
     @FXML
-    void onCreateRoom()
+    protected void onCreateRoom()
     {
         viewModel.onCreateRoom();
         viewHandler.closeWindow(root);
     }
 
     @FXML
-    void onGenerateCode()
+    protected void onGenerateCode()
     {
         viewModel.generateCode();
     }
 
     @FXML
-    void onKeyPressed(KeyEvent event)
+    protected void onKeyPressed(KeyEvent event)
     {
         if(event.getCode() == KeyCode.ENTER)
         {
@@ -82,7 +82,7 @@ public class AddRoomController implements Controller
     }
 
     @FXML
-    void onSetImage()
+    protected void onSetImage()
     {
         try
         {

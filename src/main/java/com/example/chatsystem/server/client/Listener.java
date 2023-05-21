@@ -37,8 +37,16 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
             }
 
             case "register" -> {
-                var userList = data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
-                this.modelManager.receiveUsersInRoom((ArrayList<UserInterface>) userList);
+                var userList = (ArrayList<UserInterface>) data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
+                for (UserInterface user:userList)
+                {
+                    UserInterface moderator = data.getModeratorDBManager().getModeratorByID(user.getViaId());
+                    if(moderator != null)
+                    {
+                        userList.set(userList.indexOf(user), moderator);
+                    }
+                }
+                this.modelManager.receiveUsersInRoom(userList);
             }
 
             case "message was edited", "message was deleted" -> {
@@ -75,7 +83,7 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
                 modelManager.receiveChannelToRemove(remotePropertyChangeEvent.getNewValue());
             }
 
-            case "room was added" -> {
+            case "room was added", "room was edited" -> {
                 Room room = data.getRoomDBManager().readRoom(remotePropertyChangeEvent.getNewValue());
                 modelManager.receiveNewRoom(room);
             }
@@ -215,6 +223,37 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
         {
             return serverModel.getRooms();
         } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void editRoom(int roomId, String roomName, String roomCode, String imageUrl) throws RemoteException
+    {
+        serverModel.editRoom(roomId, roomName, roomCode, imageUrl);
+    }
+
+    @Override
+    public boolean isModeratorInRoom(String viaId, int roomId)
+    {
+        try
+        {
+            return serverModel.isModeratorInRoom(viaId, roomId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<UserInterface> getUserListInRoom(int roomId)
+    {
+
+        try
+        {
+            return serverModel.getUserListInRoom(roomId);
+        } catch (IOException e)
         {
             throw new RuntimeException(e);
         }

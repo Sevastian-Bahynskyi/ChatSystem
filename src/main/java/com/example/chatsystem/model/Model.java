@@ -40,4 +40,8 @@ public interface Model
 
     boolean isModerator(int channelId) throws RemoteException;
     void loadEverything();
+
+    void editRoom(String roomName, String roomCode, String imageUrl);
+
+    boolean isModeratorInRoom(int roomId);
 }

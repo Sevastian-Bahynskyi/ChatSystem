@@ -19,18 +19,15 @@ public class ViewModelFactory
         this.roomViewModel = new RoomViewModel(model);
         this.model = model;
     }
-    public ViewModel getViewModel(Controller controller)
+    public ViewModel getViewModel(WINDOW window)
     {
-        if(controller instanceof ChatController)
+        return switch (window)
         {
-            return chatViewModel;
-        }
-        else if(controller instanceof LoginController)
-            return loginViewModel;
-        else if(controller instanceof AddRoomController)
-            return roomViewModel;
-
-        return null;
+            case CHAT -> chatViewModel;
+            case LOG -> loginViewModel;
+            case ADD_ROOM, EDIT_ROOM -> roomViewModel;
+            default -> null;
+        };
     }
 
     public Model getModel()

@@ -23,6 +23,7 @@ public interface ServerModel extends Remote
     UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException;
 
     ArrayList<UserInterface> getUserList() throws RemoteException, IOException;
+    ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException;
 
     Data getData() throws RemoteException;
 
@@ -47,4 +48,8 @@ public interface ServerModel extends Remote
     void createRoom(String name, String code) throws RemoteException;
 
     ArrayList<Room> getRooms() throws RemoteException;
+
+    void editRoom(int roomId, String roomName, String roomCode, String imageUrl) throws RemoteException;
+
+    boolean isModeratorInRoom(String viaId, int roomId) throws RemoteException;
 }

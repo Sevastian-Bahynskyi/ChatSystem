@@ -96,7 +96,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         if(!channelList.isEmpty())
             loadMessagesByChannelIndex(0);
 
-        // todo catch events and handle them in controller
     }
 
     public void bindUserImage(ObjectProperty<Image> property)
@@ -191,6 +190,16 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 roomList.addAll(rooms);
                 support.firePropertyChange("load rooms", null, evt.getNewValue());
             }
+
+            case "reload room" -> {
+                Room room = (Room) evt.getNewValue();
+                int index = IntStream.range(0, roomList.size())
+                        .filter(i -> roomList.get(i).getId() == room.getId())
+                        .findFirst()
+                        .orElse(-1);
+
+                Platform.runLater(() -> support.firePropertyChange("reload room", null, List.of(room, index)));
+            }
         }
     }
 
@@ -283,6 +292,11 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isModeratorInRoom(int roomId)
+    {
+        return model.isModeratorInRoom(roomId);
     }
 
     public void loadEverything()

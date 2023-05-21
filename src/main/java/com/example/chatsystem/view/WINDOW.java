@@ -2,5 +2,5 @@ package com.example.chatsystem.view;
 
 public enum WINDOW
 {
-    CHAT, LOG, ADD_ROOM
+    CHAT, LOG, EDIT_ROOM, ADD_ROOM
 }

@@ -1,6 +1,8 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
 import com.example.chatsystem.model.Chatter;
+import com.example.chatsystem.model.Data;
+import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 
 import java.io.Serializable;
@@ -116,12 +118,21 @@ public class ChatterDBManager
     {
         List<UserInterface> userList = new ArrayList<>();
         try(Connection conn = getConnection()) {
-            PreparedStatement ps = conn.prepareStatement("SELECT chatter_id FROM chatterroomlist where room_id = ?");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM chatterroomlist where room_id = ?");
             ps.setInt(1, roomID);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()){
-                userList.add(new Chatter(rs.getString(1), rs.getString(2), rs.getString(3)));
+                Data data = Data.getInstance();
+                String userId = rs.getString("chatter_id");
+                if(data.getModeratorDBManager().getModeratorByID(userId) == null)
+                {
+                    userList.add(read(userId));
+                }
+                else
+                {
+                    userList.add(data.getModeratorDBManager().getModeratorByID(userId));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

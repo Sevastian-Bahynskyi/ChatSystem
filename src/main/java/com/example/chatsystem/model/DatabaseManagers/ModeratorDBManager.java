@@ -70,10 +70,11 @@ public class ModeratorDBManager
         UserInterface tempMod = null;
         try (Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password from chatter join moderatorroommlist m on chatter.viaid = m.moderator_id where moderator_id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password from chatter join moderatorroomlist m on chatter.viaid = m.moderator_id where moderator_id = ?");
             ps.setString(1, moderatorId);
             ResultSet rs = ps.executeQuery();
-            tempMod = new Moderator(rs.getString(1), rs.getString(2), rs.getString(3));
+            if(rs.next())
+                tempMod = new Moderator(rs.getString(1), rs.getString(2), rs.getString(3));
         } catch (SQLException e)
         {
             System.err.println(e.getMessage());

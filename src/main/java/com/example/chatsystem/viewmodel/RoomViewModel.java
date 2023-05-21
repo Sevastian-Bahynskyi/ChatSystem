@@ -91,4 +91,16 @@ public class RoomViewModel implements ViewModel
         }
     }
 
+    public void onEditRoom()
+    {
+        try
+        {
+            modelManager.editRoom(nameFieldProperty.getValue(), codeFieldProperty.getValue(), imageUrl);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            errorLabelProperty.setValue(e.getMessage());
+        }
+    }
 }

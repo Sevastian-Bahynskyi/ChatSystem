@@ -1,11 +1,10 @@
 package com.example.chatsystem.view;
 
-import com.example.chatsystem.model.Channel;
-import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.Room;
-import com.example.chatsystem.model.UserInterface;
+import com.example.chatsystem.model.*;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcons;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -354,11 +353,23 @@ public class ChatController implements Controller, PropertyChangeListener
             newUser.setMinSize(messageOthersTemplate.getMinWidth(), messageOthersTemplate.getMinHeight());
             newUser.setPadding(newUser.getPadding());
             newUser.getStyleClass().add("message-template");
-            newUser.getChildren().add(generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16));
-            newUser.setOnMouseClicked(event ->
+            HBox userUi = generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16);
+//            var channel = viewModel.getChannelByIndex(channelListPane.getChildren().indexOf(selectedChannel));
+            if(user.isModerator())
             {
-                showContextMenu(options, event.getScreenX(), event.getScreenY());
-            });
+                var starIcon = new FontAwesomeIcon();
+                starIcon.setIcon(FontAwesomeIcons.STAR);
+                starIcon.setFill(Color.YELLOW);
+                userUi.getChildren().add(starIcon);
+            }
+            newUser.getChildren().add(userUi);
+
+            if(user.isModerator()) {
+                newUser.setOnMouseClicked(event ->
+                {
+                    showContextMenu(options, event.getScreenX(), event.getScreenY());
+                });
+            }
 
 
             children.add(newUser);
@@ -499,6 +510,12 @@ public class ChatController implements Controller, PropertyChangeListener
 
     private void addRoom(Room room)
     {
+        addRoom(roomList.getChildren().size(), room);
+
+    }
+
+    private void addRoom(int index, Room room)
+    {
         Circle circle = new Circle(30);
         Label label = new Label(room.getName());
         label.setStyle("-fx-text-fill: white; -fx-font-size: 14");
@@ -515,7 +532,7 @@ public class ChatController implements Controller, PropertyChangeListener
         imageRoomContainer.setAlignment(Pos.CENTER);
 
 
-        roomList.getChildren().add(imageRoomContainer);
+        roomList.getChildren().add(index, imageRoomContainer);
         if(roomList.getChildren().size() == 1)
         {
             currentRoom = imageRoomContainer;
@@ -527,12 +544,25 @@ public class ChatController implements Controller, PropertyChangeListener
         });
 
         circle.setOnMouseClicked(event -> {
-            if(currentRoom != null)
+            if (currentRoom != null)
                 currentRoom.getStyleClass().remove(currentRoom.getStyleClass().size() - 1);
             currentRoom = imageRoomContainer;
             imageRoomContainer.getStyleClass().add("room-selected");
-            int index = roomList.getChildren().indexOf(imageRoomContainer);
-            viewModel.loadChannelsByRoomIndex(index);
+            int indexX = roomList.getChildren().indexOf(imageRoomContainer);
+            viewModel.loadChannelsByRoomIndex(indexX);
+
+            if(event.getButton() == MouseButton.SECONDARY)
+            {
+                if(viewModel.isModeratorInRoom(room.getId()))
+                {
+                    HashMap<String, Runnable> options = new HashMap<>();
+                    options.put("Edit", () -> {
+                        roomToEdit = imageRoomContainer;
+                        viewHandler.openParallelView(WINDOW.EDIT_ROOM);
+                    });
+                    showContextMenu(options, event.getScreenX(), event.getScreenY());
+                }
+            }
         });
 
 
@@ -544,6 +574,8 @@ public class ChatController implements Controller, PropertyChangeListener
             circle.setFill(new ImagePattern(room.getImage()));
 
     }
+
+    private HBox roomToEdit = null;
 
 
     @Override
@@ -669,6 +701,13 @@ public class ChatController implements Controller, PropertyChangeListener
 
             case "clear channels" -> {
                 channelListPane.getChildren().clear();
+            }
+
+            case "reload room" -> {
+                List<Object> t = (List<Object>) evt.getNewValue();
+                Room room = (Room) t.get(0);
+                int index = (int) t.get(1);
+                addRoom(index, room);
             }
         }
     }

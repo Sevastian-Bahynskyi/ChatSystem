@@ -100,7 +100,7 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public Room getRoom(int id) throws RemoteException, IOException
     {
-        return null;
+        return data.getRoomDBManager().readRoom(id);
     }
 
     @Override
@@ -178,5 +178,24 @@ public class ServerModelImplementation implements ServerModel
     public ArrayList<Room> getRooms()
     {
         return (ArrayList<Room>) data.getRoomDBManager().getRooms();
+    }
+
+    @Override
+    public void editRoom(int roomId, String roomName, String roomCode, String imageUrl) throws RemoteException
+    {
+        data.getRoomDBManager().updateRoom(roomId, new Room(roomName, roomCode));
+        support.firePropertyChange("room was edited", null, roomId);
+    }
+
+    @Override
+    public boolean isModeratorInRoom(String viaId, int roomId) throws RemoteException
+    {
+        return data.getModeratorDBManager().isModeratorInRoom(viaId, roomId);
+    }
+
+    @Override
+    public ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException
+    {
+        return (ArrayList<UserInterface>) data.getChatterDBManager().readAllByRoomID(roomId);
     }
 }

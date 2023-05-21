@@ -21,6 +21,7 @@ public class ModelManager implements Model
 
     private ArrayList<Message> messages;
     private ArrayList<Channel> channels;
+    private ArrayList<UserInterface> users;
     private ArrayList<Room> rooms;
 
     public ModelManager() throws IOException, InterruptedException, SQLException
@@ -48,6 +49,7 @@ public class ModelManager implements Model
     {
         support.firePropertyChange("load rooms", null, rooms);
         support.firePropertyChange("load channels", null, channels);
+        support.firePropertyChange("update user list", null, users);
         support.firePropertyChange("user", null, user);
     }
 
@@ -62,7 +64,10 @@ public class ModelManager implements Model
     {
         rooms = server.getRooms();
         if(!rooms.isEmpty())
+        {
             room = rooms.get(0);
+            users = server.getUserListInRoom(room.getId());
+        }
 
         channels = server.getChannelsInTheRoom(room.getId());
 
@@ -102,7 +107,20 @@ public class ModelManager implements Model
     {
         if(roomId == -1)
             return channels;
-        else return server.getChannelsInTheRoom(roomId);
+        else {
+            try
+            {
+                this.room = server.getRoom(roomId);
+                users = server.getUserListInRoom(room.getId());
+                System.out.println(users);
+                // user list is empty all the time
+
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            return server.getChannelsInTheRoom(roomId);
+        }
     }
 
     @Override
@@ -130,8 +148,6 @@ public class ModelManager implements Model
 
     public void addRoom(String name, String code, String imageURL)
     {
-        Room room = new Room(1, name, code);
-        room.setImageUrl(imageURL);
         try
         {
             server.createRoom(name, code);
@@ -241,8 +257,29 @@ public class ModelManager implements Model
         return server.isModerator(user.getViaId(), channelId);
     }
 
+    @Override
+    public boolean isModeratorInRoom(int roomId)
+    {
+        try
+        {
+            return server.isModeratorInRoom(user.getViaId(), roomId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void receiveNewRoom(Room room)
     {
-        support.firePropertyChange("room added", null, room);
+        if(rooms.contains(room))
+            support.firePropertyChange("reload room", null, room);
+        else
+            support.firePropertyChange("room added", null, room);
+    }
+
+    @Override
+    public void editRoom(String roomName, String roomCode, String imageUrl)
+    {
+        server.editRoom(room.getId(), roomName, roomCode, imageUrl);
     }
 }

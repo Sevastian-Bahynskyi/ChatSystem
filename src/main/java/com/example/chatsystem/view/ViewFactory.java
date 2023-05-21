@@ -24,14 +24,15 @@ public class ViewFactory
     }
     public Region loadView(WINDOW view)
     {
-        String fxmlFile;
-        switch (view)
+        String fxmlFile = switch (view)
         {
-            case LOG -> fxmlFile = "login_view.fxml";
-            case CHAT -> fxmlFile = "chat_view.fxml";
-            case ADD_ROOM -> fxmlFile = "add_room_view.fxml";
+            case LOG -> "login_view.fxml";
+            case CHAT ->  "chat_view.fxml";
+            case ADD_ROOM -> "add_room_view.fxml";
+            case EDIT_ROOM -> "edit_room_view.fxml";
             default -> throw new IllegalArgumentException("Didn't find the appropriate view.");
-        }
+        };
+
         if (newController == null || currentController.getClass().equals(newController.getClass()))
         {
             FXMLLoader loader = new FXMLLoader();
@@ -39,7 +40,7 @@ public class ViewFactory
             try {
                 Region root = loader.load();
                 newController = loader.getController();
-                newController.init(viewHandler, viewModelFactory.getViewModel(newController), root);
+                newController.init(viewHandler, viewModelFactory.getViewModel(view), root);
 
             } catch (IOException e) {
                 e.printStackTrace();
