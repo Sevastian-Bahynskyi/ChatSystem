@@ -84,16 +84,6 @@ class ChatViewModelTest
     PropertyChangeEvent evt = new PropertyChangeEvent(chatViewModel,"new message",null,dummyMessage);
     chatViewModel.propertyChange(evt);
   }
-  @Test void edit_user_allows_the_user_to_be_edited()
-  {
-    chatViewModel.editUser();
-    assertTrue(false);
-  }
-  @Test void delete_user_allows_the_user_to_be_deleted()
-  {
-    chatViewModel.deleteUser();
-    assertTrue(false);
-  }
   @Test void edit_message_calls_model_edit_message() throws IOException
   {
     ArgumentCaptor<String> stringValue = ArgumentCaptor.forClass(String.class);

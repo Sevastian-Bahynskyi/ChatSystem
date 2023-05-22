@@ -93,6 +93,10 @@
     -fx-background-color: #6d267c;
 }
 
+.code-dialog-pane *{
+    -fx-background-color: pink;
+}
+
 .channel{
     -fx-background-color: transparent;
     -fx-text-fill: white;

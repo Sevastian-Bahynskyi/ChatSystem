@@ -1,10 +1,8 @@
 package com.example.chatsystem.model.DatabaseManagers;
 
-import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 
-import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,13 +63,14 @@ public class ModeratorDBManager
     }
 
 
-    public UserInterface getModeratorByID(String moderatorId)
+    public UserInterface getModeratorByIDInRoom(String moderatorId, int roomId)
     {
         UserInterface tempMod = null;
         try (Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password from chatter join moderatorroomlist m on chatter.viaid = m.moderator_id where moderator_id = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT viaid, username, password from chatter join moderatorroomlist m on chatter.viaid = m.moderator_id where moderator_id = ? AND m.room_id = ?");
             ps.setString(1, moderatorId);
+            ps.setInt(2, roomId);
             ResultSet rs = ps.executeQuery();
             if(rs.next())
                 tempMod = new Moderator(rs.getString(1), rs.getString(2), rs.getString(3));

@@ -161,16 +161,15 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public boolean isModerator(String chatterId, int channelId)
+    public boolean isModerator(String chatterId, int roomId)
     {
-        Room room = data.getRoomDBManager().getRoomByChannel(channelId);
-        return data.getModeratorDBManager().isModeratorInRoom(chatterId, room.getId());
+        return data.getModeratorDBManager().isModeratorInRoom(chatterId, roomId);
     }
 
     @Override
-    public void createRoom(String name, String code) throws RemoteException
+    public void createRoom(UserInterface user, String name, String code) throws RemoteException
     {
-        Room room = data.getRoomDBManager().createRoom(name, code);
+        Room room = data.getRoomDBManager().createRoom(user, name, code);
         support.firePropertyChange("room was added", null, room.getId());
     }
 
@@ -197,5 +196,23 @@ public class ServerModelImplementation implements ServerModel
     public ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException
     {
         return (ArrayList<UserInterface>) data.getChatterDBManager().readAllByRoomID(roomId);
+    }
+
+    @Override
+    public void banUser(int roomId, UserInterface user)
+    {
+        data.getChatterDBManager().banUserInRoom(user.getViaId(), roomId);
+    }
+
+    @Override
+    public void makeModerator(UserInterface user, int roomId) throws RemoteException
+    {
+        data.getChatterDBManager().makeModeratorInRoom(user.getViaId(), roomId);
+    }
+
+    @Override
+    public void addChatterToRoom(UserInterface user, Room room) throws RemoteException
+    {
+        data.getRoomDBManager().addChatterToRoom(user, room);
     }
 }

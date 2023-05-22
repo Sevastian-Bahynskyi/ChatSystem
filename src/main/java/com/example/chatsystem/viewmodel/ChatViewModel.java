@@ -75,7 +75,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
     }
 
-    public void loadChannelsByRoomIndex(int roomIndex)
+    public boolean loadChannelsByRoomIndex(int roomIndex)
     {
         ArrayList<Channel> channels = null;
         if(roomIndex == -1)
@@ -84,6 +84,9 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
             channels = model.getChannels(roomList.get(roomIndex).getId());
         }
+
+        if(channels == null)
+            return false;
 
         support.firePropertyChange("clear channels", null, true);
         channelList.clear();
@@ -94,9 +97,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
 
         if(!channelList.isEmpty())
-            loadMessagesByChannelIndex(0);
+            loadMessagesByChannelIndex(channelList.size() - 1);
 
         support.firePropertyChange("update user list", null, model.getUserList());
+        return true;
     }
 
     public void bindUserImage(ObjectProperty<Image> property)
@@ -201,6 +205,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
                 Platform.runLater(() -> support.firePropertyChange("reload room", null, List.of(room, index)));
             }
+
+            case "join a room" -> {
+                Platform.runLater(() -> support.firePropertyChange("join a room", null, evt.getNewValue()));
+            }
         }
     }
 
@@ -217,16 +225,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
         support.removePropertyChangeListener(listener);
-    }
-
-    public void editUser()
-    {
-        System.out.println("edit option was chosen");
-    }
-
-    public void deleteUser()
-    {
-        System.out.println("delete option was chosen");
     }
 
     public void editMessage(int index, String newMessage)
@@ -303,5 +301,47 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     public void loadEverything()
     {
         model.loadEverything();
+    }
+
+    public boolean amIModerator()
+    {
+        return model.getUser().isModerator();
+    }
+
+    public void banUser(UserInterface user)
+    {
+        model.banUser(user);
+    }
+
+    public void makeModerator(UserInterface user)
+    {
+        user = new Moderator(user);
+        model.makeModerator(user);
+    }
+
+    public void selectRoom(Room room)
+    {
+        for (var r:roomList)
+        {
+            if(r.getId() == room.getId())
+            {
+                loadChannelsByRoomIndex(roomList.indexOf(r));
+            }
+        }
+    }
+
+    public void joinRoom(Room room)
+    {
+        model.joinRoom(room);
+    }
+
+    public int getRoomIndex(int id)
+    {
+        for (var r:roomList)
+        {
+            if(r.getId() == id)
+                return roomList.indexOf(r);
+        }
+        return -1;
     }
 }

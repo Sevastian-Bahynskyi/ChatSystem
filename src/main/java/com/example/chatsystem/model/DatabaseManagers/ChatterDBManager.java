@@ -2,10 +2,8 @@ package com.example.chatsystem.model.DatabaseManagers;
 
 import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.model.Data;
-import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 
-import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,13 +123,13 @@ public class ChatterDBManager
             while (rs.next()){
                 Data data = Data.getInstance();
                 String userId = rs.getString("chatter_id");
-                if(data.getModeratorDBManager().getModeratorByID(userId) == null)
+                if(data.getModeratorDBManager().getModeratorByIDInRoom(userId, roomID) == null)
                 {
                     userList.add(read(userId));
                 }
                 else
                 {
-                    userList.add(data.getModeratorDBManager().getModeratorByID(userId));
+                    userList.add(data.getModeratorDBManager().getModeratorByIDInRoom(userId, roomID));
                 }
             }
         } catch (SQLException e) {
@@ -140,10 +138,43 @@ public class ChatterDBManager
         return userList;
     }
 
+    public void makeModeratorInRoom(String viaId, int roomId)
+    {
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO moderatorroomlist (room_id, moderator_id) values(?, ?)");
+
+            ps.setInt(1, roomId);
+            ps.setString(2, viaId);
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void banUserInRoom(String viaId, int roomId)
+    {
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM chatterroomlist WHERE room_id = ? AND chatter_id = ?");
+
+            ps.setInt(1, roomId);
+            ps.setString(2, viaId);
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
+    }
+
     private Connection getConnection() throws SQLException
     {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2","postgres","password");
     }
+
 
 }

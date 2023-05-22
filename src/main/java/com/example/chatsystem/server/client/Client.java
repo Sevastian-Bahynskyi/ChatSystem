@@ -165,9 +165,9 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void createRoom(String name, String code) throws RemoteException
+    public void createRoom(UserInterface user, String name, String code) throws RemoteException
     {
-        listener.createRoom(name, code);
+        listener.createRoom(user, name, code);
     }
 
     @Override
@@ -198,5 +198,29 @@ public class Client implements Runnable, ServerModel
     public ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException
     {
         return listener.getUserListInRoom(roomId);
+    }
+
+    @Override
+    public void banUser(int roomId, UserInterface user)
+    {
+        listener.banUser(roomId, user);
+    }
+
+    @Override
+    public void makeModerator(UserInterface user, int roomId)
+    {
+        listener.makeModerator(user, roomId);
+    }
+
+    @Override
+    public void addChatterToRoom(UserInterface user, Room room)
+    {
+        try
+        {
+            listener.addChatterToRoom(user, room);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

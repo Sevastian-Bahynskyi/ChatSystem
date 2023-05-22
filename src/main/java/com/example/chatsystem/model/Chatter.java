@@ -24,9 +24,18 @@ public class Chatter implements UserInterface,Serializable
         this.imageUrl = Data.getDefaultImageUrl();
     }
 
+    public Chatter(UserInterface user)
+    {
+        this.VIAid = user.getViaId();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+    }
+
     @Override
     public Image getImage()
     {
+        if(imageUrl == null)
+            imageUrl = Data.getDefaultImageUrl();
         return new Image(getClass().getResourceAsStream(imageUrl));
     }
 
@@ -95,11 +104,11 @@ public class Chatter implements UserInterface,Serializable
     @Override
     public boolean equals(Object obj)
     {
-        if(obj == null || obj.getClass() != getClass())
+        if(obj == null || obj.getClass().getInterfaces()[0] != getClass().getInterfaces()[0])
             return false;
 
-        Chatter u = (Chatter) obj;
-        return u.username.equals(username) && u.password.equals(password);
+        UserInterface u = (UserInterface) obj;
+        return u.getUsername().equals(username) && u.getPassword().equals(password);
     }
 
     @Override public String getViaId()

@@ -44,4 +44,10 @@ public interface Model
     void editRoom(String roomName, String roomCode, String imageUrl);
 
     boolean isModeratorInRoom(int roomId);
+
+    void banUser(UserInterface user);
+
+    void makeModerator(UserInterface user);
+
+    void joinRoom(Room room);
 }

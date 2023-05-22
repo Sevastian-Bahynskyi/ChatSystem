@@ -38,14 +38,6 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
 
             case "register" -> {
                 var userList = (ArrayList<UserInterface>) data.getChatterDBManager().readAllByRoomID(modelManager.getRoomId());
-                for (UserInterface user:userList)
-                {
-                    UserInterface moderator = data.getModeratorDBManager().getModeratorByID(user.getViaId());
-                    if(moderator != null)
-                    {
-                        userList.set(userList.indexOf(user), moderator);
-                    }
-                }
                 this.modelManager.receiveUsersInRoom(userList);
             }
 
@@ -205,11 +197,11 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void createRoom(String name, String code)
+    public void createRoom(UserInterface user, String name, String code)
     {
         try
         {
-            serverModel.createRoom(name, code);
+            serverModel.createRoom(user, name, code);
         } catch (RemoteException e)
         {
             throw new RuntimeException(e);
@@ -257,5 +249,35 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void banUser(int roomId, UserInterface user)
+    {
+        try
+        {
+            serverModel.banUser(roomId, user);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void makeModerator(UserInterface user, int roomId)
+    {
+        try
+        {
+            serverModel.makeModerator(user, roomId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void addChatterToRoom(UserInterface user, Room room) throws RemoteException
+    {
+        serverModel.addChatterToRoom(user, room);
     }
 }

@@ -3,6 +3,7 @@ package com.example.chatsystem.model;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Moderator implements UserInterface, Serializable
 {
@@ -23,8 +24,17 @@ public class Moderator implements UserInterface, Serializable
     this.imageUrl = Data.getDefaultImageUrl();
   }
 
+  public Moderator(UserInterface user)
+  {
+    this.VIAid = user.getViaId();
+    this.username = user.getUsername();
+    this.password = user.getPassword();
+  }
+
   @Override public Image getImage()
   {
+    if(imageUrl == null)
+      imageUrl = Data.getDefaultImageUrl();
     return new Image(getClass().getResourceAsStream(imageUrl));
   }
 
@@ -100,6 +110,18 @@ public class Moderator implements UserInterface, Serializable
 
     return true;
   }
+
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if(obj == null || obj.getClass().getInterfaces()[0] != getClass().getInterfaces()[0])
+      return false;
+
+    UserInterface u = (UserInterface) obj;
+    return u.getUsername().equals(username) && u.getPassword().equals(password);
+  }
+
 
   @Override
   public boolean isModerator()

@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ModelManager implements Model
 {
@@ -112,7 +113,17 @@ public class ModelManager implements Model
             {
                 this.room = server.getRoom(roomId);
                 users = server.getUserListInRoom(room.getId());
+                if(!users.contains(user))
+                {
+                    support.firePropertyChange("join a room", null, List.of(room, user));
+                    return null;
+                }
+                if(server.isModerator(user.getViaId(), room.getId()))
+                    user = new Moderator(user);
+                else
+                    user = new Chatter(user);
                 System.out.println(users);
+                System.out.println(user);
                 // user list is empty all the time
 
             } catch (IOException e)
@@ -121,6 +132,12 @@ public class ModelManager implements Model
             }
             return server.getChannelsInTheRoom(roomId);
         }
+    }
+
+    @Override
+    public void joinRoom(Room room)
+    {
+        server.addChatterToRoom(user, room);
     }
 
     @Override
@@ -133,6 +150,18 @@ public class ModelManager implements Model
     public void disconnect() throws IOException
     {
 //        server.disconnect();
+    }
+
+    @Override
+    public void banUser(UserInterface user)
+    {
+        server.banUser(room.getId(), user);
+    }
+
+    @Override
+    public void makeModerator(UserInterface user)
+    {
+        server.makeModerator(user, room.getId());
     }
 
     private Message currentMessage;
@@ -150,7 +179,9 @@ public class ModelManager implements Model
     {
         try
         {
-            server.createRoom(name, code);
+            server.createRoom(user, name, code);
+            user = new Moderator(user);
+            System.out.println(user);
         } catch (RemoteException e)
         {
             throw new RuntimeException(e);

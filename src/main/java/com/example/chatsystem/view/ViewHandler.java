@@ -98,6 +98,7 @@ public class ViewHandler
         parallelStage.setScene(parallelScene);
         parallelStage.sizeToScene();
         parallelStage.setResizable(true);
+        parallelStage.setAlwaysOnTop(true);
         parallelStage.show();
     }
 

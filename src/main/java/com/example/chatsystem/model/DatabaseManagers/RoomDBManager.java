@@ -4,6 +4,7 @@ package com.example.chatsystem.model.DatabaseManagers;
 import com.example.chatsystem.StartGui;
 import com.example.chatsystem.model.Data;
 import com.example.chatsystem.model.Room;
+import com.example.chatsystem.model.UserInterface;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -27,14 +28,22 @@ public class RoomDBManager
         return DatabaseConfig.getDataSource().getConnection();
     }
 
-    public Room createRoom(String name, String code)
+    public Room createRoom(UserInterface user, String name, String code)
     {
         try(Connection connection = getConnection())
         {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name, code) VALUES (?, ?)");
             ps.setString(1, name);
             ps.setString(2, code);
-            ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+            if(rs.next())
+            {
+                int roomId = rs.getInt("id");
+                ps = connection.prepareStatement("INSERT INTO moderatorroomlist (room_id, moderator_id) VALUES(?, ?)");
+                ps.setInt(1, roomId);
+                ps.setString(2, user.getViaId());
+            }
+
         }
         catch (SQLException e)
         {
@@ -158,6 +167,23 @@ public class RoomDBManager
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+
+    public void addChatterToRoom(UserInterface user, Room room)
+    {
+        try(Connection connection = getConnection())
+        {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO chatterroomlist (chatter_id, room_id) values(?, ?)");
+
+            ps.setString(1, user.getViaId());
+            ps.setInt(2, room.getId());
+            ps.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            System.err.println(e.getMessage());
+        }
     }
 }
 

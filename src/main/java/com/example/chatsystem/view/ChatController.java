@@ -9,6 +9,7 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -263,8 +264,11 @@ public class ChatController implements Controller, PropertyChangeListener
     void onSendMessage() throws IOException
     {
         String t = textField.getText();
-        if(t == null || t.isEmpty() || t.matches("^(\n)+$")) // doesn't allow to send messages that consist of '\n' chars
+        if(t == null || t.isEmpty() || (t.trim().isEmpty())) // doesn't allow to send messages that consist of '\n' chars
+        {
+            textField.clear();
             return;
+        }
         else if(t.equals("deleted message"))
         {
             textField.setText("");
@@ -340,9 +344,6 @@ public class ChatController implements Controller, PropertyChangeListener
         ArrayList<Node> children = new ArrayList<>();
 
 
-        HashMap<String, Runnable> options = new HashMap<>();
-        options.put("Edit", () -> viewModel.editUser());
-        options.put("Delete", () -> viewModel.deleteUser());
 
 
         for (UserInterface user:users)
@@ -354,7 +355,7 @@ public class ChatController implements Controller, PropertyChangeListener
             newUser.setPadding(newUser.getPadding());
             newUser.getStyleClass().add("message-template");
             HBox userUi = generateTemplate(messageOthersTemplate, user.getImage(), user.getUsername(), 20, 16);
-//            var channel = viewModel.getChannelByIndex(channelListPane.getChildren().indexOf(selectedChannel));
+
             if(user.isModerator())
             {
                 var starIcon = new FontAwesomeIcon();
@@ -364,7 +365,48 @@ public class ChatController implements Controller, PropertyChangeListener
             }
             newUser.getChildren().add(userUi);
 
-            if(user.isModerator()) {
+            if(viewModel.amIModerator() && !user.isModerator()) {
+                HashMap<String, Runnable> options = new HashMap<>();
+                options.put("Ban", () -> {
+                    Dialog<String> dialog = new Dialog<>();
+                    dialog.setContentText("Do you confirm banning the user?");
+                    ButtonType confirmButton = new ButtonType("Confirm");
+                    dialog.getDialogPane().getButtonTypes().addAll(confirmButton, ButtonType.CANCEL);
+
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == confirmButton) {
+                            viewModel.banUser(user);
+                            userListPane.getChildren().remove(newUser);
+                        } else if (dialogButton == ButtonType.CANCEL) {
+                            dialog.close();
+                        }
+                        return null;
+                    });
+                    dialog.showAndWait();
+
+                });
+                options.put("Make a moderator", () -> {
+                    Dialog<String> dialog = new Dialog<>();
+                    dialog.setContentText("Do you confirm making the user a moderator?");
+                    ButtonType confirmButton = new ButtonType("Confirm");
+                    dialog.getDialogPane().getButtonTypes().addAll(confirmButton, ButtonType.CANCEL);
+
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == confirmButton) {
+                            viewModel.makeModerator(user);
+                            var starIcon = new FontAwesomeIcon();
+                            starIcon.setIcon(FontAwesomeIcons.STAR);
+                            starIcon.setFill(Color.YELLOW);
+                            newUser.setOnMouseClicked(null);
+                            userUi.getChildren().add(starIcon);
+                        } else if (dialogButton == ButtonType.CANCEL) {
+                            dialog.close();
+                        }
+                        return null;
+                    });
+                    dialog.showAndWait();
+                });
+
                 newUser.setOnMouseClicked(event ->
                 {
                     showContextMenu(options, event.getScreenX(), event.getScreenY());
@@ -544,12 +586,14 @@ public class ChatController implements Controller, PropertyChangeListener
         });
 
         circle.setOnMouseClicked(event -> {
+            int indexX = roomList.getChildren().indexOf(imageRoomContainer);
+            if(!viewModel.loadChannelsByRoomIndex(indexX))
+                return;
+
             if (currentRoom != null)
                 currentRoom.getStyleClass().remove(currentRoom.getStyleClass().size() - 1);
             currentRoom = imageRoomContainer;
             imageRoomContainer.getStyleClass().add("room-selected");
-            int indexX = roomList.getChildren().indexOf(imageRoomContainer);
-            viewModel.loadChannelsByRoomIndex(indexX);
 
             if(event.getButton() == MouseButton.SECONDARY)
             {
@@ -574,6 +618,7 @@ public class ChatController implements Controller, PropertyChangeListener
             circle.setFill(new ImagePattern(room.getImage()));
 
     }
+
 
     private HBox roomToEdit = null;
 
@@ -701,6 +746,58 @@ public class ChatController implements Controller, PropertyChangeListener
 
             case "clear channels" -> {
                 channelListPane.getChildren().clear();
+            }
+
+            case "join a room" -> {
+                var data = ((List) evt.getNewValue());
+                Room room = (Room) data.get(0);
+                UserInterface user = ((UserInterface) data.get(1));
+
+                String dialogColor = "pink";
+                TextInputDialog dialog = new TextInputDialog();
+                var dialogPane = dialog.getDialogPane();
+                dialogPane.setStyle("-fx-background-color: " + dialogColor);
+
+                dialog.setTitle("Input Dialog");
+                dialog.setHeaderText(null);
+                dialog.setContentText("Please enter the room code:");
+
+                // Show the dialog and wait for user input
+                Optional<String> result = dialog.showAndWait();
+
+                // Process the user input
+                result.ifPresent(code -> {
+                    Alert confirmationDialog;
+                    if(!code.equals(room.getCode()))
+                    {
+                        confirmationDialog = new Alert(Alert.AlertType.WARNING);
+                        confirmationDialog.setTitle("Oops");
+                        confirmationDialog.setHeaderText(null);
+                        confirmationDialog.setContentText("The code that was entered is incorrect!");
+                    }
+                    else
+                    {
+                        // Display a confirmation dialog with the entered name
+                        confirmationDialog = new Alert(Alert.AlertType.INFORMATION);
+                        confirmationDialog.setTitle("Welcome");
+                        confirmationDialog.setHeaderText(null);
+                        confirmationDialog.setContentText("You successfully joined the room: " + room.getName());
+                        viewModel.joinRoom(room);
+                        HBox hbox = (HBox) roomList.getChildren().get(viewModel.getRoomIndex(room.getId()));
+                        Circle circle = ((Circle) hbox.getChildren().get(0));
+                        MouseEvent clickEvent = new MouseEvent(
+                                MouseEvent.MOUSE_CLICKED,
+                                0, 0, 0, 0,
+                                MouseButton.PRIMARY, 1,
+                                false, false, false, false,
+                                true, false, false, false,
+                                true, true, null
+                        );
+                        circle.fireEvent(clickEvent);
+                    }
+                    confirmationDialog.getDialogPane().setStyle("-fx-background-color: " + dialogColor);
+                    confirmationDialog.showAndWait();
+                });
             }
 
             case "reload room" -> {
