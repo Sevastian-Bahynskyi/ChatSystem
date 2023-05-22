@@ -22,7 +22,7 @@ public interface Model
 
     void disconnect() throws IOException;
 
-    ArrayList<UserInterface> getUserList() throws IOException;
+    ArrayList<UserInterface> getUserList();
 
     int getChannelId();
 

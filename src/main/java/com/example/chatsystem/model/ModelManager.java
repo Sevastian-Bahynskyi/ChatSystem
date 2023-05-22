@@ -162,9 +162,9 @@ public class ModelManager implements Model
         support.addPropertyChangeListener(listener);
     }
 
-    public ArrayList<UserInterface> getUserList() throws IOException
+    public ArrayList<UserInterface> getUserList()
     {
-        return server.getUserList();
+        return users;
     }
 
     @Override

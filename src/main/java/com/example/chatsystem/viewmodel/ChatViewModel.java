@@ -96,6 +96,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         if(!channelList.isEmpty())
             loadMessagesByChannelIndex(0);
 
+        support.firePropertyChange("update user list", null, model.getUserList());
     }
 
     public void bindUserImage(ObjectProperty<Image> property)
