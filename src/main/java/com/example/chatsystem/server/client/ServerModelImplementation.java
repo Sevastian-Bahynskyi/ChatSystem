@@ -201,7 +201,7 @@ public class ServerModelImplementation implements ServerModel
     @Override
     public void banUser(int roomId, UserInterface user)
     {
-        data.getChatterDBManager().banUserInRoom(user.getViaId(), roomId);
+        data.getChatterDBManager().removeUserFromRoom(user.getViaId(), roomId);
     }
 
     @Override
@@ -214,5 +214,11 @@ public class ServerModelImplementation implements ServerModel
     public void addChatterToRoom(UserInterface user, Room room) throws RemoteException
     {
         data.getRoomDBManager().addChatterToRoom(user, room);
+    }
+
+    @Override
+    public void leaveRoom(String viaId, int roomId) throws RemoteException
+    {
+        data.getChatterDBManager().removeUserFromRoom(viaId, roomId);
     }
 }

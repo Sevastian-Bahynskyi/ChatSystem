@@ -286,4 +286,16 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     {
         serverModel.addChatterToRoom(user, room);
     }
+
+    @Override
+    public void leaveRoom(String viaId, int roomId)
+    {
+        try
+        {
+            serverModel.leaveRoom(viaId, roomId);
+        } catch (RemoteException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 }

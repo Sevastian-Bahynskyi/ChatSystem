@@ -55,6 +55,12 @@ public class ModelManager implements Model
     }
 
     @Override
+    public void leaveRoom()
+    {
+        server.leaveRoom(user.getViaId(), room.getId());
+    }
+
+    @Override
     public void register(String viaID, String username, String password, String imageUrl)
     {
         user = server.register(viaID, username, password, imageUrl);

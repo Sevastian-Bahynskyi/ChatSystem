@@ -21,7 +21,7 @@
    <children>
       <HBox styleClass="room-list-pane">
          <children>
-            <VBox prefHeight="200.0" prefWidth="115.0" styleClass="room-list-pane">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="115.0" styleClass="room-list-pane">
                <children>
                   <HBox alignment="CENTER">
                      <children>
@@ -48,6 +48,14 @@
                         <Insets bottom="5.0" />
                      </VBox.margin>
                   </ScrollPane>
+                  <Button mnemonicParsing="false" onAction="#onLeaveRoom" styleClass="leave-room-button" text="Leave room">
+                     <VBox.margin>
+                        <Insets bottom="15.0" top="15.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
                </children>
                <HBox.margin>
                   <Insets />

@@ -337,4 +337,9 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
         return -1;
     }
+
+    public void leaveRoom()
+    {
+        model.leaveRoom();
+    }
 }

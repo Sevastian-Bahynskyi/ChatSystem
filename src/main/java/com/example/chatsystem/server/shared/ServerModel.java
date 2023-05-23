@@ -58,4 +58,6 @@ public interface ServerModel extends Remote
     void makeModerator(UserInterface user, int roomId) throws RemoteException;
 
     void addChatterToRoom(UserInterface user, Room room) throws RemoteException;
+
+    void leaveRoom(String viaId, int roomId) throws RemoteException;
 }

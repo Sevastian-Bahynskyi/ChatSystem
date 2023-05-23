@@ -1,6 +1,5 @@
 package com.example.chatsystem.view.ChatControllerDelegates;
 
-import com.example.chatsystem.model.Channel;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Room;
 import com.example.chatsystem.model.UserInterface;
@@ -9,12 +8,9 @@ import com.example.chatsystem.view.ViewHandler;
 import com.example.chatsystem.view.WINDOW;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -25,15 +21,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
-import javafx.stage.Popup;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
 
 public class ChatController implements Controller, PropertyChangeListener
@@ -157,6 +151,26 @@ public class ChatController implements Controller, PropertyChangeListener
     public Region getRoot()
     {
         return root;
+    }
+
+    @FXML
+    protected void onLeaveRoom()
+    {
+        if(!viewModel.amIModerator())
+        {
+            viewModel.leaveRoom();
+            MouseEvent clickEvent = new MouseEvent(
+                    MouseEvent.MOUSE_CLICKED,
+                    0, 0, 0, 0,
+                    MouseButton.PRIMARY, 1,
+                    false, false, false, false,
+                    true, false, false, false,
+                    true, true, null
+            );
+//            currentRoom.getStyleClass().remove(0);
+            HBox temp = (HBox) roomList.getChildren().get(0);
+            temp.getChildren().get(0).fireEvent(clickEvent);
+        }
     }
 
     @FXML

@@ -50,4 +50,6 @@ public interface Model
     void makeModerator(UserInterface user);
 
     void joinRoom(Room room);
+
+    void leaveRoom();
 }

@@ -154,7 +154,7 @@ public class ChatterDBManager
         }
     }
 
-    public void banUserInRoom(String viaId, int roomId)
+    public void removeUserFromRoom(String viaId, int roomId)
     {
         try(Connection connection = getConnection())
         {
@@ -175,6 +175,4 @@ public class ChatterDBManager
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2","postgres","password");
     }
-
-
 }

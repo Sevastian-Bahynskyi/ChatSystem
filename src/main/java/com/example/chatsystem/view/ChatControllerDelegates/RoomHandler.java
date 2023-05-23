@@ -67,7 +67,8 @@ public class RoomHandler
                 return;
 
             if (c.currentRoom != null)
-                c.currentRoom.getStyleClass().remove(c.currentRoom.getStyleClass().size() - 1);
+                if(!c.currentRoom.getStyleClass().isEmpty())
+                    c.currentRoom.getStyleClass().remove(0);
             c.currentRoom = imageRoomContainer;
             imageRoomContainer.getStyleClass().add("room-selected");
 

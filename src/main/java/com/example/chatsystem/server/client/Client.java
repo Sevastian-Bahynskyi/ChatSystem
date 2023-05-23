@@ -277,4 +277,10 @@ public class Client implements Runnable, ServerModel
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void leaveRoom(String viaId, int roomId)
+    {
+        listener.leaveRoom(viaId, roomId);
+    }
 }

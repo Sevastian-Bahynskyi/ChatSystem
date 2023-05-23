@@ -109,6 +109,17 @@
     -fx-font-size: 14;
 }
 
+.leave-room-button:hover{
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
+
+.leave-room-button{
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-text-fill: red;
+}
+
 .room-selected{
     -fx-border-style: solid;
     -fx-border-width: 0 0 0 5px;
