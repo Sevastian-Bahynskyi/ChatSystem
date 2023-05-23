@@ -45,10 +45,9 @@ class ChatViewModelTest
     Mockito.when(modelMock.addMessage(dummyString)).thenReturn(dummyMessage);
     Mockito.when(modelMock.getUserList()).thenReturn(dummyList);
     messagesDummy.add(dummyMessage);
-    Mockito.when(modelMock.getMessages()).thenReturn(messagesDummy);
+    Mockito.when(modelMock.getMessages(1)).thenReturn(messagesDummy);
 
     controllerMock = Mockito.mock(ChatController.class);
-
   }
 
   @Test void onSendMessage_calls_addmessage_in_model_and_returns_message()
@@ -64,7 +63,7 @@ class ChatViewModelTest
   @Test void load_messages_throws_runs_the_for_loop()
   {
     Mockito.when(modelMock.getUser()).thenThrow(new ArithmeticException());
-    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessages());
+    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessagesByChannelIndex(1));
   }
 
   @Test void getUserImage_returns_an_Image_object()
