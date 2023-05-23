@@ -51,15 +51,27 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void sendMessage(Message message) throws RemoteException, IOException
+    public void sendMessage(Message message)
     {
-        listener.sendMessage(message);
+        try
+        {
+            listener.sendMessage(message);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public UserInterface login(String username, String password) throws RemoteException, IOException
+    public UserInterface login(String username, String password)
     {
-        return listener.login(username, password);
+        try
+        {
+            return listener.login(username, password);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -75,15 +87,21 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
+    public UserInterface register(String VIAid, String username, String password, String imageUrl)
     {
         return listener.register(VIAid, username, password, imageUrl);
     }
 
     @Override
-    public ArrayList<UserInterface> getUserList() throws RemoteException, IOException
+    public ArrayList<UserInterface> getUserList()
     {
-        return listener.getUserList();
+        try
+        {
+            return listener.getUserList();
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -105,33 +123,63 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public Channel getChannel(int id) throws RemoteException, IOException, SQLException
+    public Channel getChannel(int id)
     {
-        return listener.getChannel(id);
+        try
+        {
+            return listener.getChannel(id);
+        } catch (IOException | SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public Room getRoom(int id) throws RemoteException, IOException
+    public Room getRoom(int id)
     {
-        return listener.getRoom(id);
+        try
+        {
+            return listener.getRoom(id);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void editMessage(int id, String message, int channelID) throws RemoteException, IOException
+    public void editMessage(int id, String message, int channelID)
     {
-        listener.editMessage(id, message, channelID);
+        try
+        {
+            listener.editMessage(id, message, channelID);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deleteMessage(int id, int channelID) throws RemoteException, IOException
+    public void deleteMessage(int id, int channelID)
     {
-        listener.deleteMessage(id, channelID);
+        try
+        {
+            listener.deleteMessage(id, channelID);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void createChannel(String channelName, int roomId) throws IOException
+    public void createChannel(String channelName, int roomId)
     {
-        listener.createChannel(channelName, roomId);
+        try
+        {
+            listener.createChannel(channelName, roomId);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -147,13 +195,19 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void editChannel(int id, String newChannelName) throws RemoteException, IOException, SQLException
+    public void editChannel(int id, String newChannelName)
     {
-        listener.editChannel(id, newChannelName);
+        try
+        {
+            listener.editChannel(id, newChannelName);
+        } catch (IOException | SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deleteChannel(int id) throws RemoteException, IOException
+    public void deleteChannel(int id)
     {
         listener.deleteChannel(id);
     }
@@ -195,7 +249,7 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public ArrayList<UserInterface> getUserListInRoom(int roomId) throws RemoteException, IOException
+    public ArrayList<UserInterface> getUserListInRoom(int roomId)
     {
         return listener.getUserListInRoom(roomId);
     }

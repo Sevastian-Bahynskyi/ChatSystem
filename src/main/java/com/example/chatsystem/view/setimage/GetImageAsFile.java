@@ -1,7 +1,5 @@
 package com.example.chatsystem.view.setimage;
 
-import com.example.chatsystem.view.ChatController;
-import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -11,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class GetImageAsFile

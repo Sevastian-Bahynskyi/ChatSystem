@@ -41,7 +41,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         model.addPropertyChangeListener(this);
     }
 
-    public Message onSendMessage() throws IOException
+    public Message onSendMessage()
     {
         userImage.set(model.getUser().getImage());
         Message sentMessage = model.addMessage(textFieldProperty.get());
@@ -88,6 +88,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         if(channels == null)
             return false;
 
+        support.firePropertyChange("update user list", null, model.getUserList());
         support.firePropertyChange("clear channels", null, true);
         channelList.clear();
         channelList.addAll(channels);
@@ -99,7 +100,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         if(!channelList.isEmpty())
             loadMessagesByChannelIndex(channelList.size() - 1);
 
-        support.firePropertyChange("update user list", null, model.getUserList());
         return true;
     }
 
@@ -128,7 +128,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
             }
 
             case "user" -> {
-                userImage.set(((Chatter) evt.getNewValue()).getImage());
+                userImage.set(((UserInterface) evt.getNewValue()).getImage());
                 loadMessagesByChannelIndex(-1);
             }
 
@@ -229,14 +229,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public void editMessage(int index, String newMessage)
     {
-        try
-        {
-            model.editMessage(messageIdList.get(index), newMessage);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        model.editMessage(messageIdList.get(index), newMessage);
     }
 
     public void deleteMessage(int index)
@@ -251,12 +244,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         }
     }
 
-    public ArrayList<UserInterface> getUsers() throws IOException
+    public ArrayList<UserInterface> getUsers()
     {
         return model.getUserList();
     }
 
-    public void addChannel(String channelName) throws IOException
+    public void addChannel(String channelName)
     {
         model.createChannel(channelName);
     }
@@ -266,7 +259,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         return this.channelList.get(index);
     }
 
-    public void editChannel(String oldChannelName, String newChannelName) throws SQLException, IOException
+    public void editChannel(String oldChannelName, String newChannelName)
     {
         for (var ch:channelList)
         {

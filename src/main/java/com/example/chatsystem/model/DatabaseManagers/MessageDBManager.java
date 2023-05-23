@@ -65,7 +65,7 @@ public class MessageDBManager
     {
         System.out.println(LocalDateTime.now());
         ArrayList<Message> messageArrayList = new ArrayList<>();
-        try (Connection connection = DatabaseConfig.getDataSource().getConnection())
+        try (Connection connection = getConnection())
         {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM Message WHERE channel_id = ? ORDER BY id ASC");
 

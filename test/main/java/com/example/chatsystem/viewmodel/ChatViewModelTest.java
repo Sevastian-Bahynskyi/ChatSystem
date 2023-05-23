@@ -1,9 +1,7 @@
 package main.java.com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.*;
-import com.example.chatsystem.model.DatabaseManagers.ChannelDBManager;
-import com.example.chatsystem.server.client.Listener;
-import com.example.chatsystem.view.ChatController;
+import com.example.chatsystem.view.ChatControllerDelegates.ChatController;
 import com.example.chatsystem.viewmodel.ChatViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,7 +14,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;

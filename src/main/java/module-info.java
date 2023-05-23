@@ -20,4 +20,7 @@ module com.example.chatsystem {
     exports com.example.chatsystem.server.client to java.rmi;
     exports com.example.chatsystem;
     exports com.example.chatsystem.view;
+    exports com.example.chatsystem.viewmodel;
+    exports com.example.chatsystem.view.ChatControllerDelegates;
+    opens com.example.chatsystem.view.ChatControllerDelegates to javafx.fxml;
 }

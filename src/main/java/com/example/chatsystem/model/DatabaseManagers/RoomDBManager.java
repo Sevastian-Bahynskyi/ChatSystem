@@ -25,7 +25,8 @@ public class RoomDBManager
 
     private Connection getConnection() throws SQLException
     {
-        return DatabaseConfig.getDataSource().getConnection();
+        return DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres", "password");
     }
 
     public Room createRoom(UserInterface user, String name, String code)

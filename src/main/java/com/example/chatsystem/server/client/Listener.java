@@ -101,9 +101,15 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public UserInterface register(String VIAid, String username, String password, String imageUrl) throws RemoteException, IOException
+    public UserInterface register(String VIAid, String username, String password, String imageUrl)
     {
-        return serverModel.register(VIAid, username, password, imageUrl);
+        try
+        {
+            return serverModel.register(VIAid, username, password, imageUrl);
+        } catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

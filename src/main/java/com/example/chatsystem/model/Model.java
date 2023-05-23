@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public interface Model
 {
-    Message addMessage(String message) throws IOException;
+    Message addMessage(String message);
     void addPropertyChangeListener(PropertyChangeListener listener);
 
-    void login(String viaID, String username, String password) throws IOException, InterruptedException;
+    void login(String viaID, String username, String password);
 
-    void register(String VIAid, String username, String password, String imageUrl) throws IOException;
+    void register(String VIAid, String username, String password, String imageUrl);
 
     ArrayList<Message> getMessages(int channelId);
     ArrayList<Channel> getChannels(int roomId);
@@ -30,11 +30,11 @@ public interface Model
 
     void deleteMessage(int id) throws IOException;
 
-    void editMessage(int id, String message) throws IOException;
+    void editMessage(int id, String message);
 
-    void createChannel(String channelName) throws IOException;
+    void createChannel(String channelName);
 
-    boolean editChannel(int id, String newChannelName) throws IOException, SQLException;
+    boolean editChannel(int id, String newChannelName);
 
     void deleteChannel(int id);
 
