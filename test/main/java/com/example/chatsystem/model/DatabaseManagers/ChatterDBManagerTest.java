@@ -67,15 +67,6 @@ public class ChatterDBManagerTest
   }
 
   @Test
-  void creates_new_user_with_ID_out_of_bounds()
-  {
-    chatterDBManager.set
-    CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
-    customExceptionHandler.handleException(new SQLException());
-    assertEquals(customExceptionHandler.getCapturedExceptionMessage(), );
-  }
-
-  @Test
   void creataes_new_user_with_VIAID_0x6() throws SQLException
   {
     Chatter expected = new Chatter("000000", "test1", "TestPassword1");
