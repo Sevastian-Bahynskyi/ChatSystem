@@ -151,14 +151,7 @@ public class MessageDBTest
       ResultSet resultSet = preparedStatement.executeQuery();
       while (resultSet.next())
       {
-        if (resultSet.getBoolean("ismoderator"))
-        {
-          users.add(new Moderator(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
-        }
-        else
-        {
           users.add(new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
-        }
       }
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM message WHERE channel_id = '1';");
       ResultSet rs = statement.executeQuery();
@@ -202,14 +195,7 @@ public class MessageDBTest
       statement1.setString(1, rs.getString("chatter_id"));
       ResultSet resultSet = statement1.executeQuery();
       resultSet.next();
-      if (resultSet.getBoolean("ismoderator"))
-      {
-        userInterface = new Moderator(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
-      }
-      else
-      {
-        userInterface = new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
-      }
+      userInterface = new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
       expected = new Message(rs.getInt("id"), rs.getString("message"), rs.getTimestamp("timestamp"), userInterface, rs.getInt("channel_id"));
     }
     assertEquals(result.getMessage(), expected.getMessage());
@@ -241,14 +227,7 @@ public class MessageDBTest
       statement.setString(1, viaid);
       ResultSet rs = statement.executeQuery();
       rs.next();
-      if (rs.getBoolean("ismoderator"))
-      {
-        res = new Moderator(rs.getString("viaid"), rs.getString("username"), rs.getString("password"));
-      }
-      else
-      {
         res = new Chatter(rs.getString("viaid"), rs.getString("username"), rs.getString("password"));
-      }
       result = new Message(resultSet.getInt("id"), resultSet.getString("message"), res, resultSet.getInt("channel_id"));
     }
     assertEquals(expected.getMessage(), result.getMessage());
