@@ -8,6 +8,7 @@ module com.example.chatsystem {
     requires java.rmi;
     requires com.google.gson;
     requires java.sql;
+
   requires org.postgresql.jdbc;
 
     opens com.example.chatsystem to javafx.fxml;
