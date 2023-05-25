@@ -3,7 +3,6 @@ package com.example.chatsystem.model;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface Model
@@ -15,8 +14,8 @@ public interface Model
 
     void register(String VIAid, String username, String password, String imageUrl);
 
-    ArrayList<Message> getMessages(int channelId);
-    ArrayList<Channel> getChannels(int roomId);
+    ArrayList<Message> getMessagesInChannel(int channelId);
+    ArrayList<Channel> getChannelsInRoom(int roomId);
 
     UserInterface getUser();
 
@@ -39,7 +38,7 @@ public interface Model
     void deleteChannel(int id);
 
     boolean isModerator(int channelId) throws RemoteException;
-    void loadEverything();
+    void loadEverythingToTheViewModel();
 
     void editRoom(String roomName, String roomCode, String imageUrl);
 

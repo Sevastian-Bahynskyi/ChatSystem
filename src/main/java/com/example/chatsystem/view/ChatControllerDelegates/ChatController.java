@@ -167,7 +167,6 @@ public class ChatController implements Controller, PropertyChangeListener
                     true, false, false, false,
                     true, true, null
             );
-//            currentRoom.getStyleClass().remove(0);
             HBox temp = (HBox) roomList.getChildren().get(0);
             temp.getChildren().get(0).fireEvent(clickEvent);
         }

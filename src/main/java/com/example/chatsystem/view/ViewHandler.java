@@ -58,21 +58,23 @@ public class ViewHandler
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.setResizable(true);
-        stage.setOnCloseRequest(event ->
-        {
-            try
-            {
-                viewModelFactory.getModel().disconnect();
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-            Platform.exit();
-        });
+
         stage.show();
 
         if(view == WINDOW.CHAT)
-            support.firePropertyChange("load user list", null, true);
+        {
+            stage.setOnCloseRequest(event ->
+            {
+                try
+                {
+                    viewModelFactory.getModel().disconnect();
+                } catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+                Platform.exit();
+            });
+        }
 
     }
 

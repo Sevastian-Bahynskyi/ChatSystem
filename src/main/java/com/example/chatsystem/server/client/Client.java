@@ -9,6 +9,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Client implements Runnable, ServerModel
     public final int port;
     private ServerModel serverModel;
     private Listener listener;
+    private Registry registry;
     private ModelManager model;
 
     public Client(int port, ModelManager modelManager)
@@ -32,7 +34,7 @@ public class Client implements Runnable, ServerModel
     {
         try
         {
-            Registry registry = LocateRegistry.getRegistry(port);
+            registry = LocateRegistry.getRegistry(port);
             serverModel = (ServerModel) registry.lookup("ServerModel");
             listener = new Listener(serverModel, model);
             serverModel.addPropertyChangeListener(listener);
@@ -40,6 +42,18 @@ public class Client implements Runnable, ServerModel
         {
             e.printStackTrace();
         } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void disconnect()
+    {
+        try
+        {
+            registry.unbind("ServerModel");
+            System.exit(0);
+        } catch (RemoteException | NotBoundException e)
         {
             throw new RuntimeException(e);
         }

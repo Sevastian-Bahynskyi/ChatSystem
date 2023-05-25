@@ -42,7 +42,7 @@ class ChatViewModelTest
     Mockito.when(modelMock.addMessage(dummyString)).thenReturn(dummyMessage);
     Mockito.when(modelMock.getUserList()).thenReturn(dummyList);
     messagesDummy.add(dummyMessage);
-    Mockito.when(modelMock.getMessages()).thenReturn(messagesDummy);
+    Mockito.when(modelMock.getMessagesInChannel()).thenReturn(messagesDummy);
 
     controllerMock = Mockito.mock(ChatController.class);
 

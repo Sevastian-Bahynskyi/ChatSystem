@@ -10,7 +10,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,10 +58,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         ArrayList<Message> messages = null;
         if(channelIndex == -1)
-            messages = model.getMessages(-1);
+            messages = model.getMessagesInChannel(-1);
         else
         {
-            messages = model.getMessages(channelList.get(channelIndex).getId());
+            messages = model.getMessagesInChannel(channelList.get(channelIndex).getId());
         }
 
         support.firePropertyChange("clear messages", null, true);
@@ -79,10 +78,10 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         ArrayList<Channel> channels = null;
         if(roomIndex == -1)
-            channels = model.getChannels(-1);
+            channels = model.getChannelsInRoom(-1);
         else
         {
-            channels = model.getChannels(roomList.get(roomIndex).getId());
+            channels = model.getChannelsInRoom(roomList.get(roomIndex).getId());
         }
 
         if(channels == null)
@@ -293,7 +292,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public void loadEverything()
     {
-        model.loadEverything();
+        model.loadEverythingToTheViewModel();
     }
 
     public boolean amIModerator()
@@ -310,17 +309,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     {
         user = new Moderator(user);
         model.makeModerator(user);
-    }
-
-    public void selectRoom(Room room)
-    {
-        for (var r:roomList)
-        {
-            if(r.getId() == room.getId())
-            {
-                loadChannelsByRoomIndex(roomList.indexOf(r));
-            }
-        }
     }
 
     public void joinRoom(Room room)

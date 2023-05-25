@@ -1,5 +1,9 @@
 package com.example.chatsystem.model;
 
+import com.example.chatsystem.model.ModelManagerDelegates.ChannelHandler;
+import com.example.chatsystem.model.ModelManagerDelegates.MessageHandler;
+import com.example.chatsystem.model.ModelManagerDelegates.RoomHandler;
+import com.example.chatsystem.model.ModelManagerDelegates.UserHandler;
 import com.example.chatsystem.server.client.Client;
 
 import java.beans.PropertyChangeListener;
@@ -13,17 +17,25 @@ import java.util.List;
 
 public class ModelManager implements Model
 {
-    private Client server;
-    private UserInterface user;
-    private Room room;
-    private Channel channel;
-    private final int port = 5050;
-    private PropertyChangeSupport support;
+    protected Client server;
+    protected UserInterface user;
+    protected Room room;
+    protected Channel channel;
+    protected Message currentMessage;
+    protected final int port = 5050;
+    protected PropertyChangeSupport support;
 
-    private ArrayList<Message> messages;
-    private ArrayList<Channel> channels;
-    private ArrayList<UserInterface> users;
-    private ArrayList<Room> rooms;
+    protected ArrayList<Message> messages;
+    protected ArrayList<Channel> channels;
+    protected ArrayList<UserInterface> users;
+    protected ArrayList<Room> rooms;
+
+
+
+    private RoomHandler roomHandler;
+    private ChannelHandler channelHandler;
+    private MessageHandler messageHandler;
+    private UserHandler userHandler;
 
     public ModelManager()
     {
@@ -39,14 +51,7 @@ public class ModelManager implements Model
         support = new PropertyChangeSupport(this);
     }
 
-    @Override
-    public void login(String viaID, String username, String password)
-    {
-        user = server.login(username, password);
-        doFirstLoad();
-    }
-
-    public void loadEverything()
+    public void loadEverythingToTheViewModel()
     {
         support.firePropertyChange("update user list", null, users);
         support.firePropertyChange("load rooms", null, rooms);
@@ -54,20 +59,9 @@ public class ModelManager implements Model
         support.firePropertyChange("user", null, user);
     }
 
-    @Override
-    public void leaveRoom()
-    {
-        server.leaveRoom(user.getViaId(), room.getId());
-    }
 
-    @Override
-    public void register(String viaID, String username, String password, String imageUrl)
-    {
-        user = server.register(viaID, username, password, imageUrl);
-        doFirstLoad();
-    }
 
-    private void doFirstLoad()
+    protected void doFirstLoad()
     {
         rooms = server.getRooms();
         if(!rooms.isEmpty())
@@ -91,108 +85,176 @@ public class ModelManager implements Model
         }
     }
 
+
+    @Override
+    public void login(String viaID, String username, String password)
+    {
+        userHandler.login(viaID, username, password);
+    }
+
+    @Override
+    public void register(String viaID, String username, String password, String imageUrl)
+    {
+        userHandler.register(viaID, username, password, imageUrl);
+    }
+
     public void receiveUsersInRoom(ArrayList<UserInterface> users)
     {
-        support.firePropertyChange("update user list", null, users);
-    }
-
-    @Override
-    public ArrayList<Message> getMessages(int channelId)
-    {
-        if(channelId == -1)
-            return messages;
-        else {
-
-            this.channel = server.getChannel(channelId);
-            return (ArrayList<Message>) server.getAllMessagesByChannel(channelId);
-        }
-    }
-
-    @Override
-    public ArrayList<Channel> getChannels(int roomId)
-    {
-        if(roomId == -1)
-            return channels;
-        else {
-            try
-            {
-                this.room = server.getRoom(roomId);
-                users = server.getUserListInRoom(room.getId());
-                if(server.isModerator(user.getViaId(), room.getId()))
-                    user = new Moderator(user);
-                else
-                    user = new Chatter(user);
-
-                if(!users.contains(user))
-                {
-                    support.firePropertyChange("join a room", null, List.of(room, user));
-                    return null;
-                }
-
-                System.out.println(users);
-                System.out.println(user);
-                // user list is empty all the time
-
-            } catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-            return server.getChannelsInTheRoom(roomId);
-        }
-    }
-
-    @Override
-    public void joinRoom(Room room)
-    {
-        server.addChatterToRoom(user, room);
+        userHandler.receiveUsersInRoom(users);
     }
 
     @Override
     public UserInterface getUser()
     {
-        return user;
-    }
-
-    @Override
-    public void disconnect() throws IOException
-    {
-//        server.disconnect();
+        return userHandler.getUser();
     }
 
     @Override
     public void banUser(UserInterface user)
     {
-        server.banUser(room.getId(), user);
+        userHandler.banUser(user);
     }
 
     @Override
     public void makeModerator(UserInterface user)
     {
-        server.makeModerator(user, room.getId());
+        userHandler.makeModerator(user);
     }
 
-    private Message currentMessage;
+    @Override
+    public boolean isModerator(int channelId) throws RemoteException
+    {
+        return userHandler.isModerator(channelId);
+    }
+
+    @Override
+    public boolean isModeratorInRoom(int roomId)
+    {
+        return userHandler.isModeratorInRoom(roomId);
+    }
+
+    @Override
+    public ArrayList<UserInterface> getUserList()
+    {
+        return userHandler.getUserList();
+    }
+
+    public void addRoom(String name, String code, String imageURL)
+    {
+        roomHandler.addRoom(name, code, imageURL);
+    }
+
+    @Override
+    public void leaveRoom()
+    {
+        roomHandler.leaveRoom();
+    }
+
+    @Override
+    public ArrayList<Channel> getChannelsInRoom(int roomId)
+    {
+        return roomHandler.getChannelsInRoom(roomId);
+    }
+
+    @Override
+    public void joinRoom(Room room)
+    {
+        roomHandler.joinRoom(room);
+    }
+
+    @Override
+    public void editRoom(String roomName, String roomCode, String imageUrl)
+    {
+        roomHandler.editRoom(roomName, roomCode, imageUrl);
+    }
+
+    @Override
+    public int getRoomId()
+    {
+        return roomHandler.getRoomId();
+    }
+
+    public void receiveNewRoom(Room room)
+    {
+        roomHandler.receiveNewRoom(room);
+    }
+
+    @Override
+    public int getChannelId()
+    {
+        return channelHandler.getChannelId();
+    }
+
+    @Override
+    public void createChannel(String channelName)
+    {
+        channelHandler.createChannel(channelName);
+    }
+
+    public void receiveNewChannel(Channel channel)
+    {
+        channelHandler.receiveNewChannel(channel);
+    }
+
+    @Override
+    public boolean editChannel(int id, String newChannelName)
+    {
+        return channelHandler.editChannel(id, newChannelName);
+    }
+
+    public void reloadChannel(Channel channel)
+    {
+        channelHandler.reloadChannel(channel);
+    }
+
+    @Override
+    public void deleteChannel(int id)
+    {
+        channelHandler.deleteChannel(id);
+    }
+
+    public void receiveChannelToRemove(int channelId)
+    {
+        channelHandler.receiveChannelToRemove(channelId);
+    }
+
+    public void sendOthersMessage(Message message)
+    {
+        messageHandler.sendOthersMessage(message);
+    }
+
+    @Override
+    public void deleteMessage(int id)
+    {
+        messageHandler.deleteMessage(id);
+    }
+
+    @Override
+    public void editMessage(int id, String message)
+    {
+        messageHandler.editMessage(id, message);
+    }
+
+    @Override
+    public ArrayList<Message> getMessagesInChannel(int channelId)
+    {
+        return channelHandler.getMessagesInChannel(channelId);
+    }
+
+    public void reloadMessages(ArrayList<Message> messages)
+    {
+        messageHandler.reloadMessages(messages);
+    }
+
+    public void reloadMessage(Message mes)
+    {
+        messageHandler.reloadMessage(mes);
+    }
 
     @Override
     public Message addMessage(String message)
     {
-        Message mes = new Message(message, user, channel.getId());
-        server.sendMessage(mes);
-        return currentMessage;
-    }
-
-
-    public void addRoom(String name, String code, String imageURL)
-    {
-        try
-        {
-            server.createRoom(user, name, code);
-            user = new Moderator(user);
-            System.out.println(user);
-        } catch (RemoteException e)
-        {
-            throw new RuntimeException(e);
-        }
+        return messageHandler.addMessage(message);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -200,118 +262,10 @@ public class ModelManager implements Model
         support.addPropertyChangeListener(listener);
     }
 
-    public ArrayList<UserInterface> getUserList()
-    {
-        return users;
-    }
-
     @Override
-    public int getChannelId()
+    public void disconnect() throws IOException
     {
-        return channel.getId();
+        server.disconnect();
     }
 
-    public void sendOthersMessage(Message message)
-    {
-        currentMessage = message;
-        if(!message.getUser().equals(user))
-            support.firePropertyChange("new message", null, message);
-    }
-
-    @Override
-    public int getRoomId()
-    {
-        return room.getId();
-    }
-
-    @Override
-    public void deleteMessage(int id)
-    {
-        server.deleteMessage(id, channel.getId());
-    }
-
-    @Override
-    public void editMessage(int id, String message)
-    {
-        server.editMessage(id, message, channel.getId());
-    }
-
-    @Override
-    public void createChannel(String channelName)
-    {
-        server.createChannel(channelName, channel.getRoomId());
-    }
-
-    public void reloadMessages(ArrayList<Message> messages)
-    {
-        support.firePropertyChange("reload messages", null, messages);
-    }
-
-    public void reloadMessage(Message mes)
-    {
-        support.firePropertyChange("reload message", null, mes);
-    }
-
-    public void receiveNewChannel(Channel channel)
-    {
-        this.channel = channel;
-        support.firePropertyChange("new channel", null, channel);
-    }
-
-    @Override
-    public boolean editChannel(int id, String newChannelName)
-    {
-        if(user.isModerator())
-            server.editChannel(id, newChannelName);
-        return user.isModerator();
-    }
-
-    public void reloadChannel(Channel channel)
-    {
-        support.firePropertyChange("reload channel", null, channel);
-    }
-
-    @Override
-    public void deleteChannel(int id)
-    {
-        if(user.isModerator())
-            server.deleteChannel(id);
-    }
-
-    public void receiveChannelToRemove(int channelId)
-    {
-        support.firePropertyChange("delete channel", null, channelId);
-    }
-
-    @Override
-    public boolean isModerator(int channelId) throws RemoteException
-    {
-        return server.isModerator(user.getViaId(), channelId);
-    }
-
-    @Override
-    public boolean isModeratorInRoom(int roomId)
-    {
-        try
-        {
-            return server.isModeratorInRoom(user.getViaId(), roomId);
-        } catch (RemoteException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void receiveNewRoom(Room room)
-    {
-        if(rooms.contains(room))
-            support.firePropertyChange("reload room", null, room);
-        else
-            support.firePropertyChange("room added", null, room);
-    }
-
-    @Override
-    public void editRoom(String roomName, String roomCode, String imageUrl)
-    {
-        server.editRoom(room.getId(), roomName, roomCode, imageUrl);
-    }
 }
