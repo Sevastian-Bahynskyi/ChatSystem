@@ -2,14 +2,17 @@ package main.java.com.example.chatsystem.model.DatabaseManagers;
 
 import com.example.chatsystem.model.Chatter;
 import com.example.chatsystem.model.DatabaseManagers.ChatterDBManager;
+import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.postgresql.util.PSQLException;
 
 import java.sql.*;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ChatterDBManagerTest
 {
@@ -37,6 +40,57 @@ public class ChatterDBManagerTest
       result = new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
       //Deletes the created element so that the Database doesn't get full of testing data
       PreparedStatement st = connection.prepareStatement("DELETE FROM Chatter WHERE viaid = '123457';");
+      st.executeUpdate();
+    }
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void creates_new_user_viaid_9x6() throws SQLException
+  {
+    Chatter expected = new Chatter("999999", "test1", "TestPassword1");
+    Chatter result;
+    chatterDBManager.insert("999999", "test1", "TestPassword1");
+    try (Connection connection = getConnection())
+    {
+      //Tries to find the new Chatter into the Database
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM Chatter WHERE viaid = '999999';");
+      ResultSet resultSet = statement.executeQuery();
+      resultSet.next();
+      //Stores the result of the search. No need of while loop to search through the results, as viaid's will be unique, meaning that the result of this query will always be one
+      result = new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
+      //Deletes the created element so that the Database doesn't get full of testing data
+      PreparedStatement st = connection.prepareStatement("DELETE FROM Chatter WHERE viaid = '999999';");
+      st.executeUpdate();
+    }
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void creates_new_user_with_ID_out_of_bounds()
+  {
+    chatterDBManager.set
+    CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
+    customExceptionHandler.handleException(new SQLException());
+    assertEquals(customExceptionHandler.getCapturedExceptionMessage(), );
+  }
+
+  @Test
+  void creataes_new_user_with_VIAID_0x6() throws SQLException
+  {
+    Chatter expected = new Chatter("000000", "test1", "TestPassword1");
+    Chatter result;
+    chatterDBManager.insert("000000", "test1", "TestPassword1");
+    try (Connection connection = getConnection())
+    {
+      //Tries to find the new Chatter into the Database
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM Chatter WHERE viaid = '000000';");
+      ResultSet resultSet = statement.executeQuery();
+      resultSet.next();
+      //Stores the result of the search. No need of while loop to search through the results, as viaid's will be unique, meaning that the result of this query will always be one
+      result = new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password"));
+      //Deletes the created element so that the Database doesn't get full of testing data
+      PreparedStatement st = connection.prepareStatement("DELETE FROM Chatter WHERE viaid = '000000';");
       st.executeUpdate();
     }
     assertEquals(expected, result);
@@ -166,7 +220,14 @@ public class ChatterDBManagerTest
         statement.setString(1, ids.get(i));
         ResultSet resultSet1 = statement.executeQuery();
         resultSet1.next();
+        if (resultSet1.getBoolean("isModerator"))
+        {
+          result.add(new Moderator(resultSet1.getString("viaid"), resultSet1.getString("username"), resultSet1.getString("password")));
+        }
+        else
+        {
         result.add(new Chatter(resultSet1.getString("viaid"),resultSet1.getString("username"), resultSet1.getString("password")));
+        }
       }
       assertEquals(expected, result);
     }
@@ -175,4 +236,19 @@ public class ChatterDBManagerTest
   {
     return DriverManager.getConnection("jdbc:postgresql://localhost:5432/sep2?currentSchema=sep2", "postgres","password");
   }
+}
+class CustomExceptionHandler extends SQLException
+{
+  private String capturedExceptionMessage;
+  ChatterDBManager chatterDBManager = new ChatterDBManager();
+
+  public void handleException(Exception exception) {
+    // Capture the exception message
+    capturedExceptionMessage = exception.getMessage();
+  }
+
+  public String getCapturedExceptionMessage() {
+    return capturedExceptionMessage;
+  }
+
 }
