@@ -28,7 +28,7 @@ class ChatViewModelTest
   private String dummyString = "dummy message";
   private ArrayList<Message> messagesDummy = new ArrayList<>();
   private UserInterface Dummy = new Chatter("111111","Blahaj","shorks123");
-  private Message dummyMessage = new Message("dummy message",Dummy,1);
+  private Message dummyMessage = new Message("dummy message",Dummy,2);
   private ArrayList<UserInterface> dummyList = new ArrayList<>();
 
   private  ObjectProperty<Image> profileImage = new SimpleObjectProperty();
@@ -61,7 +61,7 @@ class ChatViewModelTest
   @Test void load_messages_throws_runs_the_for_loop()
   {
     Mockito.when(modelMock.getUser()).thenThrow(new ArithmeticException());
-    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessagesByChannelIndex(1));
+    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessagesByChannelIndex(2));
   }
 
   @Test void getUserImage_returns_an_Image_object()
