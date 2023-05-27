@@ -1,6 +1,7 @@
 package com.example.chatsystem.server.client;
 
 import com.example.chatsystem.model.*;
+import com.example.chatsystem.model.ModelManagerDelegates.ModelManager;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeEvent;
 import dk.via.remote.observer.RemotePropertyChangeListener;

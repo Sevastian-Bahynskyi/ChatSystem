@@ -1,8 +1,7 @@
 package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.ModelManager;
-import com.example.chatsystem.model.Room;
+import com.example.chatsystem.model.ModelManagerDelegates.ModelManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

@@ -1,14 +1,12 @@
 package com.example.chatsystem;
 
 import com.example.chatsystem.model.Model;
-import com.example.chatsystem.model.ModelManager;
+import com.example.chatsystem.model.ModelManagerDelegates.ModelManager;
 import com.example.chatsystem.view.ViewHandler;
 import com.example.chatsystem.view.WINDOW;
 import com.example.chatsystem.viewmodel.ViewModelFactory;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class StartSecondClient extends Application
 {

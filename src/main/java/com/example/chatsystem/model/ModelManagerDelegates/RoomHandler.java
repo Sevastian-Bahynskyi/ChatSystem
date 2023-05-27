@@ -7,15 +7,20 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomHandler extends ModelManager
+public class RoomHandler
 {
+    private ModelManager m;
+    public RoomHandler(ModelManager m)
+    {
+        this.m = m;
+    }
     public void addRoom(String name, String code, String imageURL)
     {
         try
         {
-            server.createRoom(user, name, code);
-            user = new Moderator(user);
-            System.out.println(user);
+            m.server.createRoom(m.user, name, code);
+            m.user = new Moderator(m.user);
+            System.out.println(m.user);
         } catch (RemoteException e)
         {
             throw new RuntimeException(e);
@@ -23,44 +28,44 @@ public class RoomHandler extends ModelManager
     }
     public void joinRoom(Room room)
     {
-        server.addChatterToRoom(user, room);
+        m.server.addChatterToRoom(m.user, room);
     }
 
     public int getRoomId()
     {
-        return room.getId();
+        return m.room.getId();
     }
 
     public void receiveNewRoom(Room room)
     {
-        if(rooms.contains(room))
-            support.firePropertyChange("reload room", null, room);
+        if(m.rooms.contains(room))
+            m.support.firePropertyChange("reload room", null, room);
         else
-            support.firePropertyChange("room added", null, room);
+            m.support.firePropertyChange("room added", null, room);
     }
 
     public void editRoom(String roomName, String roomCode, String imageUrl)
     {
-        server.editRoom(room.getId(), roomName, roomCode, imageUrl);
+        m.server.editRoom(m.room.getId(), roomName, roomCode, imageUrl);
     }
 
     public ArrayList<Channel> getChannelsInRoom(int roomId)
     {
         if(roomId == -1)
-            return channels;
+            return m.channels;
         else {
             try
             {
-                this.room = server.getRoom(roomId);
-                users = server.getUserListInRoom(room.getId());
-                if(server.isModerator(user.getViaId(), room.getId()))
-                    user = new Moderator(user);
+                m.room = m.server.getRoom(roomId);
+                m.users = m.server.getUserListInRoom(m.room.getId());
+                if(m.server.isModerator(m.user.getViaId(), m.room.getId()))
+                    m.user = new Moderator(m.user);
                 else
-                    user = new Chatter(user);
+                    m.user = new Chatter(m.user);
 
-                if(!users.contains(user))
+                if(!m.users.contains(m.user))
                 {
-                    support.firePropertyChange("join a room", null, List.of(room, user));
+                    m.support.firePropertyChange("join a room", null, List.of(m.room, m.user));
                     return null;
                 }
 
@@ -70,12 +75,12 @@ public class RoomHandler extends ModelManager
             {
                 throw new RuntimeException(e);
             }
-            return server.getChannelsInTheRoom(roomId);
+            return m.server.getChannelsInTheRoom(roomId);
         }
     }
 
     public void leaveRoom()
     {
-        server.leaveRoom(user.getViaId(), room.getId());
+        m.server.leaveRoom(m.user.getViaId(), m.room.getId());
     }
 }
