@@ -2,7 +2,7 @@ package main.java.com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.*;
 import com.example.chatsystem.view.ChatControllerDelegates.ChatController;
-import com.example.chatsystem.viewmodel.ChatViewModel;
+import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

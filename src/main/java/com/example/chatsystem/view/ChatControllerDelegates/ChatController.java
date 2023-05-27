@@ -6,7 +6,7 @@ import com.example.chatsystem.model.UserInterface;
 import com.example.chatsystem.view.Controller;
 import com.example.chatsystem.view.ViewHandler;
 import com.example.chatsystem.view.WINDOW;
-import com.example.chatsystem.viewmodel.ChatViewModel;
+import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
