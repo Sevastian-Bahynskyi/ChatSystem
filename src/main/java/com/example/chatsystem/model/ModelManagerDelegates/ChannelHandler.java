@@ -19,7 +19,7 @@ public class ChannelHandler
 
     public void createChannel(String channelName)
     {
-        m.server.createChannel(channelName, m.channel.getRoomId());
+        m.server.createChannel(channelName, m.room.getId());
     }
 
     public void receiveNewChannel(Channel channel)

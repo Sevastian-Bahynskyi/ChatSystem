@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class MessageHandler
 {
     private ModelManager m;
-    MessageHandler(ModelManager m)
+    public MessageHandler(ModelManager m)
     {
         this.m = m;
     }
