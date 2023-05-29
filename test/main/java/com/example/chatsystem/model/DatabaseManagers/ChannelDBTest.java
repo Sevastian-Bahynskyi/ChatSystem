@@ -58,9 +58,9 @@ class ChannelDBTest
 
   @Test
   void getChannelsBy_Id_returns_null_if_not_found() throws SQLException
-    {
-      assertEquals(null,channelDBManager.getChannelById(0));
-    }
+  {
+    assertEquals(null,channelDBManager.getChannelById(0));
+  }
 
   @Test
   void getChannelsByRoom_returns_a_collection_of_channels_in_that_room() throws SQLException

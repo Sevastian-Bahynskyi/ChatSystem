@@ -151,7 +151,7 @@ public class MessageDBTest
       ResultSet resultSet = preparedStatement.executeQuery();
       while (resultSet.next())
       {
-          users.add(new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
+        users.add(new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
       }
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM message WHERE channel_id = '1';");
       ResultSet rs = statement.executeQuery();
@@ -227,12 +227,12 @@ public class MessageDBTest
       statement.setString(1, viaid);
       ResultSet rs = statement.executeQuery();
       rs.next();
-        res = new Chatter(rs.getString("viaid"), rs.getString("username"), rs.getString("password"));
+      res = new Chatter(rs.getString("viaid"), rs.getString("username"), rs.getString("password"));
       result = new Message(resultSet.getInt("id"), resultSet.getString("message"), res, resultSet.getInt("channel_id"));
     }
     assertEquals(expected.getMessage(), result.getMessage());
   }
-//If I try to update a message that doesn't exist, the database doesn't care, but if I want to retrieve that object, the query throws an error. Should I try to equal null to null? jajajja
+  //If I try to update a message that doesn't exist, the database doesn't care, but if I want to retrieve that object, the query throws an error. Should I try to equal null to null? jajajja
   @Test
   void update_message_that_doesnt_exists() throws SQLException
   {
@@ -292,12 +292,12 @@ public class MessageDBTest
   }
   private void realDelete(int id) throws SQLException
   {
-      try (Connection connection = getConnection())
-      {
-        PreparedStatement statement = connection.prepareStatement("DELETE FROM message WHERE id = ?;");
-        statement.setInt(1, id);
-        statement.executeUpdate();
-      }
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("DELETE FROM message WHERE id = ?;");
+      statement.setInt(1, id);
+      statement.executeUpdate();
+    }
   }
 
 

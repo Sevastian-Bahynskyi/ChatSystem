@@ -47,6 +47,13 @@ public class ModeratorDBManagerTest
     assertEquals(expected.getUsername(), result.getUsername());
   }
 
+  @Test
+  void non_existing_chatter_becomes_a_moderator() throws SQLException
+  {
+    //I still don't know how to catch these exceptions
+    //assertThrows(SQLException.class, () -> moderatorDBManager.makeModerator("135790", 1));
+  }
+
   @Test public void deletes_a_moderator() throws SQLException
   {
     UserInterface expected = new Chatter("123457", "test", "PasswordTest1");
@@ -58,13 +65,15 @@ public class ModeratorDBManagerTest
       //Deletes the element
       moderatorDBManager.deleteModeratorByID(expected.getViaId());
       //Tries to find the element
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM chatterroomlist;");
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT * FROM chatterroomlist;");
       ResultSet resultSet = statement.executeQuery();
       while (resultSet.next())
       {
         if (resultSet.getString("chatter_id").equals(expected.getViaId()))
         {
-          result = new Chatter(resultSet.getString("chatter_id"), expected.getUsername(), expected.getPassword());
+          result = new Chatter(resultSet.getString("chatter_id"),
+              expected.getUsername(), expected.getPassword());
         }
       }
     }
@@ -73,26 +82,142 @@ public class ModeratorDBManagerTest
     chatterDBManager.delete("123457");
   }
 
-  @Test public void read_by_viaid() throws SQLException
+  @Test public void read_by_viaid_and_room() throws SQLException
   {
     //Gets a specific chatter
-    //Chatter result = (Chatter) moderatorDBManager.read("111111");
-    Chatter expected;
+    UserInterface user = chatterDBManager.read("111111");
+    UserInterface result = moderatorDBManager.getModeratorByIDInRoom(user.getViaId(), 1);
+    UserInterface expected = null;
     try (Connection connection = getConnection())
     {
-      //Statement for getting the same chatter as above
-      PreparedStatement statement = connection.prepareStatement(
-          "SELECT * FROM Chatter WHERE viaid = '111111'");
-      ResultSet resultSet = statement.executeQuery();
-      resultSet.next();
-      //Ideally, stores the same chatter as the DBManager stored before
-      expected = new Chatter(resultSet.getString("viaid"),
-          resultSet.getString("username"), resultSet.getString("password"));
+      PreparedStatement statement1 = connection.prepareStatement(
+          "SELECT * FROM moderatorroomlist WHERE moderator_id = ? AND room_id = ?;");
+      statement1.setString(1, user.getViaId());
+      statement1.setInt(2, 1);
+      ResultSet rs = statement1.executeQuery();
+      while (rs.next())
+      {
+        if (rs.getString("moderator_id").equals(user.getViaId()) && rs.getInt("room_id") == 1)
+        {
+          //Statement for getting the same chatter as above
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM Chatter WHERE viaid = '111111'");
+          ResultSet resultSet = statement.executeQuery();
+          resultSet.next();
+          //Ideally, stores the same chatter as the DBManager stored before
+          expected = new Chatter(resultSet.getString("viaid"),resultSet.getString("username"), resultSet.getString("password"));
+        }
+      }
     }
-    //assertEquals(expected, result);
+    assertEquals(expected, result);
   }
 
+  @Test
+  void is_moderator_an_existing_moderator() throws SQLException
+  {
+    UserInterface user = chatterDBManager.read("111111");
+    Boolean result = moderatorDBManager.isModeratorInRoom(user.getViaId(), 1);
+    Boolean expected = false;
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM moderatorroomlist WHERE moderator_id = ?;");
+      statement.setString(1, user.getViaId());
+      ResultSet rs = statement.executeQuery();
+      while (rs.next())
+      {
+        if (rs.getInt("room_id") == 1)
+        {
+          expected = true;
+        }
+      }
+    }
+    assertEquals(expected, result);
+  }
 
+  @Test
+  void is_moderator_a_regular_chatter() throws SQLException
+  {
+    UserInterface user = chatterDBManager.read("111111");
+    Boolean result = moderatorDBManager.isModeratorInRoom(user.getViaId(), 2);
+    Boolean expected = false;
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM moderatorroomlist WHERE moderator_id = ?;");
+      statement.setString(1, user.getViaId());
+      ResultSet rs = statement.executeQuery();
+      while (rs.next())
+      {
+        if (rs.getInt("room_id") == 2)
+        {
+          expected = true;
+        }
+      }
+    }
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void is_moderator_from_non_existing_room() throws SQLException
+  {
+    UserInterface user = chatterDBManager.read("111111");
+    Boolean result = moderatorDBManager.isModeratorInRoom(user.getViaId(), 0);
+    Boolean expected = false;
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM moderatorroomlist WHERE moderator_id = ?;");
+      statement.setString(1, user.getViaId());
+      ResultSet rs = statement.executeQuery();
+      while (rs.next())
+      {
+        if (rs.getInt("room_id") == 0)
+        {
+          expected = true;
+        }
+      }
+    }
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void get_list_of_all_moderators_from_room_that_exists() throws SQLException
+  {
+    ArrayList<Moderator> result = (ArrayList<Moderator>) moderatorDBManager.getListOfAllModeratorsOfRoom(1);
+    ArrayList<Moderator> expected = new ArrayList<>();
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM moderatorroomlist WHERE room_id = 1;");
+      ResultSet rs = statement.executeQuery();
+      while (rs.next())
+      {
+        PreparedStatement statement1 = connection.prepareStatement("SELECT * FROM chatter WHERE viaid = ?;");
+        statement1.setString(1, rs.getString("moderator_id"));
+        ResultSet resultSet = statement1.executeQuery();
+        resultSet.next();
+        expected.add(new Moderator(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
+      }
+    }
+    assertEquals(expected, result);
+  }
+
+  @Test
+  void get_list_of_all_moderators_from_room_doesnt_exist() throws SQLException
+  {
+    ArrayList<Moderator> result = (ArrayList<Moderator>) moderatorDBManager.getListOfAllModeratorsOfRoom(0);
+    ArrayList<Moderator> expected = new ArrayList<>();
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM moderatorroomlist WHERE room_id = 0;");
+      ResultSet rs = statement.executeQuery();
+      while (rs.next())
+      {
+        PreparedStatement statement1 = connection.prepareStatement("SELECT * FROM chatter WHERE viaid = ?;");
+        statement1.setString(1, rs.getString("moderator_id"));
+        ResultSet resultSet = statement1.executeQuery();
+        resultSet.next();
+        expected.add(new Moderator(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
+      }
+    }
+    assertEquals(expected, result);
+  }
 
   private Connection getConnection() throws SQLException
   {
