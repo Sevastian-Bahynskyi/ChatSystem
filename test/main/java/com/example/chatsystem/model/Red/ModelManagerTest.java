@@ -4,6 +4,7 @@ import com.example.chatsystem.model.*;
 import com.example.chatsystem.model.DatabaseManagers.ChannelDBManager;
 import com.example.chatsystem.model.ModelManagerDelegates.*;
 import com.example.chatsystem.server.client.ServerModelImplementation;
+import com.example.chatsystem.server.server.Server;
 import com.example.chatsystem.server.shared.ServerModel;
 import com.example.chatsystem.view.WINDOW;
 import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
@@ -12,6 +13,7 @@ import com.example.chatsystem.viewmodel.ViewModel;
 import com.example.chatsystem.viewmodel.ViewModelFactory;
 import org.checkerframework.checker.units.qual.C;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -33,37 +35,44 @@ import java.util.Collection;
 public class ModelManagerTest
 {
   private ModelManager model = null;
-  private ViewModelFactory viewModelFactory = null;
-  private ViewModel chatViewModel = null;
   private UserInterface user = null;
   private ArrayList<UserInterface> users = new ArrayList();
+
+
   @BeforeEach void setUp() throws SQLException
   {
     model = new ModelManager();
-    user = new Chatter("111122","Seashells","Seashore");
+    user = new Chatter("111122","Seashells","Seashore1");
     users.add(user);
-    model.login("111122","Seashells","Seashore");
+    model.login("111122","Seashells","Seashore1");
     Channel newChannel = new Channel(15,"Music",5);
     model.receiveNewChannel(newChannel);
   }
-  @Test void loadEverythingToTheViewModel_fires_property_change()
-  {
-      model.loadEverythingToTheViewModel();
-  }
 
-  @Test void receiveUsersInRoom()
+  @Test void receiveUsersInRoom_calls_delegate_methods_and_adds_it_to_object()
   {
     model.receiveUsersInRoom(users);
+    ArrayList<UserInterface> listFromModel = model.getUserList();
+    ArrayList<UserInterface> testAgainstList = new ArrayList<>();
+    testAgainstList.add(user);
+    assertEquals(testAgainstList.get(0),listFromModel.get(0));
   }
 
-  @Test void getUser()
+  @Test void banUser_removes_the_user_from_the_chatter_room_list_of_that_room() throws SQLException
   {
-    model.getUser();
-  }
-
-  @Test void banUser()
-  {
+    Room room = new Room(5,"roomname","doesntmater");
+    model.joinRoom(room);
     model.banUser(user);
+    Collection<UserInterface> users = Data.getInstance().getChatterDBManager().readAllByRoomID(5);
+    ArrayList<UserInterface> usersArrayList = (ArrayList<UserInterface>) users;
+    for (int i = 0; i < users.size(); i++)
+    {
+      if (usersArrayList.get(i).getUsername().equals(user.getUsername()))
+      {
+        assertTrue(true);
+      }
+    }
+    assertTrue(false);
   }
 
   @Test void makeModerator()
