@@ -2,58 +2,63 @@ package com.example.chatsystem.model.ModelManagerDelegates;
 
 import com.example.chatsystem.model.Channel;
 import com.example.chatsystem.model.Message;
-import com.example.chatsystem.model.ModelManager;
 
 import java.util.ArrayList;
 
-public class ChannelHandler extends ModelManager
+public class ChannelHandler
 {
-    @Override
+    private ModelManager m;
+    public ChannelHandler(ModelManager modelManager)
+    {
+        this.m = modelManager;
+    }
     public int getChannelId()
     {
-        return channel.getId();
+        return m.channel.getId();
     }
 
-    @Override
     public void createChannel(String channelName)
     {
-        server.createChannel(channelName, channel.getRoomId());
+        m.server.createChannel(channelName, m.room.getId());
     }
 
     public void receiveNewChannel(Channel channel)
     {
-        this.channel = channel;
-        support.firePropertyChange("new channel", null, channel);
+        this.m.channel = channel;
+        m.support.firePropertyChange("new channel", null, channel);
     }
 
-    @Override
     public boolean editChannel(int id, String newChannelName)
     {
-        if(user.isModerator())
-            server.editChannel(id, newChannelName);
-        return user.isModerator();
+        if(m.user.isModerator())
+            m.server.editChannel(id, newChannelName);
+        return m.user.isModerator();
     }
 
     public void reloadChannel(Channel channel)
     {
-        support.firePropertyChange("reload channel", null, channel);
+        m.support.firePropertyChange("reload channel", null, channel);
     }
 
-    @Override
     public void deleteChannel(int id)
     {
-        if(user.isModerator())
-            server.deleteChannel(id);
+        if(m.user.isModerator())
+            m.server.deleteChannel(id);
     }
 
     public ArrayList<Message> getMessagesInChannel(int channelId)
     {
         if(channelId == -1)
-            return messages;
+            return m.messages;
         else {
 
-            this.channel = server.getChannel(channelId);
-            return (ArrayList<Message>) server.getAllMessagesByChannel(channelId);
+            this.m.channel = m.server.getChannel(channelId);
+            return (ArrayList<Message>) m.server.getAllMessagesByChannel(channelId);
         }
+    }
+
+    public void receiveChannelToRemove(int channelId)
+    {
+        m.support.firePropertyChange("delete channel", null, channelId);
     }
 }

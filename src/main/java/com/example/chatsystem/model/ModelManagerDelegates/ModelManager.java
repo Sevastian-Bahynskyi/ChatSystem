@@ -1,5 +1,6 @@
-package com.example.chatsystem.model;
+package com.example.chatsystem.model.ModelManagerDelegates;
 
+import com.example.chatsystem.model.*;
 import com.example.chatsystem.model.ModelManagerDelegates.ChannelHandler;
 import com.example.chatsystem.model.ModelManagerDelegates.MessageHandler;
 import com.example.chatsystem.model.ModelManagerDelegates.RoomHandler;
@@ -49,6 +50,10 @@ public class ModelManager implements Model
         }
         server.run();
         support = new PropertyChangeSupport(this);
+        roomHandler = new RoomHandler(this);
+        channelHandler = new ChannelHandler(this);
+        userHandler = new UserHandler(this);
+        messageHandler = new MessageHandler(this);
     }
 
     public void loadEverythingToTheViewModel()

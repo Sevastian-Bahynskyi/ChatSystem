@@ -1,6 +1,7 @@
-package com.example.chatsystem.viewmodel;
+package com.example.chatsystem.viewmodel.ChatViewModelDelegates;
 
 import com.example.chatsystem.model.*;
+import com.example.chatsystem.viewmodel.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
@@ -17,14 +18,18 @@ import java.util.stream.IntStream;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
-    private Model model;
-    private SimpleStringProperty textFieldProperty;
-    private SimpleListProperty<Chatter> users;
-    private ObjectProperty<Image> userImage;
-    private ArrayList<Integer> messageIdList;
-    private ArrayList<Channel> channelList;
-    private ArrayList<Room> roomList;
-    private PropertyChangeSupport support;
+    protected Model model;
+    protected SimpleStringProperty textFieldProperty;
+    protected SimpleListProperty<Chatter> users;
+    protected ObjectProperty<Image> userImage;
+    protected ArrayList<Integer> messageIdList;
+    protected ArrayList<Channel> channelList;
+    protected ArrayList<Room> roomList;
+    protected PropertyChangeSupport support;
+    private ChannelHandler channelHandler;
+    private MessageHandler messageHandler;
+    private RoomHandler roomHandler;
+    private UserHandler userHandler;
 
 
     public ChatViewModel(Model model)
@@ -38,15 +43,15 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         this.channelList = new ArrayList<>();
         this.roomList = new ArrayList<>();
         model.addPropertyChangeListener(this);
+        channelHandler = new ChannelHandler(this);
+        messageHandler = new MessageHandler(this);
+        roomHandler = new RoomHandler(this);
+        userHandler = new UserHandler(this);
     }
 
     public Message onSendMessage()
     {
-        userImage.set(model.getUser().getImage());
-        Message sentMessage = model.addMessage(textFieldProperty.get());
-        messageIdList.add(sentMessage.getId());
-        textFieldProperty.set("");
-        return sentMessage;
+        return messageHandler.onSendMessage();
     }
 
     public Image getUserImage()
@@ -56,50 +61,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public void loadMessagesByChannelIndex(int channelIndex)
     {
-        ArrayList<Message> messages = null;
-        if(channelIndex == -1)
-            messages = model.getMessagesInChannel(-1);
-        else
-        {
-            messages = model.getMessagesInChannel(channelList.get(channelIndex).getId());
-        }
-
-        support.firePropertyChange("clear messages", null, true);
-        messageIdList.clear();
-        for (Message message:messages)
-        {
-            messageIdList.add(message.getId());
-            support.firePropertyChange("new message", null,
-                    List.of(message, message.getUser().equals(model.getUser())));
-        }
+        messageHandler.loadMessagesByChannelIndex(channelIndex);
     }
 
     public boolean loadChannelsByRoomIndex(int roomIndex)
     {
-        ArrayList<Channel> channels = null;
-        if(roomIndex == -1)
-            channels = model.getChannelsInRoom(-1);
-        else
-        {
-            channels = model.getChannelsInRoom(roomList.get(roomIndex).getId());
-        }
-
-        if(channels == null)
-            return false;
-
-        support.firePropertyChange("update user list", null, model.getUserList());
-        support.firePropertyChange("clear channels", null, true);
-        channelList.clear();
-        channelList.addAll(channels);
-        for (var ch:channels)
-        {
-            support.firePropertyChange("new channel", null, ch);
-        }
-
-        if(!channelList.isEmpty())
-            loadMessagesByChannelIndex(channelList.size() - 1);
-
-        return true;
+        return channelHandler.loadChannelsByRoomIndex(roomIndex);
     }
 
     public void bindUserImage(ObjectProperty<Image> property)
@@ -213,7 +180,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public boolean isMyMessage(Message message)
     {
-        return message.getUser().equals(model.getUser());
+        return messageHandler.isMyMessage(message);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -228,19 +195,12 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public void editMessage(int index, String newMessage)
     {
-        model.editMessage(messageIdList.get(index), newMessage);
+       messageHandler.editMessage(index,newMessage);
     }
 
     public void deleteMessage(int index)
     {
-        try
-        {
-            model.deleteMessage(messageIdList.get(index));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        messageHandler.deleteMessage(index);
     }
 
     public ArrayList<UserInterface> getUsers()
@@ -250,44 +210,32 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public void addChannel(String channelName)
     {
-        model.createChannel(channelName);
+        channelHandler.addChannel(channelName);
     }
 
     public Channel getChannelByIndex(int index)
     {
-        return this.channelList.get(index);
+        return channelHandler.getChannelByIndex(index);
     }
 
     public void editChannel(String oldChannelName, String newChannelName)
     {
-        for (var ch:channelList)
-        {
-            if(ch.getName().equals(oldChannelName) && model.editChannel(ch.getId(), newChannelName))
-            {
-                ch.setName(newChannelName);
-            }
-        }
+        channelHandler.editChannel(oldChannelName,newChannelName);
     }
 
     public void deleteChannel(int indexOfChannelToChange)
     {
-        model.deleteChannel(channelList.get(indexOfChannelToChange).getId());
+        channelHandler.deleteChannel(indexOfChannelToChange);
     }
 
     public boolean isModerator(int channelId)
     {
-        try
-        {
-            return model.isModerator(channelId);
-        } catch (RemoteException e)
-        {
-            throw new RuntimeException(e);
-        }
+        return  userHandler.isModerator(channelId);
     }
 
     public boolean isModeratorInRoom(int roomId)
     {
-        return model.isModeratorInRoom(roomId);
+        return userHandler.isModeratorInRoom(roomId);
     }
 
     public void loadEverything()
@@ -297,37 +245,31 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
     public boolean amIModerator()
     {
-        return model.getUser().isModerator();
+        return userHandler.amIModerator();
     }
 
     public void banUser(UserInterface user)
     {
-        model.banUser(user);
+        userHandler.banUser(user);
     }
 
     public void makeModerator(UserInterface user)
     {
-        user = new Moderator(user);
-        model.makeModerator(user);
+        userHandler.makeModerator(user);
     }
 
     public void joinRoom(Room room)
     {
-        model.joinRoom(room);
+        roomHandler.joinRoom(room);
     }
 
     public int getRoomIndex(int id)
     {
-        for (var r:roomList)
-        {
-            if(r.getId() == id)
-                return roomList.indexOf(r);
-        }
-        return -1;
+        return roomHandler.getRoomIndex(id);
     }
 
     public void leaveRoom()
     {
-        model.leaveRoom();
+        roomHandler.leaveRoom();
     }
 }

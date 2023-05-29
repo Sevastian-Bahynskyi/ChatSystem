@@ -2,9 +2,7 @@ package com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.Model;
 import com.example.chatsystem.view.*;
-
-import java.beans.PropertyChangeListener;
-import java.util.LongSummaryStatistics;
+import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 
 public class ViewModelFactory
 {

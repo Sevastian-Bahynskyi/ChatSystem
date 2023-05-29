@@ -1,6 +1,7 @@
 package com.example.chatsystem.server.client;
 
 import com.example.chatsystem.model.*;
+import com.example.chatsystem.model.ModelManagerDelegates.ModelManager;
 import com.example.chatsystem.server.shared.ServerModel;
 import dk.via.remote.observer.RemotePropertyChangeListener;
 
@@ -9,7 +10,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;

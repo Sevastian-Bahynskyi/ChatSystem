@@ -2,7 +2,7 @@ package main.java.com.example.chatsystem.viewmodel;
 
 import com.example.chatsystem.model.*;
 import com.example.chatsystem.view.ChatControllerDelegates.ChatController;
-import com.example.chatsystem.viewmodel.ChatViewModel;
+import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,7 +28,7 @@ class ChatViewModelTest
   private String dummyString = "dummy message";
   private ArrayList<Message> messagesDummy = new ArrayList<>();
   private UserInterface Dummy = new Chatter("111111","Blahaj","shorks123");
-  private Message dummyMessage = new Message("dummy message",Dummy,1);
+  private Message dummyMessage = new Message("dummy message",Dummy,2);
   private ArrayList<UserInterface> dummyList = new ArrayList<>();
 
   private  ObjectProperty<Image> profileImage = new SimpleObjectProperty();
@@ -45,7 +45,6 @@ class ChatViewModelTest
     Mockito.when(modelMock.getMessagesInChannel(1)).thenReturn(messagesDummy);
 
     controllerMock = Mockito.mock(ChatController.class);
-
   }
 
   @Test void onSendMessage_calls_addmessage_in_model_and_returns_message()
@@ -61,7 +60,7 @@ class ChatViewModelTest
   @Test void load_messages_throws_runs_the_for_loop()
   {
     Mockito.when(modelMock.getUser()).thenThrow(new ArithmeticException());
-    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessagesByChannelIndex(1));
+    assertThrows(ArithmeticException.class, () -> chatViewModel.loadMessagesByChannelIndex(2));
   }
 
   @Test void getUserImage_returns_an_Image_object()

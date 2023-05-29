@@ -51,4 +51,6 @@ public interface Model
     void joinRoom(Room room);
 
     void leaveRoom();
+
+    void addRoom(String name, String code, String imageUrl);
 }

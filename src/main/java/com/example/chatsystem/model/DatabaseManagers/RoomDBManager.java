@@ -33,18 +33,20 @@ public class RoomDBManager
     {
         try(Connection connection = getConnection())
         {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name, code) VALUES (?, ?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO Room (name, code) VALUES (?, ?) RETURNING id");
             ps.setString(1, name);
             ps.setString(2, code);
-            ResultSet rs = ps.executeQuery();
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+            int roomId = 0;
             if(rs.next())
             {
-                int roomId = rs.getInt("id");
-                ps = connection.prepareStatement("INSERT INTO moderatorroomlist (room_id, moderator_id) VALUES(?, ?)");
-                ps.setInt(1, roomId);
-                ps.setString(2, user.getViaId());
+                roomId = rs.getInt("id");
             }
-
+            ps = connection.prepareStatement("INSERT INTO moderatorroomlist (room_id, moderator_id) VALUES(?, ?)");
+            ps.setInt(1, roomId);
+            ps.setString(2, user.getViaId());
+            ps.executeUpdate();
         }
         catch (SQLException e)
         {

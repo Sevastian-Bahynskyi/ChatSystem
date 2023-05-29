@@ -10,7 +10,7 @@ public class Room implements Serializable
     public static final int MIN_ROOM_NAME_LENGTH = 4;
     public static final int MAX_ROOM_NAME_LENGTH = 20;
     public static final int MIN_ROOM_CODE_LENGTH = 6;
-    public static final int MAX_ROOM_CODE_LENGTH = 12;
+    public static final int MAX_ROOM_CODE_LENGTH = 20;
     private int id;
     private String name;
     private String code;
@@ -21,12 +21,16 @@ public class Room implements Serializable
     public Room(int id, String name, String code)
     {
         this.id = id;
+        validateRoomName(name);
+        validateRoomCode(code);
         this.name = name;
         this.code = code;
     }
 
     public Room(String name, String code)
     {
+        validateRoomName(name);
+        validateRoomCode(code);
         this.name = name;
         this.code = code;
     }
@@ -106,11 +110,5 @@ public class Room implements Serializable
         if (this == o) return true;
         if (!(o instanceof Room room)) return false;
         return id == room.id;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(id);
     }
 }

@@ -6,8 +6,9 @@ import com.example.chatsystem.model.UserInterface;
 import com.example.chatsystem.view.Controller;
 import com.example.chatsystem.view.ViewHandler;
 import com.example.chatsystem.view.WINDOW;
-import com.example.chatsystem.viewmodel.ChatViewModel;
+import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 import com.example.chatsystem.viewmodel.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -337,6 +338,9 @@ public class ChatController implements Controller, PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        uiHandler.propertyChange(evt);
+        Platform.runLater(() -> {
+            uiHandler.propertyChange(evt);
+        });
+
     }
 }

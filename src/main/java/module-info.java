@@ -23,4 +23,7 @@ module com.example.chatsystem {
     exports com.example.chatsystem.viewmodel;
     exports com.example.chatsystem.view.ChatControllerDelegates;
     opens com.example.chatsystem.view.ChatControllerDelegates to javafx.fxml;
+  exports com.example.chatsystem.viewmodel.ChatViewModelDelegates;
+    exports com.example.chatsystem.model.ModelManagerDelegates to java.rmi;
+    opens com.example.chatsystem.model.ModelManagerDelegates to com.google.gson;
 }
