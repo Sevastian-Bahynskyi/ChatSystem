@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.anyString;
+
 public class LoginVMTest {
     private Model modelMock;
     private LoginViewModel loginViewModel;
@@ -54,13 +56,12 @@ public class LoginVMTest {
     }
     @Test
     public void exceptionTests(){
-        try {
-            loginViewModel.onLogin();
-            Assertions.fail("Via id is wrong");
-        }
-        catch (Exception e){
-            Assertions.assertTrue(e instanceof Exception);
-        }
+
+            //Mockito.when(modelMock.login(anyString(),anyString(),anyString())).thenThrow(RuntimeException.class);
+            Mockito.doThrow(RuntimeException.class).when(modelMock).login(Mockito.<String>any(),Mockito.<String>any(),Mockito.<String>any());
+            Assertions.assertFalse(loginViewModel.onLogin(),"Login not failed");
+            Mockito.doThrow(RuntimeException.class).when(modelMock).register(Mockito.<String>any(),Mockito.<String>any(),Mockito.<String>any(),Mockito.<String>any());
+            Assertions.assertFalse(loginViewModel.onRegister(),"Register not failed");
 
     }
 }
