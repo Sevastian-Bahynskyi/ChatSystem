@@ -177,18 +177,18 @@ public class ChatController implements Controller, PropertyChangeListener
     protected void onSendMessage() throws IOException
     {
         String t = textField.getText();
-        if(t == null || t.isEmpty() || (t.trim().isEmpty())) // doesn't allow to send messages that consist of '\n' chars
+        if(t == null || t.isEmpty() || (t.trim().isEmpty())) // doesn't allow to send messages that consist of whitespace chars
         {
             textField.clear();
             return;
         }
-        else if(t.equals("deleted message"))
+        else if(t.equals("deleted message")) // if message is deleted
         {
             textField.setText("");
             return;
         }
 
-        if(isEditMessage)
+        if(isEditMessage) // if edit message was selected before
         {
             isEditMessage = false;
             String temp = textField.getText();
