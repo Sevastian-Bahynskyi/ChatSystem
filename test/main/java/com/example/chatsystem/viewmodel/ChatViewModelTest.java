@@ -45,7 +45,6 @@ class ChatViewModelTest
     Mockito.when(modelMock.getMessagesInChannel(1)).thenReturn(messagesDummy);
 
     controllerMock = Mockito.mock(ChatController.class);
-
   }
 
   @Test void onSendMessage_calls_addmessage_in_model_and_returns_message()

@@ -10,13 +10,13 @@ import java.util.Random;
 
 public class RoomViewModel implements ViewModel
 {
-    private ModelManager modelManager;
+    private Model modelManager;
     private StringProperty nameFieldProperty, codeFieldProperty, errorLabelProperty;
     private String imageUrl;
 
     public RoomViewModel(Model model)
     {
-        this.modelManager = (ModelManager) model;
+        this.modelManager = model;
         this.nameFieldProperty = new SimpleStringProperty();
         this.codeFieldProperty = new SimpleStringProperty();
         this.errorLabelProperty = new SimpleStringProperty();
@@ -86,7 +86,6 @@ public class RoomViewModel implements ViewModel
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             errorLabelProperty.setValue(e.getMessage());
         }
     }
