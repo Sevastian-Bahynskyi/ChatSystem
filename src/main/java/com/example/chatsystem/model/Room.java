@@ -80,7 +80,7 @@ public class Room implements Serializable
 
         for (int i = 0; i < name.length(); i++)
         {
-            if(!Character.isDigit(name.charAt(i)) && !Character.isAlphabetic(name.charAt(i)))
+            if(!Character.isDigit(name.charAt(i)) && !Character.isAlphabetic(name.charAt(i)) && !Character.isSpaceChar(name.charAt(i)))
                 throw new IllegalArgumentException("Room contains prohibited characters.");
         }
     }

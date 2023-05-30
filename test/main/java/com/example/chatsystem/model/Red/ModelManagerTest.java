@@ -4,14 +4,17 @@ import com.example.chatsystem.model.*;
 import com.example.chatsystem.model.DatabaseManagers.ChannelDBManager;
 import com.example.chatsystem.model.ModelManagerDelegates.*;
 import com.example.chatsystem.server.client.ServerModelImplementation;
+import com.example.chatsystem.server.server.Server;
 import com.example.chatsystem.server.shared.ServerModel;
 import com.example.chatsystem.view.WINDOW;
 import com.example.chatsystem.viewmodel.ChatViewModelDelegates.ChatViewModel;
 import com.example.chatsystem.viewmodel.ChatViewModelDelegates.RoomHandler;
 import com.example.chatsystem.viewmodel.ViewModel;
 import com.example.chatsystem.viewmodel.ViewModelFactory;
+import javafx.application.Platform;
 import org.checkerframework.checker.units.qual.C;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -33,163 +36,186 @@ import java.util.Collection;
 public class ModelManagerTest
 {
   private ModelManager model = null;
-  private ViewModelFactory viewModelFactory = null;
-  private ViewModel chatViewModel = null;
   private UserInterface user = null;
   private ArrayList<UserInterface> users = new ArrayList();
+
+
   @BeforeEach void setUp() throws SQLException
   {
     model = new ModelManager();
-    user = new Chatter("111122","Seashells","Seashore");
+    user = new Chatter("111111","Dumy_1","password_1");
     users.add(user);
-    model.login("111122","Seashells","Seashore");
+    model.login("111111","Dumy_1","password_1");
     Channel newChannel = new Channel(15,"Music",5);
     model.receiveNewChannel(newChannel);
   }
-  @Test void loadEverythingToTheViewModel_fires_property_change()
-  {
-      model.loadEverythingToTheViewModel();
-  }
 
-  @Test void receiveUsersInRoom()
-  {
-    model.receiveUsersInRoom(users);
-  }
-
-  @Test void getUser()
-  {
-    model.getUser();
-  }
-
-  @Test void banUser()
+  @Test void banUser_removes_the_user_from_the_chatter_room_list_of_that_room()
+      throws SQLException, InterruptedException
   {
     model.banUser(user);
+    Collection<UserInterface> users = Data.getInstance().getChatterDBManager().readAllByRoomID(6);
+    ArrayList<UserInterface> usersArrayList = (ArrayList<UserInterface>) users;
+    for (int i = 0; i < users.size(); i++)
+    {
+      if (usersArrayList.get(i).getViaId().equals(user.getViaId()))
+      {
+        assertTrue(false);
+      }
+    }
+    assertTrue(true);
   }
 
-  @Test void makeModerator()
+  @Test void makeModerator() throws SQLException
   {
+    Room temp = new Room(7,"doesntmatter","doesntmatter");
     model.makeModerator(user);
+    assertTrue(Data.getInstance().getModeratorDBManager().isModeratorInRoom("111111",7));
   }
 
-  @Test void isModerator() throws RemoteException
+  @Test void isModerator_checks_the_database_and_returns_true_when_true() throws RemoteException
   {
-    model.isModerator(1);
+    assertTrue(model.isModeratorInRoom(1));
   }
 
-  @Test void isModeratorInRoom()
+  @Test void isModerator_checks_the_database_and_returns_false_when_false() throws RemoteException
   {
-    model.isModeratorInRoom(1);
+    assertFalse(model.isModeratorInRoom(3));
   }
 
-  @Test void getUserList()
+  @Test void addRoom_adds_a_room_to_the_database_with_the_next_id()
+      throws SQLException
   {
-    model.getUserList();
+    model.addRoom("newRoom","longercode",null);
+    int roomid = model.getRoomId();
+    Data.getInstance().getRoomDBManager().deleteRoom(11);
+    assertEquals(11,roomid);
   }
 
-  @Test void addRoom()
+  @Test void leaveRoom_removes_chatter_from_Chatter_roomlist()
+      throws SQLException, InterruptedException
   {
-    model.addRoom("newRoom","code",null);
-  }
-
-  @Test void leaveRoom()
-  {
-    model.leaveRoom();
-  }
-
-  @Test void getChannelsInRoom()
-  {
-    model.getChannelsInRoom(1);
-  }
-
-  @Test void joinRoom()
-  {
-    Room room = new Room(9,"newRoom","code");
+    model.addRoom("newRoomGetId","longercode",null);
+    Room room = new Room(5,"newRoomGetId","longercode");
+    model.receiveNewRoom(room);
     model.joinRoom(room);
+    Collection<UserInterface> whenJoined = Data.getInstance().getChatterDBManager().readAllByRoomID(5);
+    int whenJoinedSize = whenJoined.size();
+    model.leaveRoom();
+    Collection<UserInterface> whenLeft = Data.getInstance().getChatterDBManager().readAllByRoomID(5);
+    int whenLeftSize = whenLeft.size();
+    assertEquals(whenJoinedSize-1,whenLeftSize);
   }
 
-  @Test void editRoom()
+  @Test void getChannelsInRoom_returns_channels_in_room_from_database()
+      throws SQLException
   {
-    model.editRoom("newRoom","code",null);
+   ArrayList<Channel> channelArrayListFromModel = model.getChannelsInRoom(1);
+    ArrayList<Channel> channelArrayListFromDB = Data.getInstance().getChannelDBManager()
+        .getChannelsByRoomID(1);
+    assertEquals(channelArrayListFromDB.get(0).getId(),channelArrayListFromModel.get(0).getId());
   }
 
-  @Test void getRoomId()
+  @Test void joinRoom_adds_user_to_roomlist_in_database() throws SQLException
   {
-    model.getRoomId();
+    Room room = new Room(3,"newRoom","longercode");
+    model.joinRoom(room);
+    Collection<UserInterface> chatterRoomListFromDB = Data.getInstance().getChatterDBManager().readAllByRoomID(3);
+    model.leaveRoom();
+    assertTrue(chatterRoomListFromDB.contains(user));
   }
 
-  @Test void receiveNewRoom()
+  @Test void editRoom_goes_to_database_and_changes_room() throws SQLException
   {
-    model.receiveNewRoom(new Room(7,"newRoom","code"));
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(7,"newRoom","longercode");
+    model.joinRoom(room);
+    model.editRoom("roomNameEdited","longercode",null);
+    Room gotRoom = Data.getInstance().getRoomDBManager().readRoom(7);
+    assertEquals("roomNameEdited",gotRoom.getName());
   }
 
-  @Test void getChannelId()
+  @Test void getRoomId_gets_the_id_of_current_rooom() throws SQLException
   {
-    model.getChannelId();
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(9,"newRoom","longercode");
+    model.joinRoom(room);
+    int temp = model.getRoomId();
+    model.leaveRoom();
+    assertEquals(9,temp);
   }
 
-  @Test void createChannel()
+  @Test void getChannelId_gets_the_current_channel_the_user_is_in()
+      throws SQLException
   {
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(8,"newRoom","longercode");
+    model.joinRoom(room);
+
     model.createChannel("newChannel");
+    int tempid = model.getChannelId();
+
+    model.leaveRoom();
+
+    assertEquals(17,tempid);
   }
 
-  @Test void receiveNewChannel()
+  @Test void createChannel() throws SQLException
   {
-    model.receiveNewChannel(new Channel(11,"channel11",1));
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(6,"newRoom","longercode");
+    model.joinRoom(room);
+
+    model.createChannel("newChannel");
+    Channel temp = Data.getInstance().getChannelDBManager().getChannelById(model.getChannelId());
+
+    model.leaveRoom();
+
+    assertEquals("newChannel",temp.getName());
+
   }
 
-  @Test void editChannel()
+
+  @Test void editChannel() throws SQLException
   {
-    model.editChannel(2,"newname");
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(6,"newRoom","longercode");
+    model.joinRoom(room);
+
+    model.createChannel("newChannel");
+    model.editChannel(model.getChannelId(),"newName");
+    Channel temp = Data.getInstance().getChannelDBManager().getChannelById(model.getChannelId());
+
+    model.leaveRoom();
+
+    assertEquals("newName",temp.getName());
+
   }
 
-  @Test void reloadChannel()
+  @Test void editMessage_changes_the_specified_message_in_the_database() throws SQLException
   {
-    model.reloadChannel(new Channel(12,"channel11",1));
+    model.editMessage(13,"newMessage");
+    assertEquals(   "newMessage",Data.getInstance().getMessageDBManager().getLastMessage(14).getMessage());
   }
 
-  @Test void deleteChannel()
+  @Test void getMessagesInChannel_from_database_matches_messages_in_channel_in_database()
+      throws SQLException
   {
-    model.deleteChannel(11);
+    ArrayList<Message> messagesList = model.getMessagesInChannel(10);
+    Message expected = Data.getInstance().getMessageDBManager().readMessage(9);
+    Message returned = messagesList.get(0);
+    assertEquals(expected.getMessage(),returned.getMessage());
   }
 
-  @Test void receiveChannelToRemove()
+  @Test void addMessage_adds_message_to_the_database() throws SQLException
   {
-    model.receiveChannelToRemove(12);
-  }
-
-  @Test void sendOthersMessage()
-  {
-    model.sendOthersMessage(new Message("message",user,3));
-  }
-
-  @Test void deleteMessage()
-  {
-    model.deleteMessage(5);
-  }
-
-  @Test void editMessage()
-  {
-    model.editMessage(6,"newMessage");
-  }
-
-  @Test void getMessagesInChannel()
-  {
-    model.getMessagesInChannel(10);
-  }
-
-  @Test void reloadMessages()
-  {
-    model.reloadMessages(new ArrayList<>());
-  }
-
-  @Test void reloadMessage()
-  {
-    model.reloadMessage(new Message("message2",user,3));
-  }
-
-  @Test void addMessage()
-  {
+    model.addRoom("newRoom","longercode",null);
+    Room room = new Room(12,"newRoom","longercode");
+    model.joinRoom(room);
+    model.createChannel("tempChannel");
     model.addMessage("newMessage3");
+    Message temp = Data.getInstance().getMessageDBManager().getLastMessage(19);
+    assertEquals("newMessage3",temp.getMessage());
   }
 
 }
