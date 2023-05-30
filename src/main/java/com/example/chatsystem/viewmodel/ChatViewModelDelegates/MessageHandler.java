@@ -8,19 +8,26 @@ import java.util.List;
 
 public class MessageHandler
 {
-  private ChatViewModel c;
+  private ChatViewModel vm;
 
   public MessageHandler(ChatViewModel c)
   {
-    this.c = c;
+    this.vm = c;
   }
 
   public Message onSendMessage()
   {
-    c.userImage.set(c.model.getUser().getImage());
-    Message sentMessage = c.model.addMessage(c.textFieldProperty.get());
-    c.messageIdList.add(sentMessage.getId());
-    c.textFieldProperty.set("");
+    // images are half done, but they are not stored in the database
+    // so all the user images are default, as if user didn't choose the image during registrations
+    vm.userImage.set(vm.model.getUser().getImage());
+    // view model calls model and pass string message
+    Message sentMessage = vm.model.addMessage(vm.textFieldProperty.get());
+    // new message is added to messageIdList
+    // such a decision was made, because if user choose to edit message or delete it. Controller doesn't know ID of the message.
+    // so it passes index to viewmodel, here it gets the ID by provided by controller index and passes the ID to the model
+    vm.messageIdList.add(sentMessage.getId());
+    // reset textfield
+    vm.textFieldProperty.set("");
     return sentMessage;
   }
 
@@ -28,37 +35,37 @@ public class MessageHandler
   {
     ArrayList<Message> messages = null;
     if(channelIndex == -1)
-      messages = c.model.getMessagesInChannel(-1);
+      messages = vm.model.getMessagesInChannel(-1);
     else
     {
-      messages = c.model.getMessagesInChannel(c.channelList.get(channelIndex).getId());
+      messages = vm.model.getMessagesInChannel(vm.channelList.get(channelIndex).getId());
     }
 
-    c.support.firePropertyChange("clear messages", null, true);
-    c.messageIdList.clear();
+    vm.support.firePropertyChange("clear messages", null, true);
+    vm.messageIdList.clear();
     for (Message message:messages)
     {
-      c.messageIdList.add(message.getId());
-      c.support.firePropertyChange("new message", null,
-          List.of(message, message.getUser().equals(c.model.getUser())));
+      vm.messageIdList.add(message.getId());
+      vm.support.firePropertyChange("new message", null,
+          List.of(message, message.getUser().equals(vm.model.getUser())));
     }
   }
 
   public boolean isMyMessage(Message message)
   {
-    return message.getUser().equals(c.model.getUser());
+    return message.getUser().equals(vm.model.getUser());
   }
 
   public void editMessage(int index, String newMessage)
   {
-    c.model.editMessage(c.messageIdList.get(index), newMessage);
+    vm.model.editMessage(vm.messageIdList.get(index), newMessage);
   }
 
   public void deleteMessage(int index)
   {
     try
     {
-      c.model.deleteMessage(c.messageIdList.get(index));
+      vm.model.deleteMessage(vm.messageIdList.get(index));
     }
     catch (IOException e)
     {

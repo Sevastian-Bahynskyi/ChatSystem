@@ -177,12 +177,13 @@ public class ChatController implements Controller, PropertyChangeListener
     protected void onSendMessage() throws IOException
     {
         String t = textField.getText();
-        if(t == null || t.isEmpty() || (t.trim().isEmpty())) // doesn't allow to send messages that consist of whitespace chars
+        // doesn't allow to send messages that consist of whitespace chars
+        if(t == null || t.isEmpty() || (t.trim().isEmpty()))
         {
             textField.clear();
             return;
-        }
-        else if(t.equals("deleted message")) // if message is deleted
+        } // if message is deleted
+        else if(t.equals("deleted message"))
         {
             textField.setText("");
             return;
@@ -193,15 +194,18 @@ public class ChatController implements Controller, PropertyChangeListener
             isEditMessage = false;
             String temp = textField.getText();
             textField.clear();
+            // change GUI
             editMessageInUI((VBox) chatPane.getChildren().get(indexOfMessageToChange), temp);
+            // edit message in database and notify other client about the change
             new Thread(() -> this.viewModel.editMessage(indexOfMessageToChange, temp)).start();
         }
         else
         {
             Message message = viewModel.onSendMessage();
+            // creates message in database and notifies all the clients to add the message in UI
             addMessage(messageMyTemplate, profileImage.get(), message, true);
-            scrollPane.requestFocus();
         }
+        scrollPane.requestFocus();
     }
 
     @FXML
