@@ -88,7 +88,7 @@ public class ChatController implements Controller, PropertyChangeListener
         this.messageMyTemplate.setManaged(false);
         this.messageOthersTemplate.setManaged(false);
         this.textField.setTextFormatter(new TextFormatter<String>(change ->
-                change.getControlNewText().length() <= 8000 ? change : null));
+                change.getControlNewText().length() <= 3000 ? change : null));
 
         this.chatPane.heightProperty().addListener((observable, oldValue, newValue) ->
         {

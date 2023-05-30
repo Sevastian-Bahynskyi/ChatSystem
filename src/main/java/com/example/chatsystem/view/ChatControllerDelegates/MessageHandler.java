@@ -72,6 +72,10 @@ public class MessageHandler
                     c.showContextMenu(options, event.getScreenX(), event.getScreenY());
                 }
             });
+
+            if(c.viewModel.isMyMessage(message))
+                options.put("Edit", () -> editMessage(message.getMessage()));
+
             options.put("Delete", () -> c.deleteMessage(vBox));
         }
         if(isNeedAnimation)

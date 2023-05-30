@@ -31,6 +31,7 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     {
         switch (remotePropertyChangeEvent.getPropertyName())
         {
+            // client's listener gets notification and call modelManager to update GUI
             case "new message" -> {
                 var lastMessage = (data.getMessageDBManager().getLastMessage(modelManager.getChannelId()));
 
