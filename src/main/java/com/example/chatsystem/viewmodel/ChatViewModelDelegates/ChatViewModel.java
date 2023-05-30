@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 
 public class ChatViewModel implements ViewModel, PropertyChangeListener
 {
+    protected PropertyChangeSupport support;
     protected Model model;
     protected SimpleStringProperty textFieldProperty;
     protected SimpleListProperty<Chatter> users;
@@ -25,7 +26,6 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     protected ArrayList<Integer> messageIdList;
     protected ArrayList<Channel> channelList;
     protected ArrayList<Room> roomList;
-    protected PropertyChangeSupport support;
     private ChannelHandler channelHandler;
     private MessageHandler messageHandler;
     private RoomHandler roomHandler;
@@ -145,15 +145,18 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
             }
 
             case "delete channel" -> {
-                for (var ch:channelList)
-                {
-                    if(ch.getId() == (int) evt.getNewValue())
+                Platform.runLater(() -> {
+                    for (var ch:channelList)
                     {
-                        int index = channelList.indexOf(ch);
-                        support.firePropertyChange("delete channel", null, index);
-                        channelList.remove(index);
+                        if(ch.getId() == (int) evt.getNewValue())
+                        {
+                            int index = channelList.indexOf(ch);
+                            support.firePropertyChange("delete channel", null, index);
+                            channelList.remove(index);
+                        }
                     }
-                }
+                });
+
             }
 
             case "load rooms" -> {
@@ -228,9 +231,9 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         channelHandler.deleteChannel(indexOfChannelToChange);
     }
 
-    public boolean isModerator(int channelId)
+    public boolean isModerator(String userId, int channelId)
     {
-        return  userHandler.isModerator(channelId);
+        return  userHandler.isModerator(userId, channelId);
     }
 
     public boolean isModeratorInRoom(int roomId)

@@ -16,6 +16,8 @@ public class MessageHandler
         m.currentMessage = message;
         if(!message.getUser().equals(m.user))
             m.support.firePropertyChange("new message", null, message);
+        // if the user who wrote the message is not the one who get the notification - notify viewmodel
+        // the author's client got UI update right in the controller at the end of the onSendMessage method
     }
 
     public void deleteMessage(int id)

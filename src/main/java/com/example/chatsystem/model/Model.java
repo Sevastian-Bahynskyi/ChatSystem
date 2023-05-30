@@ -37,7 +37,7 @@ public interface Model
 
     void deleteChannel(int id);
 
-    boolean isModerator(int channelId) throws RemoteException;
+    boolean isModerator(String roomId, int channelId) throws RemoteException;
     void loadEverythingToTheViewModel();
 
     void editRoom(String roomName, String roomCode, String imageUrl);

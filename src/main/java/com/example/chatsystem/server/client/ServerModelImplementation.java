@@ -16,10 +16,10 @@ public class ServerModelImplementation implements ServerModel
     private final RemotePropertyChangeSupport<Integer> support;
     private final Data data;
 
-    public ServerModelImplementation(Data data)
+    public ServerModelImplementation() throws SQLException
     {
         this.support = new RemotePropertyChangeSupport<>();
-        this.data = data;
+        this.data = Data.getInstance();
     }
 
     @Override
@@ -161,9 +161,9 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public boolean isModerator(String chatterId, int roomId)
+    public boolean isModerator(String chatterId, int channelId)
     {
-        return data.getModeratorDBManager().isModeratorInRoom(chatterId, roomId);
+        return data.getModeratorDBManager().isModeratorInRoom(chatterId, data.getRoomDBManager().getRoomByChannel(channelId).getId());
     }
 
     @Override

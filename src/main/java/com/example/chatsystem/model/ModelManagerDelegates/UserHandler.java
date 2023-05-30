@@ -46,9 +46,9 @@ public class UserHandler
         m.server.makeModerator(user, m.room.getId());
     }
 
-    public boolean isModerator(int channelId) throws RemoteException
+    public boolean isModerator(String roomId, int channelId) throws RemoteException
     {
-        return m.server.isModerator(m.user.getViaId(), channelId);
+        return m.server.isModerator(roomId, channelId);
     }
 
     public boolean isModeratorInRoom(int roomId)

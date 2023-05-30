@@ -127,9 +127,9 @@ public class ModelManager implements Model
     }
 
     @Override
-    public boolean isModerator(int channelId) throws RemoteException
+    public boolean isModerator(String roomId, int channelId) throws RemoteException
     {
-        return userHandler.isModerator(channelId);
+        return userHandler.isModerator(roomId, channelId);
     }
 
     @Override
@@ -225,6 +225,7 @@ public class ModelManager implements Model
 
     public void sendOthersMessage(Message message)
     {
+        // model delegates method of messageHandler
         messageHandler.sendOthersMessage(message);
     }
 

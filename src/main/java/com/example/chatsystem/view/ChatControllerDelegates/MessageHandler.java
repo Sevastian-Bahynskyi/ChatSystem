@@ -60,7 +60,7 @@ public class MessageHandler
 
         animation.setByX(-transitionValue);
         c.chatPane.getChildren().add(vBox);
-        if((c.viewModel.isMyMessage(message) || c.viewModel.isModerator(message.getChannelId())) && !message.getMessage().equals("deleted message"))
+        if((c.viewModel.isMyMessage(message) || !c.viewModel.isModerator(message.getUser().getViaId(), message.getChannelId())) && !message.getMessage().equals("deleted message"))
         {
             HashMap<String, Runnable> options = new HashMap<>();
 
@@ -72,10 +72,6 @@ public class MessageHandler
                     c.showContextMenu(options, event.getScreenX(), event.getScreenY());
                 }
             });
-
-            if(!c.viewModel.isModerator(message.getChannelId()))
-                options.put("Edit", () -> editMessage(message.getMessage()));
-
             options.put("Delete", () -> c.deleteMessage(vBox));
         }
         if(isNeedAnimation)

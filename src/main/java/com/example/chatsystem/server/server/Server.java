@@ -17,10 +17,8 @@ public class Server
 {
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, SQLException
     {
-        Data data = Data.getInstance();
-        FileLog log = FileLog.getInstance();
         Registry registry = LocateRegistry.createRegistry(5050);
-        ServerModel serverModel = new ServerModelImplementation(data);
+        ServerModel serverModel = new ServerModelImplementation();
         Remote remote = UnicastRemoteObject.exportObject(serverModel, 0);
         registry.bind("ServerModel", remote);
         System.out.println("Server is running.");

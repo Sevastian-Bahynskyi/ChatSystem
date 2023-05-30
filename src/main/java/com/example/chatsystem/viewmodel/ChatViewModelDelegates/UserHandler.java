@@ -14,11 +14,11 @@ public class UserHandler
     this.c = c;
   }
 
-  public boolean isModerator(int channelId)
+  public boolean isModerator(String roomId, int channelId)
   {
     try
     {
-      return c.model.isModerator(channelId);
+      return c.model.isModerator(roomId, channelId);
     } catch (RemoteException e)
     {
       throw new RuntimeException(e);
