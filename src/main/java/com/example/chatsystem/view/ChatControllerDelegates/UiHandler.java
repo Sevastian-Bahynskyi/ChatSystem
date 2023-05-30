@@ -207,6 +207,7 @@ public class UiHandler
             case "new message" -> {
                 var propertyEvent = (List<Object>) evt.getNewValue();
                 Message message = (Message) propertyEvent.get(0);
+                // if message author is not the same who logged it will be displayed on the right side of chat pane
                 boolean isMessageOfTheUser = (boolean) propertyEvent.get(1);
 
                 Platform.runLater(() ->

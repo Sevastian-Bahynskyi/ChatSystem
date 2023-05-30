@@ -71,7 +71,7 @@ public class ModelManager implements Model
         rooms = server.getRooms();
         if(!rooms.isEmpty())
         {
-            room = rooms.get(0);
+            room = rooms.get(rooms.size() - 1);
             users = server.getUserListInRoom(room.getId());
         }
 

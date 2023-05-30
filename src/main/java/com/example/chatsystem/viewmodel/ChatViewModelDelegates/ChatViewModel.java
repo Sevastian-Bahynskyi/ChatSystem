@@ -88,8 +88,11 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
         {
             case "new message" ->
             {
+                // adds message id to list
                 messageIdList.add(((Message) evt.getNewValue()).getId());
+                // we haven't implemented images, but if the image has a real path than GUI will display it
                 userImage.set(((Message) evt.getNewValue()).getUser().getImage());
+                // notifies the controller to add message in GUI
                 support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
             }
 
