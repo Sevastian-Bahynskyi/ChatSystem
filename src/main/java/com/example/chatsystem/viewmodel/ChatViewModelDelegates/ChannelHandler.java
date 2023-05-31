@@ -6,64 +6,69 @@ import java.util.ArrayList;
 
 public class ChannelHandler
 {
-  private ChatViewModel c;
+  private ChatViewModel vm;
 
   public ChannelHandler(ChatViewModel c)
   {
-    this.c = c;
+    this.vm = c;
   }
 
   public boolean loadChannelsByRoomIndex(int roomIndex)
   {
     ArrayList<Channel> channels = null;
     if(roomIndex == -1)
-      channels = c.model.getChannelsInRoom(-1);
+      channels = vm.model.getChannelsInRoom(-1);
     else
     {
-      channels = c.model.getChannelsInRoom(c.roomList.get(roomIndex).getId());
+      channels = vm.model.getChannelsInRoom(vm.roomList.get(roomIndex).getId());
     }
 
     if(channels == null)
       return false;
 
-    c.support.firePropertyChange("update user list", null, c.model.getUserList());
-    c.support.firePropertyChange("clear channels", null, true);
-    c.channelList.clear();
-    c.channelList.addAll(channels);
+    vm.support.firePropertyChange("update user list", null, vm.model.getUserList());
+    vm.support.firePropertyChange("clear channels", null, true);
+    vm.channelList.clear();
+    vm.channelList.addAll(channels);
     for (var ch:channels)
     {
-      c.support.firePropertyChange("new channel", null, ch);
+      vm.support.firePropertyChange("new channel", null, ch);
     }
 
-    if(!c.channelList.isEmpty())
-      c.loadMessagesByChannelIndex(c.channelList.size() - 1);
+    if(!vm.channelList.isEmpty())
+      vm.loadMessagesByChannelIndex(vm.channelList.size() - 1);
 
     return true;
   }
 
   public void addChannel(String channelName)
   {
-    c.model.createChannel(channelName);
+    vm.model.createChannel(channelName);
+    vm.support.firePropertyChange("clear messages", null, true);
   }
 
   public Channel getChannelByIndex(int index)
   {
-    return c.channelList.get(index);
+    return vm.channelList.get(index);
   }
 
   public void editChannel(String oldChannelName, String newChannelName)
   {
-    for (var ch:c.channelList)
+    for (var ch: vm.channelList)
     {
-      if(ch.getName().equals(oldChannelName) && c.model.editChannel(ch.getId(), newChannelName))
+      if(ch.getName().equals(oldChannelName) && vm.model.editChannel(ch.getId(), newChannelName))
       {
         ch.setName(newChannelName);
       }
+      System.out.println(ch + ", ");
     }
+
+//    if(!vm.channelList.isEmpty())
+//      loadChannelsByRoomIndex(vm.getRoomIndex(vm.channelList.get(0).getRoomId()));
   }
 
   public void deleteChannel(int indexOfChannelToChange)
   {
-    c.model.deleteChannel(c.channelList.get(indexOfChannelToChange).getId());
+    vm.model.deleteChannel(vm.channelList.get(indexOfChannelToChange).getId());
   }
 }

@@ -249,9 +249,9 @@ public class ChatController implements Controller, PropertyChangeListener
                 else {
                     this.viewModel.addChannel(newChannelField.getText());
                 }
-
                 newChannelField.setVisible(false);
                 newChannelField.clear();
+
             }
         }
     }

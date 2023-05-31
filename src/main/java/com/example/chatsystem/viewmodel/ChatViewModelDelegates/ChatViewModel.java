@@ -84,104 +84,107 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        switch (evt.getPropertyName())
-        {
-            case "new message" ->
+        Platform.runLater(() -> {
+            switch (evt.getPropertyName())
             {
-                // adds message id to list
-                messageIdList.add(((Message) evt.getNewValue()).getId());
-                // we haven't implemented images, but if the image has a real path than GUI will display it
-                userImage.set(((Message) evt.getNewValue()).getUser().getImage());
-                // notifies the controller to add message in GUI
-                support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
-            }
+                case "new message" ->
+                {
+                    // adds message id to list
+                    messageIdList.add(((Message) evt.getNewValue()).getId());
+                    // we haven't implemented images, but if the image has a real path than GUI will display it
+                    userImage.set(((Message) evt.getNewValue()).getUser().getImage());
+                    // notifies the controller to add message in GUI
+                    support.firePropertyChange("new message", null, List.of(evt.getNewValue(), false));
+                }
 
-            case "user" -> {
-                userImage.set(((UserInterface) evt.getNewValue()).getImage());
-                loadMessagesByChannelIndex(-1);
-            }
+                case "user" -> {
+                    userImage.set(((UserInterface) evt.getNewValue()).getImage());
+                    loadMessagesByChannelIndex(-1);
+                }
 
-            case "update user list" -> {
-                var newUsers = ((List<Chatter>) evt.getNewValue());
-                Platform.runLater(() -> support.firePropertyChange("update user list", null, newUsers));
-            }
+                case "update user list" -> {
+                    var newUsers = ((List<Chatter>) evt.getNewValue());
+                    support.firePropertyChange("update user list", null, newUsers);
+                }
 
-            case "room added" -> {
-                Room room = (Room) evt.getNewValue();
-                roomList.add(room);
-                Platform.runLater(() -> support.firePropertyChange("room added", null, room));
-            }
+                case "room added" -> {
+                    Room room = (Room) evt.getNewValue();
+                    roomList.add(room);
+                    support.firePropertyChange("room added", null, room);
+                }
 
-            case "reload messages" -> {
-                Platform.runLater(() -> support.firePropertyChange("reload messages", null, evt.getNewValue()));
-            }
+                case "reload messages" -> {
+                    support.firePropertyChange("reload messages", null, evt.getNewValue());
+                }
 
-            case "reload message" -> {
-                Message mes = (Message) evt.getNewValue();
-                Platform.runLater(() -> support.firePropertyChange("reload message", null, List.of(mes, messageIdList.indexOf(mes.getId()))));
-            }
+                case "reload message" -> {
+                    Message mes = (Message) evt.getNewValue();
+                    support.firePropertyChange("reload message", null, List.of(mes, messageIdList.indexOf(mes.getId())));
+                }
 
-            case "new channel" -> {
-                channelList.add(((Channel) evt.getNewValue()));
-                support.firePropertyChange("new channel", null, evt.getNewValue());
-            }
+                case "new channel" -> {
+                    channelList.add(((Channel) evt.getNewValue()));
+                    support.firePropertyChange("new channel", null, evt.getNewValue());
+                }
 
-            case "load channels" -> {
-                System.out.println(evt.getNewValue());
-                ArrayList<Channel> channels = (ArrayList<Channel>) evt.getNewValue();
-                Collections.reverse(channels);
+                case "load channels" -> {
+                    System.out.println(evt.getNewValue());
+                    ArrayList<Channel> channels = (ArrayList<Channel>) evt.getNewValue();
+                    Collections.reverse(channels);
 
-                channelList.addAll(channels);
+                    channelList.addAll(channels);
 
 
-                support.firePropertyChange("load channels", null, evt.getNewValue());
-            }
+                    support.firePropertyChange("load channels", null, evt.getNewValue());
+                }
 
-            case "reload channel" -> {
-                Channel channel = (Channel) evt.getNewValue();
-                int index = IntStream.range(0, channelList.size())
-                        .filter(i -> channelList.get(i).getId() == channel.getId())
-                        .findFirst()
-                        .orElse(-1);
+                case "reload channel" -> {
+                    Channel channel = (Channel) evt.getNewValue();
+                    int index = IntStream.range(0, channelList.size())
+                            .filter(i -> channelList.get(i).getId() == channel.getId())
+                            .findFirst()
+                            .orElse(-1);
 
-                Platform.runLater(() -> support.firePropertyChange("reload channel", null, List.of(channel, index)));
-            }
+                    index = channelList.size() - 1 - index;
 
-            case "delete channel" -> {
-                Platform.runLater(() -> {
-                    for (var ch:channelList)
-                    {
-                        if(ch.getId() == (int) evt.getNewValue())
+                    support.firePropertyChange("reload channel", null, List.of(channel, index));
+                }
+
+                case "delete channel" -> {
+                    int index = -1;
+                        for (var ch:channelList)
                         {
-                            int index = channelList.indexOf(ch);
-                            support.firePropertyChange("delete channel", null, index);
-                            channelList.remove(index);
+                            if(ch.getId() == (int) evt.getNewValue())
+                            {
+                                index = channelList.indexOf(ch);
+                                support.firePropertyChange("delete channel", null, channelList.size() - 1 - index);
+                            }
                         }
-                    }
-                });
+                    channelList.remove(index);
+                }
 
+                case "load rooms" -> {
+                    ArrayList<Room> rooms = (ArrayList<Room>) evt.getNewValue();
+                    roomList.addAll(rooms);
+                    support.firePropertyChange("load rooms", null, evt.getNewValue());
+                }
+
+                case "reload room" -> {
+                    Room room = (Room) evt.getNewValue();
+                    int index = IntStream.range(0, roomList.size())
+                            .filter(i -> roomList.get(i).getId() == room.getId())
+                            .findFirst()
+                            .orElse(-1);
+
+                    support.firePropertyChange("reload room", null, List.of(room, index));
+                }
+
+                case "join a room" -> {
+                    support.firePropertyChange("join a room", null, evt.getNewValue());
+                }
             }
+        });
 
-            case "load rooms" -> {
-                ArrayList<Room> rooms = (ArrayList<Room>) evt.getNewValue();
-                roomList.addAll(rooms);
-                support.firePropertyChange("load rooms", null, evt.getNewValue());
-            }
-
-            case "reload room" -> {
-                Room room = (Room) evt.getNewValue();
-                int index = IntStream.range(0, roomList.size())
-                        .filter(i -> roomList.get(i).getId() == room.getId())
-                        .findFirst()
-                        .orElse(-1);
-
-                Platform.runLater(() -> support.firePropertyChange("reload room", null, List.of(room, index)));
-            }
-
-            case "join a room" -> {
-                Platform.runLater(() -> support.firePropertyChange("join a room", null, evt.getNewValue()));
-            }
-        }
     }
 
     public boolean isMyMessage(Message message)
