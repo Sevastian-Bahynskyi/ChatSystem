@@ -3,6 +3,7 @@ package com.example.chatsystem.viewmodel.ChatViewModelDelegates;
 import com.example.chatsystem.model.Channel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChannelHandler
 {

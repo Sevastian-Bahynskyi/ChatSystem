@@ -151,7 +151,7 @@ public class ChannelDBManager
     try (Connection connection = getConnection())
     {
       PreparedStatement preparedStatement = connection.prepareStatement(
-          "SELECT * FROM Channel WHERE room_id = ?;");
+          "SELECT * FROM Channel WHERE room_id = ? ORDER BY id DESC");
       preparedStatement.setInt(1, roomId);
       ResultSet resultSet = preparedStatement.executeQuery();
       ArrayList<Channel> channels = new ArrayList<>();

@@ -109,8 +109,13 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
 
                 case "room added" -> {
                     Room room = (Room) evt.getNewValue();
-                    roomList.add(room);
+                    roomList.add(0, room);
+                    loadChannelsByRoomIndex(getRoomIndex(room.getId()));
                     support.firePropertyChange("room added", null, room);
+                }
+
+                case "select room" -> {
+                    support.firePropertyChange("select room", null, getRoomIndex(((Room) evt.getNewValue()).getId()));
                 }
 
                 case "reload messages" -> {
@@ -123,15 +128,13 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 }
 
                 case "new channel" -> {
-                    channelList.add(((Channel) evt.getNewValue()));
+                    channelList.add(0, ((Channel) evt.getNewValue()));
                     support.firePropertyChange("new channel", null, evt.getNewValue());
                 }
 
                 case "load channels" -> {
-                    System.out.println(evt.getNewValue());
                     ArrayList<Channel> channels = (ArrayList<Channel>) evt.getNewValue();
-                    Collections.reverse(channels);
-
+                    System.out.println(channels);
                     channelList.addAll(channels);
 
 
@@ -145,9 +148,14 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                             .findFirst()
                             .orElse(-1);
 
-                    index = channelList.size() - 1 - index;
+//                    index = channelList.size() - 1 - index;
 
                     support.firePropertyChange("reload channel", null, List.of(channel, index));
+                }
+
+                case "select channel" -> {
+                    Channel channel = (Channel) evt.getNewValue();
+                    support.firePropertyChange("select channel", null, channelList.indexOf(channel));
                 }
 
                 case "delete channel" -> {
@@ -157,7 +165,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                             if(ch.getId() == (int) evt.getNewValue())
                             {
                                 index = channelList.indexOf(ch);
-                                support.firePropertyChange("delete channel", null, channelList.size() - 1 - index);
+                                support.firePropertyChange("delete channel", null, index);
                             }
                         }
                     channelList.remove(index);
@@ -166,6 +174,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                 case "load rooms" -> {
                     ArrayList<Room> rooms = (ArrayList<Room>) evt.getNewValue();
                     roomList.addAll(rooms);
+
                     support.firePropertyChange("load rooms", null, evt.getNewValue());
                 }
 
@@ -176,6 +185,7 @@ public class ChatViewModel implements ViewModel, PropertyChangeListener
                             .findFirst()
                             .orElse(-1);
 
+                    System.out.println("Room to change - " + index);
                     support.firePropertyChange("reload room", null, List.of(room, index));
                 }
 

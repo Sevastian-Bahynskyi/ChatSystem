@@ -205,11 +205,11 @@ public class Listener extends UnicastRemoteObject implements RemotePropertyChang
     }
 
     @Override
-    public void createRoom(UserInterface user, String name, String code)
+    public Room createRoom(UserInterface user, String name, String code)
     {
         try
         {
-            serverModel.createRoom(user, name, code);
+            return serverModel.createRoom(user, name, code);
         } catch (RemoteException e)
         {
             throw new RuntimeException(e);
