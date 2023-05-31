@@ -233,9 +233,9 @@ public class Client implements Runnable, ServerModel
     }
 
     @Override
-    public void createRoom(UserInterface user, String name, String code) throws RemoteException
+    public Room createRoom(UserInterface user, String name, String code) throws RemoteException
     {
-        listener.createRoom(user, name, code);
+        return listener.createRoom(user, name, code);
     }
 
     @Override

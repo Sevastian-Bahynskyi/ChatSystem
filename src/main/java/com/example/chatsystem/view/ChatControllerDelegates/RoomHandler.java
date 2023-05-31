@@ -29,10 +29,10 @@ public class RoomHandler
     }
     protected void addRoom(Room room)
     {
-        addRoom(c.roomList.getChildren().size(), room);
+        addRoom(c.roomList.getChildren().size(), room, false);
     }
 
-    protected void addRoom(int index, Room room)
+    protected void addRoom(int index, Room room, boolean needToReplace)
     {
         Circle circle = new Circle(30);
         Label label = new Label(room.getName());
@@ -49,8 +49,10 @@ public class RoomHandler
         imageRoomContainer.setMaxWidth(Double.MAX_VALUE);
         imageRoomContainer.setAlignment(Pos.CENTER);
 
+        if(!needToReplace)
+            c.roomList.getChildren().add(index, imageRoomContainer);
+        else c.roomList.getChildren().set(index, imageRoomContainer);
 
-        c.roomList.getChildren().add(index, imageRoomContainer);
         if(c.roomList.getChildren().size() == 1)
         {
             c.currentRoom = imageRoomContainer;
@@ -61,8 +63,9 @@ public class RoomHandler
             popup.show(imageRoomContainer.getScene().getWindow(), event.getScreenX() + 10, event.getScreenY() + 10);
         });
 
-        circle.setOnMouseClicked(event -> {
+        imageRoomContainer.setOnMouseClicked(event -> {
             int indexX = c.roomList.getChildren().indexOf(imageRoomContainer);
+            System.out.println(indexX);
             if(!c.viewModel.loadChannelsByRoomIndex(indexX))
                 return;
 
@@ -127,7 +130,6 @@ public class RoomHandler
                 confirmationDialog.setContentText("You successfully joined the room: " + room.getName());
                 c.viewModel.joinRoom(room);
                 HBox hbox = (HBox) c.roomList.getChildren().get(c.viewModel.getRoomIndex(room.getId()));
-                Circle circle = ((Circle) hbox.getChildren().get(0));
                 MouseEvent clickEvent = new MouseEvent(
                         MouseEvent.MOUSE_CLICKED,
                         0, 0, 0, 0,
@@ -136,7 +138,7 @@ public class RoomHandler
                         true, false, false, false,
                         true, true, null
                 );
-                circle.fireEvent(clickEvent);
+                hbox.fireEvent(clickEvent);
             }
             confirmationDialog.getDialogPane().setStyle("-fx-background-color: " + dialogColor);
             confirmationDialog.showAndWait();

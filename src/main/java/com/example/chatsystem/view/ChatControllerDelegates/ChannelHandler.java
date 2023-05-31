@@ -18,7 +18,7 @@ public class ChannelHandler
         this.c = chatController;
     }
 
-    protected void addChannel(String channelName)
+    protected void addChannel(int index, String channelName)
     {
         Map<String, Runnable> options = new HashMap<>();
 
@@ -33,9 +33,10 @@ public class ChannelHandler
 
         options.put("Edit", this::editChannel);
         options.put("Delete", this::deleteChannel);
-
-        c.channelListPane.getChildren().add(0, label);
-        int indexOfChannel = c.channelListPane.getChildren().size() - 1;
+        if(index == -1)
+            c.channelListPane.getChildren().add(label);
+        else c.channelListPane.getChildren().add(index, label);
+        int indexOfChannel = c.indexOfChannelToChange;
 
 
         label.setOnMouseClicked(event -> {
@@ -44,7 +45,7 @@ public class ChannelHandler
                 if(!c.viewModel.amIModerator())
                     return;
 
-                c.indexOfChannelToChange = c.channelListPane.getChildren().size() - c.channelListPane.getChildren().indexOf(label) - 1;
+                c.indexOfChannelToChange = c.channelListPane.getChildren().indexOf(label);
                 System.out.println("Index of channel: " + c.indexOfChannelToChange);
 
                 c.showContextMenu(options, event.getScreenX(), event.getScreenY());
@@ -53,7 +54,7 @@ public class ChannelHandler
             {
                 c.onChannelClick(event);
 
-                c.viewModel.loadMessagesByChannelIndex(indexOfChannel);
+                c.viewModel.loadMessagesByChannelIndex(c.channelListPane.getChildren().indexOf(label));
             }
         });
         if (c.selectedChannel != null) {
@@ -66,6 +67,7 @@ public class ChannelHandler
     protected void deleteChannel()
     {
         c.viewModel.deleteChannel(c.indexOfChannelToChange);
+
     }
 
 

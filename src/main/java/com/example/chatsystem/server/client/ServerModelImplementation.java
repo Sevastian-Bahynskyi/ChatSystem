@@ -167,10 +167,14 @@ public class ServerModelImplementation implements ServerModel
     }
 
     @Override
-    public void createRoom(UserInterface user, String name, String code) throws RemoteException
+    public Room createRoom(UserInterface user, String name, String code) throws RemoteException
     {
         Room room = data.getRoomDBManager().createRoom(user, name, code);
+        addChatterToRoom(user, room);
+        makeModerator(user, room.getId());
+        createChannel("General", room.getId());
         support.firePropertyChange("room was added", null, room.getId());
+        return room;
     }
 
     @Override

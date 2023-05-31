@@ -309,9 +309,9 @@ public class ChatController implements Controller, PropertyChangeListener
         viewHandler.openParallelView(WINDOW.ADD_ROOM);
     }
 
-    public void addChannel(String channelName)
+    public void addChannel(int index, String channelName)
     {
-        channelHandler.addChannel(channelName);
+        channelHandler.addChannel(index, channelName);
     }
 
     public void deleteChannel()
@@ -329,9 +329,9 @@ public class ChatController implements Controller, PropertyChangeListener
         roomHandler.addRoom(room);
     }
 
-    public void addRoom(int index, Room room)
+    public void addRoom(int index, Room room, boolean needToReplace)
     {
-        roomHandler.addRoom(index, room);
+        roomHandler.addRoom(index, room, needToReplace);
     }
 
     public void joinRoom(Room room)

@@ -45,7 +45,7 @@ public interface ServerModel extends Remote
 
     boolean isModerator(String chatterId, int channelId) throws RemoteException;
 
-    void createRoom(UserInterface user, String name, String code) throws RemoteException;
+    Room createRoom(UserInterface user, String name, String code) throws RemoteException;
 
     ArrayList<Room> getRooms() throws RemoteException;
 

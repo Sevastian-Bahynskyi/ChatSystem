@@ -18,8 +18,11 @@ public class RoomHandler
     {
         try
         {
-            m.server.createRoom(m.user, name, code);
+            Room room = new Room(name, code); // firstly checks if room can be created
             m.user = new Moderator(m.user);
+            room = m.server.createRoom(m.user, name, code);
+            m.support.firePropertyChange("select room", null, room);
+
             System.out.println(m.user);
         } catch (RemoteException e)
         {
@@ -58,7 +61,7 @@ public class RoomHandler
             {
                 m.room = m.server.getRoom(roomId);
                 m.users = m.server.getUserListInRoom(m.room.getId());
-                if(m.server.isModerator(m.user.getViaId(), m.room.getId()))
+                if(m.server.isModerator(m.user.getViaId(), m.channel.getId()))
                     m.user = new Moderator(m.user);
                 else
                     m.user = new Chatter(m.user);
@@ -68,8 +71,6 @@ public class RoomHandler
                     m.support.firePropertyChange("join a room", null, List.of(m.room, m.user));
                     return null;
                 }
-
-                // user list is empty all the time
 
             } catch (IOException e)
             {

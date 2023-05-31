@@ -44,6 +44,8 @@ public class ChannelHandler
     {
         if(m.user.isModerator())
             m.server.deleteChannel(id);
+        m.channel = m.channels.get(m.channels.size() - 1);
+        m.support.firePropertyChange("select channel", null, m.channel);
     }
 
     public ArrayList<Message> getMessagesInChannel(int channelId)

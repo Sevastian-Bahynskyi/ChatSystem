@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -231,7 +232,7 @@ public class UiHandler
 
             case "room added" -> {
                 Room room = (Room) evt.getNewValue();
-                c.addRoom(room);
+                c.addRoom(0, room, false);
             }
 
             case "reload messages" -> {
@@ -259,7 +260,7 @@ public class UiHandler
 
             case "new channel" -> {
                 Channel channel = (Channel) evt.getNewValue();
-                c.addChannel(channel.getName());
+                c.addChannel(0, channel.getName());
             }
 
             case "clear messages" -> {
@@ -273,11 +274,18 @@ public class UiHandler
                 ((Label) c.channelListPane.getChildren().get(index)).setText(mes.getName());
             }
 
+            case "select channel" -> {
+                int index = (int) evt.getNewValue();
+                c.channelListPane.getChildren().get(index).fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                        0, 0, 0, 0, MouseButton.PRIMARY, 1,
+                        false, false, false, false, true, false, false, true, true, true, null));
+            }
+
             case "load channels" -> {
                 ArrayList<Channel> channels = (ArrayList<Channel>) evt.getNewValue();
                 for (Channel ch:channels)
                 {
-                    c.addChannel(ch.getName());
+                    c.addChannel(-1, ch.getName());
                 }
             }
 
@@ -287,6 +295,15 @@ public class UiHandler
                 {
                     c.addRoom(r);
                 }
+                c.roomList.getChildren().get(c.roomList.getChildren().size() - 1).fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                        0, 0, 0, 0, MouseButton.PRIMARY, 1,
+                        false, false, false, false, true, false, false, true, true, true, null));
+            }
+
+            case "select room" -> {
+                c.roomList.getChildren().get((Integer) evt.getNewValue()).fireEvent(new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                        0, 0, 0, 0, MouseButton.PRIMARY, 1,
+                        false, false, false, false, true, false, false, true, true, true, null));
             }
 
             case "delete channel" -> {
@@ -309,7 +326,7 @@ public class UiHandler
                 List<Object> t = (List<Object>) evt.getNewValue();
                 Room room = (Room) t.get(0);
                 int index = (int) t.get(1);
-                c.addRoom(index, room);
+                c.addRoom(index, room, true);
             }
         }
     }
