@@ -57,6 +57,7 @@ class ChatViewModelTest
     Message message = chatViewModel.onSendMessage();
     assertEquals(dummyMessage,message);
   }
+
   @Test void load_messages_throws_runs_the_for_loop()
   {
     Mockito.when(modelMock.getUser()).thenThrow(new ArithmeticException());

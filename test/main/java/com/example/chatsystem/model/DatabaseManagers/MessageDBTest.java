@@ -5,7 +5,6 @@ import com.example.chatsystem.model.DatabaseManagers.MessageDBManager;
 import com.example.chatsystem.model.Message;
 import com.example.chatsystem.model.Moderator;
 import com.example.chatsystem.model.UserInterface;
-import com.sun.javafx.logging.jfr.JFRInputEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +12,7 @@ import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageDBTest
 {
@@ -151,9 +149,11 @@ public class MessageDBTest
       ResultSet resultSet = preparedStatement.executeQuery();
       while (resultSet.next())
       {
-        users.add(new Chatter(resultSet.getString("viaid"), resultSet.getString("username"), resultSet.getString("password")));
+        users.add(new Chatter(resultSet.getString("viaid"),
+            resultSet.getString("username"), resultSet.getString("password")));
       }
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM message WHERE channel_id = '1';");
+      PreparedStatement statement =
+          connection.prepareStatement("SELECT * FROM message WHERE channel_id = '1';");
       ResultSet rs = statement.executeQuery();
       while (rs.next())
       {
@@ -165,10 +165,21 @@ public class MessageDBTest
             currentChatter = users.get(i);
           }
         }
-        expected.add(new Message(rs.getInt("id"), rs.getString("message"), rs.getTimestamp("timestamp"), currentChatter, rs.getInt("channel_id")));
+        expected.add(new Message(rs.getInt("id"),
+            rs.getString("message"), rs.getTimestamp("timestamp"),
+            currentChatter, rs.getInt("channel_id")));
       }
     }
-    assertEquals(expected.get(0).getMessage(), result.get(0).getMessage());
+    boolean trueBool = true;
+    for (int i = 0; i < result.size(); i++)
+    {
+      if (result.get(i).equals(expected.get(i)))
+      {
+        trueBool = true;
+      }
+      else trueBool = false;
+    }
+    assertTrue(trueBool);
   }
 
   @Test
